@@ -14,7 +14,7 @@ This section must be completed by the student; the AI cannot attest to what the 
 - Modified: [student to list any code, text or numbers changed by hand]
 - Independently tested: [student to list, see the verification log below]
 - Rejected or redirected: [student to list suggestions not accepted]
-- Decisions made by the student during the session: the task prompt itself (scope, phases, controls, "ASK" rules). No question was put to the student during execution; the SME and powermetrics decisions were resolved by the defaults the prompt specified (SME skipped as non-trivial; powermetrics not run because it needs sudo).
+- Decisions made by the student during the session: the task prompt itself (scope, phases, controls, "ASK" rules). No question was put to the student during execution; the SME decision was resolved by the default the prompt specified (SME skipped as non-trivial). powermetrics was not run by the AI (needs sudo); the student ran it afterwards and the AI used the pasted output.
 
 ## The flawed-benchmark incident (Experiment 8)
 Planned, deliberate part (`src/naive/naive_bench.c`, `plots/exp8_naive_vs_fixed.png`): a naive benchmark was written first on purpose, with a corrected twin. N1: a multiply loop in the same translation unit with an unused result was optimised away (0 ns, infinite GiB/s; fixed: 263 GiB/s). N3: first-touch page faults inside the timed region gave 81 GiB/s instead of 148. N2 (zero-page reads) did not reproduce, and that is reported as a failed prediction.
@@ -38,8 +38,7 @@ Recorded in `docs/HYPOTHESES.md` (verdict column). Examples: alignment penalty (
 - [ ] Spot-check three numbers in `report/REPORT.md` against `data/processed/exp1_key_table_phase3.csv` and the raw CSVs (for example the 2.08x f32 SAXPY L1 speedup, 150 GiB/s plateau, 3.99 fmla per cycle).
 - [ ] Read the hypotheses table and confirm each verdict matches the cited evidence; confirm hypotheses were committed before results (`git log --follow docs/HYPOTHESES.md`; first commit precedes all data).
 - [ ] Confirm the machine state during the runs you want to claim: on AC power, Low Power Mode off (`pmset -g`), no heavy background apps. The AI could not enforce the last point; `docs/ENVIRONMENT_sessions.log` shows load averages of 1.2 to 2.4.
-- [ ] Decide whether to run powermetrics (needs sudo, the AI did not run it): `sudo powermetrics --samplers cpu_power -i 1000 -n 5` while a benchmark runs, to see per-cluster frequency; this would verify or refute the "Super tier, 4.58 GHz" inference.
-- [ ] Decide whether to verify core placement another way (for example Activity Monitor CPU history while `bin/bench` runs); the report labels the tier as inferred.
+- [x] powermetrics: the student ran `sudo powermetrics --samplers cpu_power -i 1000 -n 5` after the experiments (`data/raw/powermetrics_sample_20261006.txt`, one sample, no benchmark running); the AI read it. It supports the Super-tier inference (S cluster tops out at 4608 MHz, P clusters at 4380 MHz). Still open: repeat it while a benchmark runs, for example `caffeinate -dimsu ./bin/bench run --out /dev/null --builds auto --kernels saxpy --dtypes f32 --ws 33554432 --reps 200 --passes 5` in one terminal, powermetrics in another, and check that only S-cluster CPUs (12 to 17) are active at about 4.5 GHz.
 - [ ] Confirm you accept the unexplained items listed in section 10 of the report, or investigate one.
 - [ ] Confirm that the SME skip is acceptable (SME exists on this chip; not used).
 - [ ] Rewrite or edit the report in your own words as your course policy requires, and complete the "student did" section above.

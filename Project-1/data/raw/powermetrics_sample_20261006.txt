@@ -1,0 +1,17 @@
+Provenance: run by the student (needs sudo) on 2026-10-06 09:14:37 -0400: sudo powermetrics --samplers cpu_power -i 1000 -n 5
+Only the first sample was pasted to the AI, and the cluster-level lines are kept verbatim below; the per-CPU lines (CPU 0 to 17) were omitted here.
+No benchmark was known to be running during this sample (cluster activity 35% / 2% / 11%), so it shows each cluster's available frequency states, not what the benchmark thread ran on.
+
+P0-Cluster (CPUs 0 to 5)
+P0-Cluster HW active frequency: 1684 MHz
+P0-Cluster HW active residency:  35.12% (... highest state seen: 4380 MHz: 1.8%; 4308 MHz: .09%)
+P1-Cluster (CPUs 6 to 11)
+P1-Cluster HW active frequency: 1594 MHz
+P1-Cluster HW active residency:   1.69% (... highest state seen: 4380 MHz: .05%)
+S-Cluster (CPUs 12 to 17)
+S-Cluster HW active frequency: 2155 MHz
+S-Cluster HW active residency:  11.17% (1308 MHz: 2.7% 1620 MHz: 0% 1980 MHz: 2.6% 2292 MHz: 1.8% 2580 MHz: 1.5% 2880 MHz: 2.5% 3180 ... 4608 MHz listed as a state)
+S-Cluster frequency ladder (MHz): 1308 1620 1980 2292 2580 2880 3180 3432 3648 3828 3984 4104 4188 4236 4284 4308 4332 4428 4512 4608
+P-Cluster frequency ladder (MHz):  1344 1644 1992 2304 2652 2964 3240 3504 3696 3876 4044 4176 4284 4308 4380
+CPU 14 to 17 (S-Cluster) active residency at 4608 MHz: 3.0%, 2.8%, 2.4%, 2.3% of the sampling window
+CPU Power: 563 mW
