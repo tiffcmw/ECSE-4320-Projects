@@ -1,0 +1,74 @@
+fma peak 4s: 3.99 fmla/cycle at 20 accumulators = 145.8 GFLOP/s (IQR 145.7-146.9), plateau median over N>=12: 3.41
+fma peak 2d: 3.95 fmla/cycle at 18 accumulators = 72.3 GFLOP/s (IQR 68.5-72.4), plateau median over N>=12: 3.43
+triad single-process DRAM-size bandwidth (auto, 256 MiB to 2 GiB, f32 and f64): min 121.8, max 123.4 GiB/s of counted traffic (2 reads + 1 write)
+triad 1 concurrent processes: aggregate 122 GiB/s, per process 122
+triad 2 concurrent processes: aggregate 224 GiB/s, per process 111, 112
+triad 4 concurrent processes: aggregate 319 GiB/s, per process 68, 68, 89, 94
+triad 6 concurrent processes: aggregate 365 GiB/s, per process 44, 55, 56, 62, 63, 85
+triad 12 concurrent processes: aggregate 441 GiB/s, per process 27, 27, 28, 29, 30, 31, 31, 32, 32, 32, 68, 76
+roofline f32 saxpy auto L1 (32 KiB): AI 0.167, 46.6 GFLOP/s, 211% of DRAM-roof, 103% of L1-roof
+roofline f32 saxpy auto L2 (4 MiB): AI 0.167, 27.6 GFLOP/s, 125% of DRAM-roof, 61% of L1-roof
+roofline f32 saxpy auto DRAM (1 GiB): AI 0.167, 26.4 GFLOP/s, 119% of DRAM-roof, 58% of L1-roof
+roofline f32 mul auto L1 (32 KiB): AI 0.083, 23.1 GFLOP/s, 210% of DRAM-roof, 102% of L1-roof
+roofline f32 mul auto L2 (4 MiB): AI 0.083, 10.9 GFLOP/s, 99% of DRAM-roof, 48% of L1-roof
+roofline f32 mul auto DRAM (1 GiB): AI 0.083, 10.8 GFLOP/s, 98% of DRAM-roof, 48% of L1-roof
+roofline f32 dot auto L1 (32 KiB): AI 0.250, 4.4 GFLOP/s, 13% of DRAM-roof, 6% of L1-roof
+roofline f32 dot auto L2 (4 MiB): AI 0.250, 4.2 GFLOP/s, 13% of DRAM-roof, 6% of L1-roof
+roofline f32 dot auto DRAM (1 GiB): AI 0.250, 4.2 GFLOP/s, 13% of DRAM-roof, 6% of L1-roof
+roofline f32 dot fastmath L1 (32 KiB): AI 0.250, 40.8 GFLOP/s, 123% of DRAM-roof, 60% of L1-roof
+roofline f32 dot fastmath L2 (4 MiB): AI 0.250, 32.1 GFLOP/s, 97% of DRAM-roof, 47% of L1-roof
+roofline f32 dot fastmath DRAM (1 GiB): AI 0.250, 28.8 GFLOP/s, 87% of DRAM-roof, 43% of L1-roof
+roofline f32 stencil auto L1 (32 KiB): AI 0.625, 83.7 GFLOP/s, 101% of DRAM-roof, 57% of L1-roof
+roofline f32 stencil auto L2 (4 MiB): AI 0.625, 74.6 GFLOP/s, 90% of DRAM-roof, 51% of L1-roof
+roofline f32 stencil auto DRAM (1 GiB): AI 0.625, 71.4 GFLOP/s, 86% of DRAM-roof, 49% of L1-roof
+accuracy f32 N=1000: scalar=3.29eps scalar_unroll8=3.29eps auto=3.29eps native=3.29eps fastmath=0.497eps
+accuracy f32 N=10000: scalar=2.77eps scalar_unroll8=2.77eps auto=4.4eps native=4.4eps fastmath=2.07eps
+accuracy f32 N=100000: scalar=86eps scalar_unroll8=86eps auto=86eps native=86eps fastmath=1.75eps
+accuracy f32 N=1000000: scalar=139eps scalar_unroll8=139eps auto=137eps native=137eps fastmath=2.02eps
+accuracy f32 N=10000000: scalar=1.27e+05eps scalar_unroll8=1.27e+05eps auto=1.27e+05eps native=1.27e+05eps fastmath=9.35eps
+accuracy f32 N=100000000: scalar=1.05e+07eps scalar_unroll8=1.05e+07eps auto=1.05e+07eps native=1.05e+07eps fastmath=3.81e+03eps
+accuracy f64 N=1000: scalar=4.05eps scalar_unroll8=4.05eps auto=4.03eps native=4.03eps fastmath=1.04eps
+accuracy f64 N=10000: scalar=8.19eps scalar_unroll8=8.19eps auto=8.19eps native=8.19eps fastmath=3.26eps
+accuracy f64 N=100000: scalar=68.2eps scalar_unroll8=68.2eps auto=68.2eps native=68.2eps fastmath=19.7eps
+accuracy f64 N=1000000: scalar=307eps scalar_unroll8=307eps auto=307eps native=307eps fastmath=23.1eps
+accuracy f64 N=10000000: scalar=545eps scalar_unroll8=545eps auto=545eps native=545eps fastmath=104eps
+alias no overlap auto n=4096: 0.19 cycles per element
+alias no overlap auto n=524288: 0.33 cycles per element
+alias no overlap auto n=33554432: 0.34 cycles per element
+alias no overlap auto_norestrict n=4096: 0.20 cycles per element
+alias no overlap auto_norestrict n=524288: 0.34 cycles per element
+alias no overlap auto_norestrict n=33554432: 0.34 cycles per element
+alias no overlap scalar_norestrict n=4096: 1.00 cycles per element
+alias no overlap scalar_norestrict n=524288: 1.01 cycles per element
+alias no overlap scalar_norestrict n=33554432: 1.03 cycles per element
+alias no overlap scalar_unroll8 n=4096: 0.41 cycles per element
+alias no overlap scalar_unroll8 n=524288: 0.45 cycles per element
+alias no overlap scalar_unroll8 n=33554432: 0.46 cycles per element
+alias y = x + 1 auto_norestrict n=4096: 12.82 cycles per element
+alias y = x + 1 auto_norestrict n=524288: 9.39 cycles per element
+alias y = x + 1 auto_norestrict n=33554432: 9.43 cycles per element
+alias y = x + 1 scalar_norestrict n=4096: 12.82 cycles per element
+alias y = x + 1 scalar_norestrict n=524288: 9.43 cycles per element
+alias y = x + 1 scalar_norestrict n=33554432: 9.49 cycles per element
+alias y = x + 64 auto_norestrict n=4096: 1.00 cycles per element
+alias y = x + 64 auto_norestrict n=524288: 1.00 cycles per element
+alias y = x + 64 auto_norestrict n=33554432: 1.01 cycles per element
+alias y = x + 64 scalar_norestrict n=4096: 1.01 cycles per element
+alias y = x + 64 scalar_norestrict n=524288: 1.00 cycles per element
+alias y = x + 64 scalar_norestrict n=33554432: 1.01 cycles per element
+restrict small n=4: auto 0.53 ns, norestrict 0.76 ns, ratio 1.428
+restrict small n=8: auto 0.96 ns, norestrict 0.97 ns, ratio 1.008
+restrict small n=16: auto 2.27 ns, norestrict 2.27 ns, ratio 1.000
+restrict small n=32: auto 2.56 ns, norestrict 2.60 ns, ratio 1.014
+restrict small n=64: auto 3.25 ns, norestrict 3.26 ns, ratio 1.004
+restrict small n=128: auto 5.28 ns, norestrict 5.36 ns, ratio 1.015
+restrict small n=256: auto 10.40 ns, norestrict 10.50 ns, ratio 1.010
+restrict small n=512: auto 20.46 ns, norestrict 20.41 ns, ratio 0.998
+restrict small n=1024: auto 42.85 ns, norestrict 42.78 ns, ratio 0.998
+restrict small n=4096: auto 171.93 ns, norestrict 178.89 ns, ratio 1.040
+naive N1_hoist naive: median 108991350.4 GiB/s, 3 of 5 runs infinite (0 ns measured)
+naive N1_hoist fixed: median 262.8 GiB/s, 0 of 5 runs infinite (0 ns measured)
+naive N2_zeropage naive: median 82.9 GiB/s, 0 of 5 runs infinite (0 ns measured)
+naive N2_zeropage fixed: median 82.8 GiB/s, 0 of 5 runs infinite (0 ns measured)
+naive N3_firsttouch naive: median 81.3 GiB/s, 0 of 5 runs infinite (0 ns measured)
+naive N3_firsttouch fixed: median 148.5 GiB/s, 0 of 5 runs infinite (0 ns measured)

@@ -1,0 +1,14 @@
+	bl	_clock_gettime_nsec_np
+	mov	x19, x0
+	mov	w0, #8                          ; =0x8
+	bl	_clock_gettime_nsec_np
+	sub	x8, x0, x19
+	ucvtf	d0, x8
+	mov	x9, #26865                      ; =0x68f1
+	movk	x9, #35043, lsl #16
+	movk	x9, #63669, lsl #32
+	movk	x9, #15908, lsl #48
+	fmov	d1, x9
+	fmul	d1, d0, d1
+	mov	x9, #384565248                  ; =0x16ec0000
+	movk	x9, #3475, lsl #32
