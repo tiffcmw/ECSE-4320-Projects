@@ -52,3 +52,15 @@ The disassembly of the auto SAXPY (`vecreports/VECTORIZATION.md`) shows three co
 | H11b | Time per element for N = 16k + r is lowest for r = 0 and rises with the number of epilogue iterations: r in 1..3 (scalar tail only) costs more than r in 4..12 that are multiples of 4, and r that mixes both a 4-element step and scalar steps is the worst. The sawtooth is visible below N of about 256 and fades above N of about 1024. | pending |
 | H11c | Time per call is an affine function of N for N >= 16 with an intercept (fixed cost: entry checks plus call) of about 5 to 15 ns at 4.58 GHz (24 to 70 cycles). | pending |
 | H21 | `auto_norestrict` SAXPY is within 10% of `auto` for non-overlapping arrays at large N (runtime check is a one-time cost), but is measurably slower for N below about 64 because of the check and branch. When the arrays are made to overlap by one element (y = x + 1), the runtime check sends execution to the scalar path and the speed falls to the scalar-build level. | pending |
+
+## Addendum 2, written after the Phase 4 kernels were compiled and inspected, before Experiments 3 and 4 were run (2026-10-06)
+
+Inspection of the compiler output (`vecreports/summary.md`, remarks for `saxpy_s*` and `gather`) shows that at strides 2 to 32 and for the gather the default `auto` build does not vectorize ("the cost-model indicates that vectorization is not beneficial", it only interleaves the scalar loop 4x), and that the `auto_forcevec` build (`#pragma clang loop vectorize(enable)`) vectorizes using `ld2.4s` de-interleave at stride 2, 2-lane `zip1` code at stride 8, and lane-by-lane `ld1.s {v}[n]` for the gather, always with scalar or lane stores (NEON has no scatter). Predictions:
+
+| ID | Hypothesis | Verdict |
+|----|-----------|---------|
+| H12b | `auto` at stride 2, 4, 8, 16, 32 and for the gather runs within 10% of `scalar_unroll8` at every size (both are scalar), so the SIMD speedup is 1.0x +/- 0.1. | pending |
+| H12c | `auto_forcevec` is not faster than `scalar_unroll8` for strides >= 2 and for the gather, and is slower by 10% or more at stride 2 in L1 because of the lane stores. | pending |
+| H12d | In L1 (32 KiB footprint), time per element is nearly independent of the stride for the scalar-like builds (they are instruction bound), while at 8 MiB and above time per element grows with stride until the stride reaches one 128 B line (stride 32 for f32), where each element costs one full line fill; beyond that point it stays flat. Useful GiB/s therefore falls by about 1/stride between stride 1 and stride 32 in DRAM, and is about flat in L1. | pending |
+| H12e | The random gather in DRAM (x of 256 MiB) is limited by memory-level parallelism, not instruction count: it is at least 5x slower per element than unit stride in DRAM and 1.0 to 1.5x slower in L1. | pending |
+| H10b | Alignment: for SAXPY f32 the throughput at offsets 0 to 124 B (any multiple of 4) differs from offset 0 by at most 5% in L1 and L2 and by at most 3% in DRAM for the vector build (`auto`), with the largest effect at offsets that are not multiples of 16 B. | pending |

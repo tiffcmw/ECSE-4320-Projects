@@ -1,0 +1,3 @@
+src/kernel_tpl.c:84:6: remark: vectorized loop (vectorization width: 4, interleaved count: 4) [-Rpass=loop-vectorize]
+   84 |   LP for (size_t i = 1; i + 1 < n; i++) y[i] = (TY)0.25 * x[i - 1] + (TY)0.5 * x[i] + (TY)0.25 * x[i + 1];
+      |      ^

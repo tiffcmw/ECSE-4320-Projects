@@ -17,11 +17,25 @@
 #define K_mul 1
 #define K_dot 2
 #define K_stencil 3
+#define K_saxpy_s1 4
+#define K_saxpy_s2 4
+#define K_saxpy_s4 4
+#define K_saxpy_s8 4
+#define K_saxpy_s16 4
+#define K_saxpy_s32 4
+#define K_gather 5
+#define S_saxpy_s1 1
+#define S_saxpy_s2 2
+#define S_saxpy_s4 4
+#define S_saxpy_s8 8
+#define S_saxpy_s16 16
+#define S_saxpy_s32 32
 #define T_f32 float
 #define T_f64 double
 #define T_u32 uint32_t
 #define TY CAT(T_, DT)
 #define KID CAT(K_, KERN)
+#define STRIDE CAT(S_, KERN)
 #define FNAME CAT(CAT(CAT(CAT(CAT(kern_, KERN), _), DT), _), BUILD)
 
 #ifdef NORESTRICT
@@ -32,6 +46,8 @@
 
 #ifdef FORCE_UNROLL
 #define LP _Pragma("clang loop unroll_count(8)")
+#elif defined(FORCE_VEC)
+#define LP _Pragma("clang loop vectorize(enable)")
 #else
 #define LP
 #endif
@@ -54,6 +70,13 @@ static inline __attribute__((always_inline)) double body(size_t n, TY a, const T
   TY s = 0;
   LP for (size_t i = 0; i < n; i++) s += x[i] * y[i];
   return (double)s;
+#elif KID == 4
+  LP for (size_t i = 0; i < n; i++) y[i * STRIDE] = a * x[i * STRIDE] + y[i * STRIDE];
+  return 0.0;
+#elif KID == 5
+  const uint32_t *RS idx = (const uint32_t *)z;
+  LP for (size_t i = 0; i < n; i++) y[i] = a * x[idx[i]] + y[i];
+  return 0.0;
 #else
 #if IS_U32
   LP for (size_t i = 1; i + 1 < n; i++) y[i] = x[i - 1] + 2u * x[i] + x[i + 1];

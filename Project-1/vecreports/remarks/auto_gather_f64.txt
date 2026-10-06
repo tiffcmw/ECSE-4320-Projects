@@ -1,0 +1,4 @@
+src/kernel_tpl.c:78:6: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-analysis=loop-vectorize]
+   78 |   LP for (size_t i = 0; i < n; i++) y[i] = a * x[idx[i]] + y[i];
+      |      ^
+src/kernel_tpl.c:78:6: remark: interleaved loop (interleaved count: 4) [-Rpass=loop-vectorize]

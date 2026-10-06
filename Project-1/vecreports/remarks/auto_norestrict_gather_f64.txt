@@ -1,0 +1,6 @@
+src/kernel_tpl.c:78:48: remark: loop not vectorized: cannot identify array bounds [-Rpass-analysis=loop-vectorize]
+   78 |   LP for (size_t i = 0; i < n; i++) y[i] = a * x[idx[i]] + y[i];
+      |                                                ^
+src/kernel_tpl.c:78:6: remark: loop not vectorized [-Rpass-missed=loop-vectorize]
+   78 |   LP for (size_t i = 0; i < n; i++) y[i] = a * x[idx[i]] + y[i];
+      |      ^

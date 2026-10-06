@@ -25,20 +25,23 @@ static const long OFFS[] = {0, 4, 8, 12, 16, 60, 64};
 
 int main(void) {
   int fails = 0; long checks = 0; uint64_t seed = 987654321ULL;
-  double worst_ulp[3][4] = {{0}}, worst_rel[3] = {0}; /* [dtype][kernel] */
+  double worst_ulp[3][6] = {{0}}, worst_rel[3] = {0}; /* [dtype][kernel] */
   for (size_t r = 0; r < NREG; r++) {
     const struct kentry *e = &REGISTRY[r];
     int di = !strcmp(e->dtype, "f32") ? 0 : !strcmp(e->dtype, "f64") ? 1 : 2;
-    int ki = !strcmp(e->kernel, "saxpy") ? 0 : !strcmp(e->kernel, "mul") ? 1 : !strcmp(e->kernel, "dot") ? 2 : 3;
+    int ki = !strcmp(e->kernel, "saxpy") ? 0 : !strcmp(e->kernel, "mul") ? 1 : !strcmp(e->kernel, "dot") ? 2 : !strcmp(e->kernel, "stencil") ? 3 : !strcmp(e->kernel, "gather") ? 5 : 4;
+    long S = ki == 4 ? atol(e->kernel + 7) : 1;
     size_t sz = dtype_size(e->dtype);
     for (size_t si = 0; si < sizeof(SIZES) / sizeof(SIZES[0]); si++) for (size_t oi = 0; oi < sizeof(OFFS) / sizeof(OFFS[0]); oi++) {
       long n = SIZES[si], off = OFFS[oi];
       if (n > 5000 && oi > 1) continue;
-      size_t bytes = ((size_t)n + 2 * GUARD) * sz + 128;
+      long nal = n * S; /* allocated elements of x and y (strided kernels span n*S) */
+      size_t bytes = ((size_t)nal + 2 * GUARD) * sz + 128;
       char *bx = malloc(bytes + 64), *by = malloc(bytes + 64), *bz = malloc(bytes + 64), *by0 = malloc(bytes + 64);
       memset(bx, 0xA5, bytes); memset(by, 0xA5, bytes); memset(bz, 0xA5, bytes);
       char *x = bx + GUARD * sz + off, *y = by + GUARD * sz + off, *z = bz + GUARD * sz + off;
-      fill_array(x, n, e->dtype, &seed); fill_array(y, n, e->dtype, &seed);
+      fill_array(x, nal, e->dtype, &seed); fill_array(y, nal, e->dtype, &seed);
+      if (ki == 5) { uint32_t *ix = (uint32_t *)z; for (long i = 0; i < n; i++) ix[i] = (uint32_t)(rng_next(&seed) % (uint64_t)n); }
       memcpy(by0, by, bytes); /* snapshot of y (incl. guards) before the call */
       char *y0 = by0 + GUARD * sz + off;
       double a = 0.75; if (!strcmp(e->dtype, "f32")) a = (double)(float)0.75; if (!strcmp(e->dtype, "u32")) a = 3.0;
@@ -47,7 +50,17 @@ int main(void) {
       const float *xf = (float *)x, *y0f = (float *)y0, *yf = (float *)y, *zf = (float *)z;
       const double *xd = (double *)x, *y0d = (double *)y0, *yd = (double *)y, *zd = (double *)z;
       const uint32_t *xu = (uint32_t *)x, *y0u = (uint32_t *)y0, *yu = (uint32_t *)y, *zu = (uint32_t *)z;
-      for (long i = 0; i < n && !bad; i++) {
+      if (ki == 4) {
+        for (long i = 0; i < nal && !bad; i++) {
+          if (i % S) { if (memcmp(y + i * sz, y0 + i * sz, sz)) bad = 1; continue; } /* off-stride elements untouched */
+          int64_t u = 0;
+          if (di == 0) u = ulp_dist_f((float)fma((double)(float)a, (double)xf[i], (double)y0f[i]), yf[i]);
+          else if (di == 1) u = ulp_dist_d(fma(a, xd[i], y0d[i]), yd[i]);
+          else if ((uint32_t)3u * xu[i] + y0u[i] != yu[i]) bad = 1;
+          if ((double)u > maxu) maxu = (double)u; if (u > 1) bad = 1;
+        }
+      }
+      for (long i = 0; i < n && !bad && ki != 4; i++) {
         double ref_hi = 0; int64_t u = 0; int isint = di == 2; uint32_t refu = 0, gotu = 0;
         if (ki == 0) {
           if (di == 0) { ref_hi = fma((double)(float)a, (double)xf[i], (double)y0f[i]); u = ulp_dist_f((float)ref_hi, yf[i]); }
@@ -57,6 +70,11 @@ int main(void) {
           if (di == 0) { ref_hi = (double)xf[i] * (double)y0f[i]; u = ulp_dist_f((float)ref_hi, zf[i]); }
           else if (di == 1) { ref_hi = xd[i] * y0d[i]; u = ulp_dist_d(ref_hi, zd[i]); }
           else { refu = xu[i] * y0u[i]; gotu = zu[i]; }
+        } else if (ki == 5) {
+          uint32_t ix = ((uint32_t *)z)[i];
+          if (di == 0) { ref_hi = fma((double)(float)a, (double)xf[ix], (double)y0f[i]); u = ulp_dist_f((float)ref_hi, yf[i]); }
+          else if (di == 1) { ref_hi = fma(a, xd[ix], y0d[i]); u = ulp_dist_d(ref_hi, yd[i]); }
+          else { refu = (uint32_t)3u * xu[ix] + y0u[i]; gotu = yu[i]; }
         } else if (ki == 3) {
           if (i == 0 || i + 1 >= n) continue;
           if (di == 0) { dd s = dd_add(dd_add(dd_mul_d(0.25, xf[i - 1]), dd_mul_d(0.5, xf[i])), dd_mul_d(0.25, xf[i + 1])); u = ulp_dist_f((float)dd_round(s), yf[i]); }
@@ -83,7 +101,7 @@ int main(void) {
       if (maxu > worst_ulp[di][ki]) worst_ulp[di][ki] = maxu;
       /* guard / untouched-region checks: bytes outside the written range must be unchanged */
       for (size_t g = 0; g < (size_t)GUARD * sz + off && !bad; g++) { if (((unsigned char *)by)[g] != 0xA5 && ki != 3) { /* y guard before */ bad = 1; } }
-      if (ki == 0 || ki == 3) { for (size_t g = (size_t)GUARD * sz + off + (size_t)n * sz; g < bytes && !bad; g++) if (((unsigned char *)by)[g] != ((unsigned char *)by0)[g]) bad = 1; }
+      if (ki == 0 || ki == 3 || ki == 4 || ki == 5) { for (size_t g = (size_t)GUARD * sz + off + (size_t)nal * sz; g < bytes && !bad; g++) if (((unsigned char *)by)[g] != ((unsigned char *)by0)[g]) bad = 1; }
       if (ki == 3 && n >= 2) { if (memcmp(y, y0, sz) || memcmp(y + (n - 1) * sz, y0 + (n - 1) * sz, sz)) bad = 1; } /* boundary elems untouched */
       if (ki == 1) { for (size_t g = 0; g < (size_t)GUARD * sz + off && !bad; g++) if (((unsigned char *)bz)[g] != 0xA5) bad = 1;
                      for (size_t g = (size_t)GUARD * sz + off + (size_t)n * sz; g < bytes && !bad; g++) if (((unsigned char *)bz)[g] != 0xA5) bad = 1; }
@@ -93,7 +111,7 @@ int main(void) {
     }
   }
   printf("checks=%ld failures=%d\n", checks, fails);
-  const char *dn[3] = {"f32", "f64", "u32"}, *kn[4] = {"saxpy", "mul", "dot", "stencil"};
-  for (int d = 0; d < 2; d++) { printf("max ulp %s:", dn[d]); for (int k = 0; k < 4; k++) if (k != 2) printf(" %s=%.0f", kn[k], worst_ulp[d][k]); printf("  worst dot rel err=%.3g\n", worst_rel[d]); }
+  const char *dn[3] = {"f32", "f64", "u32"}, *kn[6] = {"saxpy", "mul", "dot", "stencil", "strided", "gather"};
+  for (int d = 0; d < 2; d++) { printf("max ulp %s:", dn[d]); for (int k = 0; k < 6; k++) if (k != 2) printf(" %s=%.0f", kn[k], worst_ulp[d][k]); printf("  worst dot rel err=%.3g\n", worst_rel[d]); }
   return fails != 0;
 }

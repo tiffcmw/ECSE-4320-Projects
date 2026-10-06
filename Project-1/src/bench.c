@@ -32,7 +32,14 @@ static int parse_list(const char *s, long *out, int max) {
   free(buf); return c;
 }
 
-static int arrays_of(const char *k) { return !strcmp(k, "mul") ? 3 : 2; }
+static int arrays_of(const char *k) { return (!strcmp(k, "mul") || !strcmp(k, "gather")) ? 3 : 2; }
+static int stride_of(const char *k) { return strncmp(k, "saxpy_s", 7) == 0 ? atoi(k + 7) : 1; }
+/* footprint in bytes per touched element n: x and y span n*stride elements; gather also has a 4 B index per element */
+static size_t foot_per_n(const char *k, const char *dt) {
+  size_t sz = dtype_size(dt);
+  if (!strcmp(k, "gather")) return 2 * sz + 4;
+  return (size_t)arrays_of(k) * sz * (size_t)stride_of(k);
+}
 static __attribute__((noinline)) double empty_kernel(size_t n, double a, const void *x, void *y, void *z) { (void)n; (void)a; (void)x; (void)y; (void)z; return 0.0; }
 
 static double measure_call_overhead(void) {
@@ -55,22 +62,24 @@ struct cfg { int reg; long n; long off; };
 
 static void run_cfg(FILE *f, const char *session, const struct cfg *c, int pass, int reps, double min_ms, double ovh, const char *qos, uint64_t seed, int *inner_cache) {
   const struct kentry *e = &REGISTRY[c->reg];
-  size_t sz = dtype_size(e->dtype), n = (size_t)c->n, na = arrays_of(e->kernel);
-  size_t region = (((n * sz + (size_t)c->off + 4096) + 16383) / 16384) * 16384;
+  size_t sz = dtype_size(e->dtype), n = (size_t)c->n, na = arrays_of(e->kernel), S = (size_t)stride_of(e->kernel), nal = n * S; /* nal = allocated elements per array */
+  size_t region = (((nal * sz + (size_t)c->off + 4096) + 16383) / 16384) * 16384;
   size_t total = na * (region + 2176) + 16384;
   char *slab = mmap(NULL, total, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
   if (slab == MAP_FAILED) { perror("mmap"); exit(1); }
   char *arr[3] = {0};
   for (size_t k = 0; k < (size_t)na; k++) arr[k] = slab + k * (region + 2176) + (size_t)c->off;
   uint64_t s = seed ^ (uint64_t)c->n;
-  fill_array(arr[0], n, e->dtype, &s);                 /* first touch happens here, outside timing */
+  fill_array(arr[0], nal, e->dtype, &s);                /* first touch happens here, outside timing */
   if (!strcmp(e->kernel, "mul") || !strcmp(e->kernel, "dot")) fill_array(arr[1], n, e->dtype, &s);
   if (!strcmp(e->kernel, "mul")) memset(arr[2], 0, n * sz);
   if (!strcmp(e->kernel, "stencil")) memset(arr[1], 0, n * sz);
-  int is_saxpy = !strcmp(e->kernel, "saxpy");
+  int is_gather = !strcmp(e->kernel, "gather");
+  if (is_gather) { uint32_t *ix = (uint32_t *)arr[2]; for (size_t i = 0; i < n; i++) ix[i] = (uint32_t)(rng_next(&s) % n); } /* random indices into x */
+  int is_saxpy = !strncmp(e->kernel, "saxpy", 5) || is_gather;
   const double a = 1e-6; double acc = 0;
   for (int r = 0; r < reps; r++) {
-    if (is_saxpy) init_y_pattern(arr[1], n, e->dtype);  /* re-initialise in-place operand every sample */
+    if (is_saxpy) init_y_pattern(arr[1], is_gather ? n : nal, e->dtype);  /* re-initialise in-place operand every sample */
     acc += e->fn(n, a, arr[0], arr[1], arr[2]); barrier(); /* untimed steady-state warm-up call */
     int inner = *inner_cache;
     if (inner == 0) {
@@ -86,8 +95,8 @@ static void run_cfg(FILE *f, const char *session, const struct cfg *c, int pass,
     uint64_t t1 = now_ns();
     int th1 = thermal_level();
     double ns = (double)(t1 - t0) / inner - ovh;
-    fprintf(f, "%llu,%s,%s,%s,%s,%zu,%zu,%ld,1,%d,%d,%d,%.4f,%.4f,%d,%d,%s\n", (unsigned long long)t0, session, e->build, e->kernel, e->dtype,
-            n, n * sz * na, c->off, pass, r, inner, ns, ovh, th0, th1, qos);
+    fprintf(f, "%llu,%s,%s,%s,%s,%zu,%zu,%ld,%zu,%d,%d,%d,%.4f,%.4f,%d,%d,%s\n", (unsigned long long)t0, session, e->build, e->kernel, e->dtype,
+            n, n * foot_per_n(e->kernel, e->dtype), c->off, S, pass, r, inner, ns, ovh, th0, th1, qos);
   }
   sink_d(acc); if (is_saxpy || 1) { volatile char sinkc = arr[0][0] + arr[1][0]; (void)sinkc; }
   munmap(slab, total);
@@ -112,7 +121,7 @@ static int cmd_run(int argc, char **argv) {
     if (!csv_contains(builds, REGISTRY[r].build) || !csv_contains(kernels, REGISTRY[r].kernel) || !csv_contains(dtypes, REGISTRY[r].dtype)) continue;
     for (int i = 0; i < ns_; i++) for (int j = 0; j < no; j++) {
       long n = sizes[i];
-      if (use_ws) { n = sizes[i] / (long)(arrays_of(REGISTRY[r].kernel) * dtype_size(REGISTRY[r].dtype)); n &= ~63L; if (n < 64) n = 64; }
+      if (use_ws) { n = sizes[i] / (long)foot_per_n(REGISTRY[r].kernel, REGISTRY[r].dtype); n &= ~63L; if (n < 64) n = 64; }
       cfgs[nc++] = (struct cfg){(int)r, n, offs[j]};
     }
   }
