@@ -49,7 +49,9 @@ def thermal_state():
 
 
 def run_experiment(name, binary, configs, rounds=3, seed=1, extra_cols=None, out_dir=RAW):
-    """configs: list of dicts {'label': {col: val, ...}, 'args': [str, ...]}.
+    """configs: list of dicts {'label': {col: val, ...}, 'args': [str, ...],
+    optional 'wrap': command prefix (e.g. taskpolicy -b), 'hog': qos_loop args for a
+    competing background process started before and killed after the invocation}.
     The first binary invocation supplies the CSV header (first line starting
     with a non-data header). Returns path of raw CSV."""
     os.makedirs(out_dir, exist_ok=True)
@@ -69,7 +71,17 @@ def run_experiment(name, binary, configs, rounds=3, seed=1, extra_cols=None, out
             cfg = configs[ci]
             before, thr_b = thermal_state()
             ts = datetime.now().isoformat(timespec="seconds")
-            res = subprocess.run([exe, "--header"] + cfg["args"], capture_output=True, text=True)
+            hog = None
+            if cfg.get("hog"):  # competing load in a separate process
+                hog = subprocess.Popen([os.path.join(BUILD, "qos_loop")] + cfg["hog"],
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                time.sleep(2.0)
+            res = subprocess.run(list(cfg.get("wrap", [])) + [exe, "--header"] + cfg["args"],
+                                 capture_output=True, text=True)
+            if hog:
+                hog.terminate()
+                hog.wait()
+                time.sleep(1.0)
             after, thr_a = thermal_state()
             done += 1
             if res.returncode != 0:
