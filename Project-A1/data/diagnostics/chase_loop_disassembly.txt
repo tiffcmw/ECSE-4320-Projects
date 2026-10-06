@@ -1,0 +1,9 @@
+# otool -tvV build/chase: timed hot loop of chase_run (inlined into main).
+# One dependent ldr (destination = base register) per iteration, scalar, not vectorized, not eliminated.
+# The same machine code runs for random and sequential layouts: the flaw was in the data layout, not the code.
+0000000100000d74	ldr	x8, [sp, #0x78]
+0000000100000d78	cbz	x8, 0x100000d88
+0000000100000d7c	ldr	x26, [x26]
+0000000100000d80	subs	x8, x8, #0x1
+0000000100000d84	b.ne	0x100000d7c
+0000000100000d88	cbnz	w23, 0x100000ca0
