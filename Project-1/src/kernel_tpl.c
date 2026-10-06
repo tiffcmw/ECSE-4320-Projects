@@ -41,26 +41,20 @@
 #define U_f64 0
 #define U_u32 1
 
-__attribute__((noinline)) double FNAME(size_t n, double a, const void *xv, void *yv, void *zv) {
-  const TY *RS x = (const TY *)xv;
-  (void)a; (void)zv;
+/* The loop lives in a function whose parameters carry `restrict`: LLVM only derives noalias from restrict on
+ * parameters (not on locals), so the main variants need it here. always_inline keeps the noalias scopes. */
+static inline __attribute__((always_inline)) double body(size_t n, TY a, const TY *RS x, TY *RS y, TY *RS z) {
 #if KID == 0
-  TY *RS y = (TY *)yv;
-  const TY aa = (TY)a;
-  LP for (size_t i = 0; i < n; i++) y[i] = aa * x[i] + y[i];
+  LP for (size_t i = 0; i < n; i++) y[i] = a * x[i] + y[i];
   return 0.0;
 #elif KID == 1
-  const TY *RS y = (const TY *)yv;
-  TY *RS z = (TY *)zv;
   LP for (size_t i = 0; i < n; i++) z[i] = x[i] * y[i];
   return 0.0;
 #elif KID == 2
-  const TY *RS y = (const TY *)yv;
   TY s = 0;
   LP for (size_t i = 0; i < n; i++) s += x[i] * y[i];
   return (double)s;
 #else
-  TY *RS y = (TY *)yv;
 #if IS_U32
   LP for (size_t i = 1; i + 1 < n; i++) y[i] = x[i - 1] + 2u * x[i] + x[i + 1];
 #else
@@ -68,4 +62,8 @@ __attribute__((noinline)) double FNAME(size_t n, double a, const void *xv, void 
 #endif
   return 0.0;
 #endif
+}
+
+__attribute__((noinline)) double FNAME(size_t n, double a, const void *xv, void *yv, void *zv) {
+  return body(n, (TY)a, (const TY *)xv, (TY *)yv, (TY *)zv);
 }

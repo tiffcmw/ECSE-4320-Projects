@@ -42,3 +42,13 @@ The rows above were written first and are not edited. During Phase 1 a smoke run
 3. SAXPY f32 at a 1 GiB working set reached about 149 GiB/s from one thread with the vector build, higher than the 60 to 120 GB/s assumed in H13, and a 4 MiB (L2-sized) point showed about the same bandwidth. The locality sweep will examine this.
 
 No hypothesis text was changed in response to these observations.
+
+## Addendum, written after Phase 2 disassembly and before Experiment 3 (2026-10-06)
+
+The disassembly of the auto SAXPY (`vecreports/VECTORIZATION.md`) shows three code paths: scalar only for N < 4, a 4-element vector loop for 4 <= N < 16, and a 16-element main loop followed by the 4-element loop and a scalar loop. Predictions for the tail study (refines H11):
+
+| ID | Hypothesis | Verdict |
+|----|-----------|---------|
+| H11b | Time per element for N = 16k + r is lowest for r = 0 and rises with the number of epilogue iterations: r in 1..3 (scalar tail only) costs more than r in 4..12 that are multiples of 4, and r that mixes both a 4-element step and scalar steps is the worst. The sawtooth is visible below N of about 256 and fades above N of about 1024. | pending |
+| H11c | Time per call is an affine function of N for N >= 16 with an intercept (fixed cost: entry checks plus call) of about 5 to 15 ns at 4.58 GHz (24 to 70 cycles). | pending |
+| H21 | `auto_norestrict` SAXPY is within 10% of `auto` for non-overlapping arrays at large N (runtime check is a one-time cost), but is measurably slower for N below about 64 because of the check and branch. When the arrays are made to overlap by one element (y = x + 1), the runtime check sends execution to the scalar path and the speed falls to the scalar-build level. | pending |
