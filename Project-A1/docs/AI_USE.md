@@ -46,5 +46,5 @@ Check each item yourself before submission and tick it.
 - [ ] Check every verdict in the report's scorecard (Section 6) against its cited plot or table, and decide whether you agree with "partly supported" calls.
 - [ ] Decide whether to validate the two unvalidated bandwidth points or remove them.
 - [ ] Rewrite the interpretation sections (3.1 to 3.4, 4.x, 5.x, 7) in your own words and add what you independently concluded; update the "What the student decided" section above to match what you actually did.
-- [ ] Confirm no em-dashes remain (`grep -rn "—" . | grep -v build`) and that your name and course details are added where the course requires.
+- [ ] Confirm no em-dashes remain (`grep -rnP "\x{2014}" . | grep -v build`) and that your name and course details are added where the course requires.
 - [ ] Optional: provide a Linux host if you want the `linux/` track; it was not built.
