@@ -1,0 +1,2 @@
+timer: back-to-back delta median 0.0 ns, min nonzero 41 ns, fraction of nonzero deltas 0.3436 (tick granularity)
+call overhead (empty kernel via fn pointer + barrier): 0.716 ns
