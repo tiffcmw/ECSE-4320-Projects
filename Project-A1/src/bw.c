@@ -5,14 +5,21 @@
 // GB/s = decimal GB per second. read_stride/read_rand touch one 8 B word per
 // 128 B line and are reported as line traffic (128 B per access).
 #include "harness.h"
+#include <arm_neon.h>
 
+// 128-bit NEON loads, 8 per iteration (128 B = one line). A scalar 8 B-load
+// version measured within a few percent of this at 64 MB and above (a single
+// 62 GB/s first-run reading was a transient), and slower only at L1-L2 sizes.
 static uint64_t read_seq(const uint64_t *a, size_t n) {
-    uint64_t s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0;
-    for (size_t i = 0; i + 8 <= n; i += 8) {
-        s0 += a[i]; s1 += a[i + 1]; s2 += a[i + 2]; s3 += a[i + 3];
-        s4 += a[i + 4]; s5 += a[i + 5]; s6 += a[i + 6]; s7 += a[i + 7];
+    uint64x2_t s0 = vdupq_n_u64(0), s1 = s0, s2 = s0, s3 = s0;
+    for (size_t i = 0; i + 16 <= n; i += 16) {
+        s0 = vaddq_u64(s0, vld1q_u64(a + i));      s1 = vaddq_u64(s1, vld1q_u64(a + i + 2));
+        s2 = vaddq_u64(s2, vld1q_u64(a + i + 4));  s3 = vaddq_u64(s3, vld1q_u64(a + i + 6));
+        s0 = vaddq_u64(s0, vld1q_u64(a + i + 8));  s1 = vaddq_u64(s1, vld1q_u64(a + i + 10));
+        s2 = vaddq_u64(s2, vld1q_u64(a + i + 12)); s3 = vaddq_u64(s3, vld1q_u64(a + i + 14));
     }
-    return s0 + s1 + s2 + s3 + s4 + s5 + s6 + s7;
+    uint64x2_t t = vaddq_u64(vaddq_u64(s0, s1), vaddq_u64(s2, s3));
+    return vgetq_lane_u64(t, 0) + vgetq_lane_u64(t, 1);
 }
 
 // One load per (stride_lines * 16) words (16 words = one 128 B line).
