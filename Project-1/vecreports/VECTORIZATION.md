@@ -110,19 +110,22 @@ mla.4s v3, v19, v7
 ```
 Integer addition is associative, so reordering is legal and the compiler does it by default. This contrasts directly with the f32 dot product above.
 
-### 3-point stencil f32, auto: unaligned neighbours (`vecreports/asm/auto_stencil_f32.s`, 27 instructions, first 24 shown)
+### 3-point stencil f32, auto: shifted vector loads (`vecreports/asm/auto_stencil_f32.s`, 27 instructions, first 24 shown, excerpt of the first 14 lines)
 ```
-ldp  q3, q4, [x13, #-0x20]     ; x[i..i+7]       aligned-stride loads
-ldur q7, [x13, #-0x18]         ; x[i-1..i+2]     unscaled (unaligned) offset load
+ldp  q3, q4, [x13, #-0x20]     ; vector loads at 16 B granularity
+ldp  q5, q6, [x13]
+ldur q7, [x13, #-0x18]         ; ldur = unscaled-offset load at a 4 B misalignment (x shifted by one element)
 ldur q16, [x13, #-0x8]
-ldur q17, [x13, #0x8]          ; x[i+1..i+4]
-ext.16b v18, v2, v7, #0xc      ; built from the previous vector (register shuffle instead of a reload)
-fmul.4s v18, v18, v0           ; c0 * x[i-1]
-fmla.4s v18, v1, v3            ; + c1 * x[i]
-fmla.4s v18, v1, v7            ; + c2 * x[i+1]  (c0 = .25, c1 = c2 = .5 after factoring; see source)
-stp  q18, q19, [x12, #-0x20]
+ldur q17, [x13, #0x8]
+ext.16b v18, v2, v7, #0xc      ; ext builds a shifted vector from two registers (no reload)
+ldur q2, [x13, #0x18]
+ext.16b v19, v7, v16, #0xc
+fmul.4s v18, v18, v0           ; one fmul with one coefficient per output vector ...
+fmla.4s v18, v1, v3            ; ... then two fmla with a second coefficient
+fmla.4s v18, v1, v7
+stp  q18, q19, [x12, #-0x20]   ; (stores of 4 output vectors follow per iteration)
 ```
-The compiler uses shifted loads (`ldur`) and `ext` for x[i-1] and x[i+1]; no gather or scalar fallback. Unaligned vector loads are plain `ldur q`.
+Per 16 outputs the loop has 4 `fmul.4s` and 8 `fmla.4s` (`summary.md`: fmul.v = 4, fmla.v = 8): 3 vector arithmetic operations per 4 outputs for 5 flops per element. The compiler uses misaligned vector loads (`ldur q`) and `ext` shuffles for the x[i-1] and x[i+1] neighbours; there is no gather and no scalar fallback in the main loop. I did not trace which register holds which stencil weight; correctness against the double-double reference is established by the tests (max 1 ulp for f32), not by reading this listing.
 
 ## Not vectorized (negative cases, evidence only)
 - All three scalar builds for every kernel: `loop not vectorized` in `vecreports/remarks/scalar*_*.txt`.
