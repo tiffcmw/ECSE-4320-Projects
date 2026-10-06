@@ -1,6 +1,6 @@
-Provenance: run by the student (needs sudo) on 2026-10-06 09:24:52 -0400 while a benchmark was running in the same shell:
-  caffeinate -dimsu ./bin/bench run --out /dev/null --builds auto --kernels saxpy --dtypes f32 --ws 33554432 --reps 2000 --passes 20 &
-  sudo powermetrics --samplers cpu_power -i 1000 -n 3     (first sample pasted to the AI; the grep filter I suggested was not applied, per-CPU lines of CPU 0 to 11 omitted below)
+Provenance: run by the student (needs sudo) on 2026-10-06 09:24:52 -0400 with powermetrics in a SEPARATE terminal while this benchmark ran in another (per the student; an earlier version of this note wrongly said the same shell):
+  caffeinate -dimsu ./bin/bench run --out /dev/null --builds auto --kernels saxpy --dtypes f32 --ws 33554432 --reps 2000 --passes 20
+  sudo powermetrics --samplers cpu_power -i 1000 -n 3     (first sample pasted to the AI; the grep filter was not applied; per-CPU lines of CPU 0 to 11 omitted below)
 Window: 1014.76 ms.
 
 P0-Cluster (CPUs 0 to 5): active frequency 1387 MHz, active residency 31.52% (30% of it at 1344 MHz; background activity), CPU 0..5 active 10.5%, 10.2%, 6.3%, 4.0%, 2.5%, 1.4% at about 1344 MHz

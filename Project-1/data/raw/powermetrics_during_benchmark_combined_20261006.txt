@@ -1,0 +1,17 @@
+Provenance: run by the student (needs sudo), 2026-10-06 shortly after 09:24, as ONE combined command in one shell (benchmark started in the background, powermetrics 3 s later):
+  caffeinate -dimsu ./bin/bench run --out /dev/null --builds auto --kernels saxpy --dtypes f32 --ws 33554432 --reps 2000 --passes 20 &
+  sleep 3; sudo powermetrics --samplers cpu_power -i 1000 -n 3 | grep ... | cut -c1-75   (the output begins with "pass 1/20 done", so the benchmark was running)
+Three consecutive 1 s samples, values copied from the pasted output (frequency of every busy CPU was 4608 MHz in all three; P0 CPUs 0 to 5 were 0% active):
+
+                              sample 1   sample 2   sample 3
+S-Cluster HW active freq MHz   4596       4588       4596       (active residency 100.00% each)
+S-Cluster CPU 12 active %      34.88      33.10      31.61
+S-Cluster CPU 13 active %      16.25      15.94      15.03
+S-Cluster CPU 14 active %      16.25      16.18      15.30
+S-Cluster CPU 15 active %      15.81      15.95      15.47
+S-Cluster CPU 16 active %       9.91      16.36      14.54
+S-Cluster CPU 17 active %      15.15      15.99      14.90
+sum over S CPUs              108.25     113.52     106.85      (about one thread plus 7 to 14 points of other work)
+P0-Cluster active residency     0.16       0.39       0.44      (CPU 0 to 5: 0%)
+P1-Cluster active residency    25.12      25.05      28.66      (about 1.4 GHz, background activity on CPUs 6 to 11)
+CPU Power mW                  14644      14759      14670
