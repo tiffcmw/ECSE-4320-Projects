@@ -90,7 +90,8 @@ static void *spinner_main(void *arg) {
 
 static char *make_chase(size_t bytes, uint64_t seed) {
     char *b = map_bytes(bytes);
-    if (!b || !chase_build(b, bytes, 128, CHASE_RANDOM, seed)) { fprintf(stderr, "chase alloc failed\n"); exit(2); }
+    size_t n = b ? chase_build(b, bytes, 128, CHASE_RANDOM, seed) : 0;
+    if (!n || !chase_verify(b, 128, n)) { fprintf(stderr, "chase alloc/verify failed\n"); exit(2); }
     return b;
 }
 
