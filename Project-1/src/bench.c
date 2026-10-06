@@ -61,7 +61,7 @@ static void run_cfg(FILE *f, const char *session, const struct cfg *c, int pass,
   char *slab = mmap(NULL, total, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
   if (slab == MAP_FAILED) { perror("mmap"); exit(1); }
   char *arr[3] = {0};
-  for (int k = 0; k < na; k++) arr[k] = slab + (size_t)k * (region + 2176) + (size_t)c->off;
+  for (size_t k = 0; k < (size_t)na; k++) arr[k] = slab + k * (region + 2176) + (size_t)c->off;
   uint64_t s = seed ^ (uint64_t)c->n;
   fill_array(arr[0], n, e->dtype, &s);                 /* first touch happens here, outside timing */
   if (!strcmp(e->kernel, "mul") || !strcmp(e->kernel, "dot")) fill_array(arr[1], n, e->dtype, &s);

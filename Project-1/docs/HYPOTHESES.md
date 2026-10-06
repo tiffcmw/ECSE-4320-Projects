@@ -32,3 +32,13 @@ Notation: lanes L = 4 (fp32), 2 (fp64), 4 (int32). AI = flops per byte moved (co
 ## How verdicts will be assigned
 
 Supported: measured value falls inside the stated range. Partly supported: trend correct but value outside range or only for some dtypes/kernels. Refuted: trend or value contradicts the statement. Anomalies are recorded with a plausible cause marked unverified.
+
+## Pilot disclosure (added after the Phase 1 smoke run, 2026-10-06)
+
+The rows above were written first and are not edited. During Phase 1 a smoke run (`data/raw/smoke_phase1.csv`, `data/raw/smoke_phase1_unroll.csv`; 3 sizes, 15 samples per point) was executed to validate the harness. It was not an experiment, but it exposed facts that bear on several hypotheses, so they are disclosed here. Verdicts are left to the real experiments.
+
+1. The assignment-defined scalar build (`-O3 -fno-vectorize -fno-slp-vectorize`) is not unrolled by clang for these loops: `scalar` and `scalar_nounroll` timed identically (about 1 loop iteration per cycle). H1 assumed an unrolled scalar loop. An explicit scalar build with `#pragma clang loop unroll_count(8)` (`scalar_unroll8`) is faster (SAXPY f32, N = 4096: 561 ns vs 899 ns per call). Speedups will be reported against `scalar_unroll8` as the primary (conservative) baseline and against `scalar` as secondary.
+2. Plain `-O3` does vectorize the f32 dot product (remark: vectorization width 4, interleaved count 4), but with a strict in-order reduction, so the adds remain a serial chain. H4 and H16 assumed no vectorization at all. The statement to test becomes: vectorized, but no better than latency bound.
+3. SAXPY f32 at a 1 GiB working set reached about 149 GiB/s from one thread with the vector build, higher than the 60 to 120 GB/s assumed in H13, and a 4 MiB (L2-sized) point showed about the same bandwidth. The locality sweep will examine this.
+
+No hypothesis text was changed in response to these observations.
