@@ -32,7 +32,7 @@ static int parse_list(const char *s, long *out, int max) {
   free(buf); return c;
 }
 
-static int arrays_of(const char *k) { return (!strcmp(k, "mul") || !strcmp(k, "gather")) ? 3 : 2; }
+static int arrays_of(const char *k) { return (!strcmp(k, "mul") || !strcmp(k, "gather") || !strcmp(k, "triad")) ? 3 : 2; }
 static int stride_of(const char *k) { return strncmp(k, "saxpy_s", 7) == 0 ? atoi(k + 7) : 1; }
 /* footprint in bytes per touched element n: x and y span n*stride elements; gather also has a 4 B index per element */
 static size_t foot_per_n(const char *k, const char *dt) {
@@ -59,6 +59,7 @@ static void init_y_pattern(void *y, size_t n, const char *dt) {
 }
 
 struct cfg { int reg; long n; long off; };
+static long g_alias = 0;
 
 static void run_cfg(FILE *f, const char *session, const struct cfg *c, int pass, int reps, double min_ms, double ovh, const char *qos, uint64_t seed, int *inner_cache) {
   const struct kentry *e = &REGISTRY[c->reg];
@@ -71,15 +72,16 @@ static void run_cfg(FILE *f, const char *session, const struct cfg *c, int pass,
   for (size_t k = 0; k < (size_t)na; k++) arr[k] = slab + k * (region + 2176) + (size_t)c->off;
   uint64_t s = seed ^ (uint64_t)c->n;
   fill_array(arr[0], nal, e->dtype, &s);                /* first touch happens here, outside timing */
-  if (!strcmp(e->kernel, "mul") || !strcmp(e->kernel, "dot")) fill_array(arr[1], n, e->dtype, &s);
-  if (!strcmp(e->kernel, "mul")) memset(arr[2], 0, n * sz);
+  if (!strcmp(e->kernel, "mul") || !strcmp(e->kernel, "dot") || !strcmp(e->kernel, "triad")) fill_array(arr[1], n, e->dtype, &s);
+  if (!strcmp(e->kernel, "mul") || !strcmp(e->kernel, "triad")) memset(arr[2], 0, n * sz);
+  if (g_alias) arr[1] = arr[0] + (size_t)g_alias * sz; /* y overlaps x shifted by g_alias elements (only valid for builds without restrict) */
   if (!strcmp(e->kernel, "stencil")) memset(arr[1], 0, n * sz);
   int is_gather = !strcmp(e->kernel, "gather");
   if (is_gather) { uint32_t *ix = (uint32_t *)arr[2]; for (size_t i = 0; i < n; i++) ix[i] = (uint32_t)(rng_next(&s) % n); } /* random indices into x */
   int is_saxpy = !strncmp(e->kernel, "saxpy", 5) || is_gather;
   const double a = 1e-6; double acc = 0;
   for (int r = 0; r < reps; r++) {
-    if (is_saxpy) init_y_pattern(arr[1], is_gather ? n : nal, e->dtype);  /* re-initialise in-place operand every sample */
+    if (g_alias) init_y_pattern(arr[0], n + (size_t)g_alias, e->dtype); else if (is_saxpy) init_y_pattern(arr[1], is_gather ? n : nal, e->dtype);  /* re-initialise in-place operand every sample */
     acc += e->fn(n, a, arr[0], arr[1], arr[2]); barrier(); /* untimed steady-state warm-up call */
     int inner = *inner_cache;
     if (inner == 0) {
@@ -95,8 +97,8 @@ static void run_cfg(FILE *f, const char *session, const struct cfg *c, int pass,
     uint64_t t1 = now_ns();
     int th1 = thermal_level();
     double ns = (double)(t1 - t0) / inner - ovh;
-    fprintf(f, "%llu,%s,%s,%s,%s,%zu,%zu,%ld,%zu,%d,%d,%d,%.4f,%.4f,%d,%d,%s\n", (unsigned long long)t0, session, e->build, e->kernel, e->dtype,
-            n, n * foot_per_n(e->kernel, e->dtype), c->off, S, pass, r, inner, ns, ovh, th0, th1, qos);
+    fprintf(f, "%llu,%s,%s,%s,%s,%zu,%zu,%ld,%zu,%d,%d,%d,%.4f,%.4f,%d,%d,%s,%ld\n", (unsigned long long)t0, session, e->build, e->kernel, e->dtype,
+            n, n * foot_per_n(e->kernel, e->dtype), c->off, S, pass, r, inner, ns, ovh, th0, th1, qos, g_alias);
   }
   sink_d(acc); if (is_saxpy || 1) { volatile char sinkc = arr[0][0] + arr[1][0]; (void)sinkc; }
   munmap(slab, total);
@@ -115,6 +117,7 @@ static int cmd_run(int argc, char **argv) {
   int use_ws = wsl != NULL;
   if (!wsl && !nl) { fprintf(stderr, "--ws or --n required\n"); return 2; }
   ns_ = parse_list(use_ws ? wsl : nl, sizes, 512);
+  g_alias = atol(getarg(argc, argv, "--alias", "0"));
   set_qos_named(qos);
   struct cfg *cfgs = malloc(sizeof(struct cfg) * NREG * ns_ * no); int nc = 0;
   for (size_t r = 0; r < NREG; r++) {
@@ -130,7 +133,7 @@ static int cmd_run(int argc, char **argv) {
   FILE *f = fopen(out, hasflag(argc, argv, "--append") ? "a" : "w");
   if (!f) { perror(out); return 1; }
   if (!hasflag(argc, argv, "--append") || ftell(f) == 0)
-    fprintf(f, "epoch_ns,session,build,kernel,dtype,n,ws_bytes,offset,stride,pass,rep,inner_reps,ns_per_call,ovh_ns,therm_before,therm_after,qos\n");
+    fprintf(f, "epoch_ns,session,build,kernel,dtype,n,ws_bytes,offset,stride,pass,rep,inner_reps,ns_per_call,ovh_ns,therm_before,therm_after,qos,alias\n");
   uint64_t order_seed = seed * 7919 + 1;
   int *idx = malloc(sizeof(int) * nc);
   for (int i = 0; i < nc; i++) idx[i] = i;
@@ -177,6 +180,27 @@ static int cmd_freq(int argc, char **argv) {
   if (out) fclose(f); return 0;
 }
 
+
+#include "fma_gen.h"
+/* FMA throughput: N independent accumulators, `fmla` repeated; time per fmla instruction. */
+static int cmd_fmapeak(int argc, char **argv) {
+  const char *out = getarg(argc, argv, "--out", NULL), *session = getarg(argc, argv, "--session", "s0");
+  int reps = atoi(getarg(argc, argv, "--reps", "15"));
+  set_qos_interactive();
+  FILE *f = out ? fopen(out, "w") : stdout;
+  fprintf(f, "epoch_ns,session,arrangement,accumulators,rep,ns_per_fmla,iters,therm\n");
+  for (int a = 0; a < 2; a++) for (int n = 1; n <= FMA_MAXACC; n++) {
+    fmafn fn = a == 0 ? FMA_4S[n - 1] : FMA_2D[n - 1];
+    long iters = 200000 / (n > 4 ? n / 4 : 1); fn(iters / 4);
+    for (int r = 0; r < reps; r++) {
+      uint64_t t0 = now_ns(); fn(iters); uint64_t t1 = now_ns();
+      fprintf(f, "%llu,%s,%s,%d,%d,%.6f,%ld,%d\n", (unsigned long long)t0, session, a == 0 ? "4s" : "2d", n, r, (double)(t1 - t0) / ((double)iters * FMA_REPEAT * n), iters, thermal_level());
+    }
+  }
+  if (out) fclose(f);
+  return 0;
+}
+
 static int cmd_timer(void) {
   enum { N = 1000000 }; static uint64_t d[N]; uint64_t prev = now_ns(); int nz = 0; uint64_t mn = ~0ULL;
   for (int i = 0; i < N; i++) { uint64_t t = now_ns(); d[i] = t - prev; prev = t; }
@@ -192,6 +216,7 @@ int main(int argc, char **argv) {
   if (!strcmp(argv[1], "run")) return cmd_run(argc, argv);
   if (!strcmp(argv[1], "freq")) return cmd_freq(argc, argv);
   if (!strcmp(argv[1], "timer")) return cmd_timer();
+  if (!strcmp(argv[1], "fmapeak")) return cmd_fmapeak(argc, argv);
   if (!strcmp(argv[1], "list")) { for (size_t i = 0; i < NREG; i++) printf("%s %s %s\n", REGISTRY[i].kernel, REGISTRY[i].dtype, REGISTRY[i].build); return 0; }
   return 2;
 }

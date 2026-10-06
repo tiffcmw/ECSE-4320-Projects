@@ -8,6 +8,7 @@ FLOPS = {"saxpy": 2.0, "mul": 1.0, "dot": 2.0, "stencil": 5.0}      # per elemen
 BYTES = {"saxpy": 3, "mul": 3, "dot": 2, "stencil": 2}               # useful bytes = this * dtype size
 for _s in (1, 2, 4, 8, 16, 32):
     FLOPS["saxpy_s%d" % _s] = 2.0; BYTES["saxpy_s%d" % _s] = 3
+FLOPS["triad"] = 2.0; BYTES["triad"] = 3
 FLOPS["gather"] = 2.0; BYTES["gather"] = 3     # plus 4 B of index per element, added in derive()
 SIZEOF = {"f32": 4, "f64": 8, "u32": 4}
 THROTTLE_LEVEL = 1  # thermal pressure level >= 1 (moderate or worse) marks a throttled sample

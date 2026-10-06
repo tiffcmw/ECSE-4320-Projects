@@ -24,6 +24,7 @@
 #define K_saxpy_s16 4
 #define K_saxpy_s32 4
 #define K_gather 5
+#define K_triad 6
 #define S_saxpy_s1 1
 #define S_saxpy_s2 2
 #define S_saxpy_s4 4
@@ -72,6 +73,9 @@ static inline __attribute__((always_inline)) double body(size_t n, TY a, const T
   return (double)s;
 #elif KID == 4
   LP for (size_t i = 0; i < n; i++) y[i * STRIDE] = a * x[i * STRIDE] + y[i * STRIDE];
+  return 0.0;
+#elif KID == 6
+  LP for (size_t i = 0; i < n; i++) z[i] = x[i] + a * y[i];
   return 0.0;
 #elif KID == 5
   const uint32_t *RS idx = (const uint32_t *)z;

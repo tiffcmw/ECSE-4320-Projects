@@ -25,11 +25,11 @@ static const long OFFS[] = {0, 4, 8, 12, 16, 60, 64};
 
 int main(void) {
   int fails = 0; long checks = 0; uint64_t seed = 987654321ULL;
-  double worst_ulp[3][6] = {{0}}, worst_rel[3] = {0}; /* [dtype][kernel] */
+  double worst_ulp[3][7] = {{0}}, worst_rel[3] = {0}; /* [dtype][kernel] */
   for (size_t r = 0; r < NREG; r++) {
     const struct kentry *e = &REGISTRY[r];
     int di = !strcmp(e->dtype, "f32") ? 0 : !strcmp(e->dtype, "f64") ? 1 : 2;
-    int ki = !strcmp(e->kernel, "saxpy") ? 0 : !strcmp(e->kernel, "mul") ? 1 : !strcmp(e->kernel, "dot") ? 2 : !strcmp(e->kernel, "stencil") ? 3 : !strcmp(e->kernel, "gather") ? 5 : 4;
+    int ki = !strcmp(e->kernel, "saxpy") ? 0 : !strcmp(e->kernel, "mul") ? 1 : !strcmp(e->kernel, "dot") ? 2 : !strcmp(e->kernel, "stencil") ? 3 : !strcmp(e->kernel, "gather") ? 5 : !strcmp(e->kernel, "triad") ? 6 : 4;
     long S = ki == 4 ? atol(e->kernel + 7) : 1;
     size_t sz = dtype_size(e->dtype);
     for (size_t si = 0; si < sizeof(SIZES) / sizeof(SIZES[0]); si++) for (size_t oi = 0; oi < sizeof(OFFS) / sizeof(OFFS[0]); oi++) {
@@ -70,6 +70,10 @@ int main(void) {
           if (di == 0) { ref_hi = (double)xf[i] * (double)y0f[i]; u = ulp_dist_f((float)ref_hi, zf[i]); }
           else if (di == 1) { ref_hi = xd[i] * y0d[i]; u = ulp_dist_d(ref_hi, zd[i]); }
           else { refu = xu[i] * y0u[i]; gotu = zu[i]; }
+        } else if (ki == 6) {
+          if (di == 0) { ref_hi = fma((double)(float)a, (double)y0f[i], (double)xf[i]); u = ulp_dist_f((float)ref_hi, zf[i]); }
+          else if (di == 1) { ref_hi = fma(a, y0d[i], xd[i]); u = ulp_dist_d(ref_hi, zd[i]); }
+          else { refu = (uint32_t)3u * y0u[i] + xu[i]; gotu = zu[i]; }
         } else if (ki == 5) {
           uint32_t ix = ((uint32_t *)z)[i];
           if (di == 0) { ref_hi = fma((double)(float)a, (double)xf[ix], (double)y0f[i]); u = ulp_dist_f((float)ref_hi, yf[i]); }
@@ -103,15 +107,28 @@ int main(void) {
       for (size_t g = 0; g < (size_t)GUARD * sz + off && !bad; g++) { if (((unsigned char *)by)[g] != 0xA5 && ki != 3) { /* y guard before */ bad = 1; } }
       if (ki == 0 || ki == 3 || ki == 4 || ki == 5) { for (size_t g = (size_t)GUARD * sz + off + (size_t)nal * sz; g < bytes && !bad; g++) if (((unsigned char *)by)[g] != ((unsigned char *)by0)[g]) bad = 1; }
       if (ki == 3 && n >= 2) { if (memcmp(y, y0, sz) || memcmp(y + (n - 1) * sz, y0 + (n - 1) * sz, sz)) bad = 1; } /* boundary elems untouched */
-      if (ki == 1) { for (size_t g = 0; g < (size_t)GUARD * sz + off && !bad; g++) if (((unsigned char *)bz)[g] != 0xA5) bad = 1;
+      if (ki == 1 || ki == 6) { for (size_t g = 0; g < (size_t)GUARD * sz + off && !bad; g++) if (((unsigned char *)bz)[g] != 0xA5) bad = 1;
                      for (size_t g = (size_t)GUARD * sz + off + (size_t)n * sz; g < bytes && !bad; g++) if (((unsigned char *)bz)[g] != 0xA5) bad = 1; }
       checks++;
       if (bad) { fails++; printf("FAIL %s %s %s n=%ld off=%ld\n", e->kernel, e->dtype, e->build, n, off); }
       free(bx); free(by); free(bz); free(by0);
     }
   }
+  /* Overlap test: builds without restrict must give the sequential result when y = x + k (loop-carried dependence). */
+  for (size_t r = 0; r < NREG; r++) {
+    const struct kentry *e = &REGISTRY[r];
+    if (strcmp(e->kernel, "saxpy") || strcmp(e->dtype, "f32") || !strstr(e->build, "norestrict")) continue;
+    for (long k = 1; k <= 3; k++) for (long n = 1; n < 200; n += 7) {
+      float *a1 = malloc((n + 8) * 4), *a2 = malloc((n + 8) * 4);
+      for (long i = 0; i < n + 8; i++) a1[i] = a2[i] = 0.5f + (float)(i % 17) * 0.0625f;
+      e->fn((size_t)n, 0.75, a1, a1 + k, NULL);
+      for (long i = 0; i < n; i++) a2[i + k] = fmaf(0.75f, a2[i], a2[i + k]);
+      if (memcmp(a1, a2, (n + 8) * 4)) { fails++; printf("FAIL overlap %s k=%ld n=%ld\n", e->build, k, n); }
+      checks++; free(a1); free(a2);
+    }
+  }
   printf("checks=%ld failures=%d\n", checks, fails);
-  const char *dn[3] = {"f32", "f64", "u32"}, *kn[6] = {"saxpy", "mul", "dot", "stencil", "strided", "gather"};
-  for (int d = 0; d < 2; d++) { printf("max ulp %s:", dn[d]); for (int k = 0; k < 6; k++) if (k != 2) printf(" %s=%.0f", kn[k], worst_ulp[d][k]); printf("  worst dot rel err=%.3g\n", worst_rel[d]); }
+  const char *dn[3] = {"f32", "f64", "u32"}, *kn[7] = {"saxpy", "mul", "dot", "stencil", "strided", "gather", "triad"};
+  for (int d = 0; d < 2; d++) { printf("max ulp %s:", dn[d]); for (int k = 0; k < 7; k++) if (k != 2) printf(" %s=%.0f", kn[k], worst_ulp[d][k]); printf("  worst dot rel err=%.3g\n", worst_rel[d]); }
   return fails != 0;
 }
