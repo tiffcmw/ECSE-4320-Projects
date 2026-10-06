@@ -22,3 +22,30 @@ Facts used from `ENVIRONMENT.md`: Super core L1D 128 KB, L2 16 MB; Performance c
 - H1 expected failure modes: working sets entirely inside one level show a flat curve and teach nothing about the others; a stride-linked chase is predicted by the prefetcher and yields a flat, misleadingly low curve (this is the AI-resilience checkpoint, measured first and kept as `data/raw/chase_naive_*`); first-touch page faults inflate timings if initialization does not touch every page.
 
 **AI-resilience prediction (written before the first run).** The "obvious" chase (node i points to node i+1) will show a nearly flat latency curve of a few ns out to 1 GB, because sequential pointers are prefetchable. The corrected random single-cycle chase will show the steps predicted in H1a.
+
+## Phase 3: Mechanism 2 (scheduling and isolation via QoS)
+
+**Disclosure.** Before writing this section I ran short pilot probes (about 10 runs, not kept as results, `data/raw/coretype_*.csv` holds the placement probes) to learn what the tools can do. The pilots showed: (a) on an idle machine every thread QoS class ran on Super cores; (b) `taskpolicy -c background` and `taskpolicy -b` placed a process on Performance cores and slowed a compute loop about 3x; (c) a single thread with QoS background got the same CPU share as one with interactive under a 36-thread hog. The hypotheses below were written after seeing these, so they are weaker evidence than the Mechanism 1 predictions; the full runs below test them with controlled repetition, and anything the pilots already suggested is marked "pilot-informed".
+
+**Question.** What do thread QoS classes (`pthread_set_qos_class_self_np`) and process-level policies (`taskpolicy -b`, `-c`) change in throughput, tail latency, run-to-run variance and CPU share for a fixed-work compute-bound loop and a memory-bound (DRAM pointer-chase) loop, alone, with N threads, and under competing load?
+
+**Microbenchmark design.** `qos_loop`: 200 chunks of fixed work (compute: 1 M dependent 64-bit multiply-adds per chunk; mem: 8000 dependent loads per chunk over a 256 MB random single-cycle chase per thread). Per-chunk times give p50, p99, max. Wall and thread CPU time are recorded; `cpu_over_wall` shows how much of the elapsed time the thread actually ran.
+
+**Controlled variables.** Same binary, QoS set inside the worker thread before measurement, per-thread buffers, start barrier, warmup excluded, 15 reps (3 shuffled rounds x 5), AC power, thermal state recorded. Competing load is a separate process (36 spinning compute threads at QoS user-interactive) so it can be isolated from the measured process.
+
+**Predictions.**
+
+- H2a (idle, thread QoS; pilot-informed). With no competing load, throughput of the compute loop and the memory loop differs by less than 3% across the five thread QoS classes, and all classes run on Super cores.
+- H2b (idle, process policy; pilot-informed). `taskpolicy -b` and `-c background` slow the compute loop by 2.5x to 4x and the DRAM chase by 2x to 4x versus plain, with run-to-run IQR/median under 10%.
+- H2c (threads). With N <= 6 threads per-thread throughput matches N = 1 within 5%. At N = 12 and 18 per-thread compute throughput stays within 10% of N = 1 (Performance cores at default policy run this dependent-chain loop about as fast as Super cores, pilot-informed). At N = 36 (2x oversubscribed) per-thread `cpu_over_wall` falls to about 0.5 and p99 chunk time rises at least 10x.
+- H2d (contention, thread QoS; pilot-informed). Under the 36-thread hog, thread QoS class does not change `cpu_over_wall` of the worker by more than 0.05 (all about 0.45 to 0.5), i.e. thread QoS is a hint, not isolation, for CLI processes.
+- H2e (contention, process policy). Under the hog, `taskpolicy -b` reduces `cpu_over_wall` below 0.05 (isolation by starvation), and p99 chunk latency grows by more than 100x.
+- Expected failure modes: QoS is a hint, so results can be non-deterministic; background policy can starve a benchmark so badly that fixed-work runs take minutes (handled by reducing chunk count and recording it); thermal throttling (flagged); placement is observed by xctrace only for sampled runs.
+
+## Phase 4: Interaction (core tier x working-set size)
+
+**Question.** Does moving a thread from a Super core to a Performance core change latency and bandwidth differently at different working-set sizes?
+
+**Design.** Pointer-chase latency vs working set (E1a sizes) and bandwidth for three conditions: (S) plain process, observed on Super cores; (P) `taskpolicy -c background`, observed on Performance cores (but also a low-power policy, a confound); (18T) 18 plain threads, each with its own buffer, which lands threads on both tiers at default policy and is analyzed per thread by throughput signature. A fourth condition keeps `-c utility` (observed on Super) as a control for the clamp mechanism itself.
+
+**Predictions (the original hypothesis, adapted).** H3: the Performance-to-Super ratio is smallest for L1-resident compute and widens when the working set exceeds the Performance L2 (8 MB) but not the Super L2 (16 MB), producing a ratio peak between 8 MB and 16 MB. Pilot-informed caveat: the pilots show a 3x slowdown for both compute and DRAM under policy (P), which suggests the ratio is nearly constant (a frequency effect), in which case H3 will be refuted for (P). For (18T), I predict that per-thread latency at 128 KB to 256 KB (above Performance L1D 64 KB, within Super L1D 128 KB) and at 8 to 16 MB splits into two groups, because the cache sizes differ by tier.

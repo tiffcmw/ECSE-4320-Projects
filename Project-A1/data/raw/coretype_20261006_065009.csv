@@ -1,0 +1,3 @@
+qos,kind,threads,bg_threads,bg_qos,super_ms,performance_ms,super_share
+interactive,compute,1,6,interactive,17922.3,3189.3,0.849
+background,compute,1,6,interactive,17792.6,3333.2,0.842
