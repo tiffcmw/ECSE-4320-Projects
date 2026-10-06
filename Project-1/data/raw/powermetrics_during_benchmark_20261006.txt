@@ -1,0 +1,16 @@
+Provenance: run by the student (needs sudo) on 2026-10-06 09:24:52 -0400 while a benchmark was running in the same shell:
+  caffeinate -dimsu ./bin/bench run --out /dev/null --builds auto --kernels saxpy --dtypes f32 --ws 33554432 --reps 2000 --passes 20 &
+  sudo powermetrics --samplers cpu_power -i 1000 -n 3     (first sample pasted to the AI; the grep filter I suggested was not applied, per-CPU lines of CPU 0 to 11 omitted below)
+Window: 1014.76 ms.
+
+P0-Cluster (CPUs 0 to 5): active frequency 1387 MHz, active residency 31.52% (30% of it at 1344 MHz; background activity), CPU 0..5 active 10.5%, 10.2%, 6.3%, 4.0%, 2.5%, 1.4% at about 1344 MHz
+P1-Cluster (CPUs 6 to 11): active residency 0.71%, down residency 94.81%, all CPUs 0% active
+S-Cluster (CPUs 12 to 17): HW active frequency 4548 MHz, active residency 100.00%, idle 0%, down 0%
+  S-Cluster state residency: 4236 MHz .37%, 4284 MHz 2.5%, 4308 MHz 7.8%, 4332 MHz 7.9%, 4512 MHz 5.2%, 4608 MHz 76%
+CPU 12 frequency: 4608 MHz, active residency 31.01%
+CPU 13 frequency: 4608 MHz, active residency 17.27%
+CPU 14 frequency: 4608 MHz, active residency 17.33%
+CPU 15 frequency: 4608 MHz, active residency 17.35%
+CPU 16 frequency: 4608 MHz, active residency 17.30%
+CPU 17 frequency: 4608 MHz, active residency 16.94%
+CPU Power: 14725 mW   GPU Power: 11 mW   ANE Power: 0 mW   Combined: 14736 mW
