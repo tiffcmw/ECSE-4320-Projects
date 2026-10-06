@@ -1,0 +1,16 @@
+checks=52272 failures=0
+max ulp f32: saxpy=0 mul=0 stencil=1 strided=0 gather=0  worst dot rel err=8.37e-06
+max ulp f64: saxpy=0 mul=0 stencil=1 strided=0 gather=0  worst dot rel err=1.35e-14
+timer: back-to-back delta median 0.0 ns, min nonzero 41 ns, fraction of nonzero deltas 0.3638 (tick granularity)
+call overhead (empty kernel via fn pointer + barrier): 0.885 ns
+session phase4: effective clock 4.584 GHz (IQR half-width 0.017)
+pass 1/3 done (1320 configs), thermal=0
+pass 2/3 done (1320 configs), thermal=0
+pass 3/3 done (1320 configs), thermal=0
+pass 1/3 done (90 configs), thermal=0
+pass 2/3 done (90 configs), thermal=0
+pass 3/3 done (90 configs), thermal=0
+pass 1/3 done (105 configs), thermal=0
+pass 2/3 done (105 configs), thermal=0
+pass 3/3 done (105 configs), thermal=0
+align/stride phase4 complete
