@@ -1,3 +1,3 @@
-src/kernel_tpl.c:67:6: remark: loop not vectorized [-Rpass-missed=loop-vectorize]
-   67 |   LP for (size_t i = 0; i < n; i++) z[i] = x[i] * y[i];
+src/kernel_tpl.c:68:6: remark: loop not vectorized [-Rpass-missed=loop-vectorize]
+   68 |   LP for (size_t i = 0; i < n; i++) z[i] = x[i] * y[i];
       |      ^

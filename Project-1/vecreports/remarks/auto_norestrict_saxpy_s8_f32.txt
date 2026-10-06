@@ -1,4 +1,4 @@
-src/kernel_tpl.c:74:6: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-missed=loop-vectorize]
-   74 |   LP for (size_t i = 0; i < n; i++) y[i * STRIDE] = a * x[i * STRIDE] + y[i * STRIDE];
+src/kernel_tpl.c:75:6: remark: the cost-model indicates that vectorization is not beneficial [-Rpass-missed=loop-vectorize]
+   75 |   LP for (size_t i = 0; i < n; i++) y[i * STRIDE] = a * x[i * STRIDE] + y[i * STRIDE];
       |      ^
-src/kernel_tpl.c:74:6: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-missed=loop-vectorize]
+src/kernel_tpl.c:75:6: remark: the cost-model indicates that interleaving is not beneficial [-Rpass-missed=loop-vectorize]

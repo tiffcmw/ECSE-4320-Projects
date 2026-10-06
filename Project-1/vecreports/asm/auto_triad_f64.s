@@ -1,0 +1,13 @@
+; auto triad f64: largest loop body (12 instr)
+ldp	q1, q2, [x9, #-0x20]
+ldp	q3, q4, [x9], #0x40
+ldp	q5, q6, [x10, #-0x20]
+ldp	q7, q16, [x10], #0x40
+fmla.2d	v1, v5, v0[0]
+fmla.2d	v2, v6, v0[0]
+fmla.2d	v3, v7, v0[0]
+fmla.2d	v4, v16, v0[0]
+stp	q1, q2, [x11, #-0x20]
+stp	q3, q4, [x11], #0x40
+subs	x12, x12, #0x8
+b.ne	0x28 <ltmp0+0x28>

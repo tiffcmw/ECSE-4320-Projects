@@ -12,6 +12,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy | f32 | fastmath | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
 | saxpy | f32 | auto_norestrict | yes | 4x4 | 51 | 5 | 0 | 0 | 1 | 6 | 3 |  |
 | saxpy | f32 | auto_forcevec | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| saxpy | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy | f64 | scalar_unroll8 | no | - | 25 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -20,6 +21,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy | f64 | fastmath | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
 | saxpy | f64 | auto_norestrict | yes | 2x4 | 31 | 4 | 0 | 0 | 1 | 4 | 2 |  |
 | saxpy | f64 | auto_forcevec | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| saxpy | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy | u32 | scalar_unroll8 | no | - | 25 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -28,6 +30,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy | u32 | fastmath | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
 | saxpy | u32 | auto_norestrict | yes | 4x4 | 53 | 0 | 0 | 0 | 0 | 6 | 3 |  |
 | saxpy | u32 | auto_forcevec | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| saxpy | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | f32 | scalar_unroll8 | no | - | 26 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -36,6 +39,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | mul | f32 | fastmath | yes | 4x4 | 12 | 0 | 4 | 0 | 0 | 4 | 2 |  |
 | mul | f32 | auto_norestrict | yes | 4x4 | 60 | 0 | 5 | 0 | 0 | 6 | 3 |  |
 | mul | f32 | auto_forcevec | yes | 4x4 | 12 | 0 | 4 | 0 | 0 | 4 | 2 |  |
+| mul | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | f64 | scalar_unroll8 | no | - | 26 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -44,6 +48,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | mul | f64 | fastmath | yes | 2x4 | 12 | 0 | 4 | 0 | 0 | 4 | 2 |  |
 | mul | f64 | auto_norestrict | yes | 2x4 | 39 | 0 | 4 | 0 | 0 | 4 | 2 |  |
 | mul | f64 | auto_forcevec | yes | 2x4 | 12 | 0 | 4 | 0 | 0 | 4 | 2 |  |
+| mul | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | mul | u32 | scalar_unroll8 | no | - | 26 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -52,6 +57,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | mul | u32 | fastmath | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
 | mul | u32 | auto_norestrict | yes | 4x4 | 60 | 0 | 0 | 0 | 0 | 6 | 3 |  |
 | mul | u32 | auto_forcevec | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| mul | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | dot | f32 | scalar | no | - | 5 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | dot | f32 | scalar_nounroll | no | - | 5 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | dot | f32 | scalar_unroll8 | no | - | 21 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -60,6 +66,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | dot | f32 | fastmath | yes | 4x4 | 10 | 4 | 0 | 0 | 0 | 4 | 0 |  |
 | dot | f32 | auto_norestrict | yes | 4x4 | 38 | 0 | 4 | 0 | 0 | 4 | 0 |  |
 | dot | f32 | auto_forcevec | yes | 4x4 | 10 | 4 | 0 | 0 | 0 | 4 | 0 |  |
+| dot | f32 | scalar_norestrict | no | - | 5 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | dot | f64 | scalar | no | - | 5 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | dot | f64 | scalar_nounroll | no | - | 5 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | dot | f64 | scalar_unroll8 | no | - | 41 | 0 | 0 | 0 | 9 | 0 | 0 | loop not vectorized |
@@ -68,6 +75,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | dot | f64 | fastmath | yes | 2x4 | 10 | 4 | 0 | 0 | 0 | 4 | 0 |  |
 | dot | f64 | auto_norestrict | yes | 2x4 | 22 | 0 | 4 | 0 | 0 | 4 | 0 |  |
 | dot | f64 | auto_forcevec | yes | 2x4 | 10 | 4 | 0 | 0 | 0 | 4 | 0 |  |
+| dot | f64 | scalar_norestrict | no | - | 5 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | dot | u32 | scalar | no | - | 5 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | dot | u32 | scalar_nounroll | no | - | 5 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | dot | u32 | scalar_unroll8 | no | - | 21 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -76,6 +84,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | dot | u32 | fastmath | yes | 4x4 | 10 | 0 | 0 | 0 | 0 | 4 | 0 |  |
 | dot | u32 | auto_norestrict | yes | 4x4 | 10 | 0 | 0 | 0 | 0 | 4 | 0 |  |
 | dot | u32 | auto_forcevec | yes | 4x4 | 10 | 0 | 0 | 0 | 0 | 4 | 0 |  |
+| dot | u32 | scalar_norestrict | no | - | 5 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | stencil | f32 | scalar | no | - | 8 | 0 | 0 | 0 | 2 | 0 | 0 | loop not vectorized |
 | stencil | f32 | scalar_nounroll | no | - | 8 | 0 | 0 | 0 | 2 | 0 | 0 | loop not vectorized |
 | stencil | f32 | scalar_unroll8 | no | - | 38 | 0 | 0 | 0 | 16 | 0 | 0 | loop not vectorized |
@@ -84,6 +93,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | stencil | f32 | fastmath | yes | 4x4 | 27 | 4 | 4 | 4 | 0 | 6 | 2 |  |
 | stencil | f32 | auto_norestrict | yes | 4x4 | 82 | 10 | 5 | 0 | 2 | 13 | 3 |  |
 | stencil | f32 | auto_forcevec | yes | 4x4 | 27 | 8 | 4 | 0 | 0 | 6 | 2 |  |
+| stencil | f32 | scalar_norestrict | no | - | 8 | 0 | 0 | 0 | 2 | 0 | 0 | loop not vectorized |
 | stencil | f64 | scalar | no | - | 8 | 0 | 0 | 0 | 2 | 0 | 0 | loop not vectorized |
 | stencil | f64 | scalar_nounroll | no | - | 8 | 0 | 0 | 0 | 2 | 0 | 0 | loop not vectorized |
 | stencil | f64 | scalar_unroll8 | no | - | 38 | 0 | 0 | 0 | 16 | 0 | 0 | loop not vectorized |
@@ -92,6 +102,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | stencil | f64 | fastmath | yes | 2x4 | 24 | 4 | 4 | 4 | 0 | 3 | 2 |  |
 | stencil | f64 | auto_norestrict | yes | 2x4 | 50 | 8 | 4 | 0 | 2 | 7 | 2 |  |
 | stencil | f64 | auto_forcevec | yes | 2x4 | 24 | 8 | 4 | 0 | 0 | 3 | 2 |  |
+| stencil | f64 | scalar_norestrict | no | - | 8 | 0 | 0 | 0 | 2 | 0 | 0 | loop not vectorized |
 | stencil | u32 | scalar | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | stencil | u32 | scalar_nounroll | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | stencil | u32 | scalar_unroll8 | no | - | 31 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -100,6 +111,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | stencil | u32 | fastmath | yes | 4x4 | 27 | 0 | 0 | 0 | 0 | 6 | 2 |  |
 | stencil | u32 | auto_norestrict | yes | 4x4 | 76 | 0 | 0 | 0 | 0 | 13 | 3 |  |
 | stencil | u32 | auto_forcevec | yes | 4x4 | 27 | 0 | 0 | 0 | 0 | 6 | 2 |  |
+| stencil | u32 | scalar_norestrict | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | f32 | scalar_unroll8 | no | - | 25 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -108,6 +120,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s1 | f32 | fastmath | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
 | saxpy_s1 | f32 | auto_norestrict | yes | 4x4 | 51 | 5 | 0 | 0 | 1 | 6 | 3 |  |
 | saxpy_s1 | f32 | auto_forcevec | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| saxpy_s1 | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | f64 | scalar_unroll8 | no | - | 25 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -116,6 +129,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s1 | f64 | fastmath | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
 | saxpy_s1 | f64 | auto_norestrict | yes | 2x4 | 31 | 4 | 0 | 0 | 1 | 4 | 2 |  |
 | saxpy_s1 | f64 | auto_forcevec | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| saxpy_s1 | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s1 | u32 | scalar_unroll8 | no | - | 25 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -124,6 +138,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s1 | u32 | fastmath | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
 | saxpy_s1 | u32 | auto_norestrict | yes | 4x4 | 53 | 0 | 0 | 0 | 0 | 6 | 3 |  |
 | saxpy_s1 | u32 | auto_forcevec | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| saxpy_s1 | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | f32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -132,6 +147,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s2 | f32 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s2 | f32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s2 | f32 | auto_forcevec | yes | 4x1 | 13 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s2 | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | f64 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -140,6 +156,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s2 | f64 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s2 | f64 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s2 | f64 | auto_forcevec | yes | 2x1 | 9 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s2 | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s2 | u32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -148,6 +165,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s2 | u32 | fastmath | no | - | 20 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s2 | u32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s2 | u32 | auto_forcevec | yes | 4x1 | 13 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s2 | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | f32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -156,6 +174,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s4 | f32 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s4 | f32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s4 | f32 | auto_forcevec | yes | 4x1 | 13 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s4 | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | f64 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -164,6 +183,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s4 | f64 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s4 | f64 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s4 | f64 | auto_forcevec | yes | 2x1 | 9 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s4 | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s4 | u32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -172,6 +192,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s4 | u32 | fastmath | no | - | 20 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s4 | u32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s4 | u32 | auto_forcevec | yes | 4x1 | 13 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s4 | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | f32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -180,6 +201,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s8 | f32 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s8 | f32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s8 | f32 | auto_forcevec | yes | 2x1 | 12 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s8 | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | f64 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -188,6 +210,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s8 | f64 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s8 | f64 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s8 | f64 | auto_forcevec | yes | 2x1 | 12 | 1 | 0 | 0 | 0 | 4 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s8 | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s8 | u32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -196,6 +219,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s8 | u32 | fastmath | no | - | 20 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s8 | u32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s8 | u32 | auto_forcevec | yes | 4x1 | 27 | 0 | 0 | 0 | 0 | 8 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s8 | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | f32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -204,6 +228,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s16 | f32 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s16 | f32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s16 | f32 | auto_forcevec | yes | 2x1 | 11 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s16 | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | f64 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -212,6 +237,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s16 | f64 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s16 | f64 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s16 | f64 | auto_forcevec | yes | 2x1 | 11 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s16 | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s16 | u32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -220,6 +246,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s16 | u32 | fastmath | no | - | 20 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s16 | u32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s16 | u32 | auto_forcevec | yes | 4x1 | 22 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s16 | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | f32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -228,6 +255,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s32 | f32 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s32 | f32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s32 | f32 | auto_forcevec | yes | 2x1 | 11 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s32 | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | f64 | scalar | no | - | 8 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | f64 | scalar_nounroll | no | - | 8 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | f64 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -236,6 +264,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s32 | f64 | fastmath | no | - | 20 | 0 | 0 | 0 | 4 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s32 | f64 | auto_norestrict | no | - | 8 | 0 | 0 | 0 | 1 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s32 | f64 | auto_forcevec | yes | 2x1 | 11 | 1 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s32 | f64 | scalar_norestrict | no | - | 8 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | saxpy_s32 | u32 | scalar_unroll8 | no | - | 37 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -244,6 +273,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | saxpy_s32 | u32 | fastmath | no | - | 20 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s32 | u32 | auto_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that vectorization is not beneficial |
 | saxpy_s32 | u32 | auto_forcevec | yes | 4x1 | 22 | 0 | 0 | 0 | 0 | 0 | 0 | the cost-model indicates that interleaving is not beneficial |
+| saxpy_s32 | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | gather | f32 | scalar | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | gather | f32 | scalar_nounroll | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | gather | f32 | scalar_unroll8 | no | - | 33 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -252,6 +282,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | gather | f32 | fastmath | no | - | 14 | 1 | 0 | 0 | 0 | 1 | 1 | the cost-model indicates that vectorization is not beneficial |
 | gather | f32 | auto_norestrict | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized: cannot identify array bounds |
 | gather | f32 | auto_forcevec | yes | 4x1 | 14 | 1 | 0 | 0 | 0 | 1 | 1 | the cost-model indicates that interleaving is not beneficial |
+| gather | f32 | scalar_norestrict | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | gather | f64 | scalar | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | gather | f64 | scalar_nounroll | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | gather | f64 | scalar_unroll8 | no | - | 33 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
@@ -260,6 +291,7 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | gather | f64 | fastmath | no | - | 15 | 2 | 0 | 0 | 0 | 1 | 1 | the cost-model indicates that vectorization is not beneficial |
 | gather | f64 | auto_norestrict | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized: cannot identify array bounds |
 | gather | f64 | auto_forcevec | yes | 2x1 | 10 | 1 | 0 | 0 | 0 | 1 | 1 | the cost-model indicates that interleaving is not beneficial |
+| gather | f64 | scalar_norestrict | no | - | 7 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
 | gather | u32 | scalar | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | gather | u32 | scalar_nounroll | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
 | gather | u32 | scalar_unroll8 | no | - | 33 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
@@ -268,3 +300,31 @@ VF = vectorization width (lanes), IC = interleave count. Elements per main-loop 
 | gather | u32 | fastmath | no | - | 14 | 0 | 0 | 0 | 0 | 1 | 1 | the cost-model indicates that vectorization is not beneficial |
 | gather | u32 | auto_norestrict | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized: cannot identify array bounds |
 | gather | u32 | auto_forcevec | yes | 4x1 | 14 | 0 | 0 | 0 | 0 | 1 | 1 | the cost-model indicates that interleaving is not beneficial |
+| gather | u32 | scalar_norestrict | no | - | 7 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
+| triad | f32 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
+| triad | f32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
+| triad | f32 | scalar_unroll8 | no | - | 26 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
+| triad | f32 | auto | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f32 | native | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f32 | fastmath | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f32 | auto_norestrict | yes | 4x4 | 60 | 5 | 0 | 0 | 1 | 6 | 3 |  |
+| triad | f32 | auto_forcevec | yes | 4x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
+| triad | f64 | scalar | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
+| triad | f64 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
+| triad | f64 | scalar_unroll8 | no | - | 26 | 0 | 0 | 0 | 8 | 0 | 0 | loop not vectorized |
+| triad | f64 | auto | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f64 | native | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f64 | fastmath | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f64 | auto_norestrict | yes | 2x4 | 39 | 4 | 0 | 0 | 1 | 4 | 2 |  |
+| triad | f64 | auto_forcevec | yes | 2x4 | 12 | 4 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | f64 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 1 | 0 | 0 | loop not vectorized |
+| triad | u32 | scalar | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
+| triad | u32 | scalar_nounroll | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
+| triad | u32 | scalar_unroll8 | no | - | 26 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |
+| triad | u32 | auto | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | u32 | native | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | u32 | fastmath | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | u32 | auto_norestrict | yes | 4x4 | 62 | 0 | 0 | 0 | 0 | 6 | 3 |  |
+| triad | u32 | auto_forcevec | yes | 4x4 | 12 | 0 | 0 | 0 | 0 | 4 | 2 |  |
+| triad | u32 | scalar_norestrict | no | - | 6 | 0 | 0 | 0 | 0 | 0 | 0 | loop not vectorized |

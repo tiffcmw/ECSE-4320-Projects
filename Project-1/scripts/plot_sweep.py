@@ -109,3 +109,21 @@ with open(f"{ROOT}/data/processed/exp1_speedup_{SID}.csv", "w") as f:
     for r in table: f.write("%s,%s,%s,%s,%d,%d,%.4f\n" % r)
 print("thrown-away throttled samples:", sum(thr.values()), "of", len(rows))
 print("plots written")
+
+# key table cited by the report: speedups and cycles per element at three regimes
+REG = [("L1 32KiB", 32 * 1024), ("L2 4MiB", 4 * 2**20), ("DRAM 1GiB", 2**30)]
+def at(build, kernel, dtype, ws):
+    w, med, lo, hi, nn = series(build, kernel, dtype)
+    if len(w) == 0: return None
+    i = int(np.argmin(np.abs(np.log(w / ws)))); return med[i], nn[i], w[i]
+with open(f"{ROOT}/data/processed/exp1_key_table_{SID}.csv", "w") as f:
+    f.write("dtype,kernel,regime,ws_bytes,auto_vs_unroll8,auto_vs_scalar,fastmath_vs_unroll8,auto_cycles_per_elem,unroll8_cycles_per_elem,scalar_cycles_per_elem,auto_GiB_s,auto_GFLOPs\n")
+    for dtype in ("f32", "f64", "u32"):
+        for kernel in KERN:
+            for lab, ws in REG:
+                a = at("auto", kernel, dtype, ws); u = at("scalar_unroll8", kernel, dtype, ws); s_ = at("scalar", kernel, dtype, ws); fm = at("fastmath", kernel, dtype, ws)
+                if a is None or u is None: continue
+                d = analyze.derive(kernel, dtype, int(a[1]), a[0])
+                f.write("%s,%s,%s,%d,%.3f,%s,%.3f,%.3f,%.3f,%s,%.1f,%.2f\n" % (dtype, kernel, lab, a[2], u[0] / a[0], "%.3f" % (s_[0] / a[0]) if s_ else "", u[0] / fm[0] if fm else float("nan"),
+                        a[0] / a[1] * GHZ, u[0] / u[1] * GHZ, "%.3f" % (s_[0] / s_[1] * GHZ) if s_ else "", d["gibs"], d["gflops"]))
+print("key table written")

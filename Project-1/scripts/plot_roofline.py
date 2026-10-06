@@ -34,8 +34,9 @@ bw = {}
 for k in g:
     s = analyze.stats(g[k]); d = analyze.derive("triad", k[2], k[3], s["median"]); ws = k[3] * 3 * analyze.SIZEOF[k[2]]
     bw[(k[0], k[2], ws)] = d["gibs"]
-dram = max(v for (b, dt, ws), v in bw.items() if b == "auto" and ws >= 256 * 2**20)
-dram_f = [v for (b, dt, ws), v in bw.items() if b == "auto" and ws >= 256 * 2**20]
+BIG = 200 * 2**20  # DRAM-size threshold; sizes are rounded down slightly by the harness
+dram = max(v for (b, dt, ws), v in bw.items() if b == "auto" and ws >= BIG)
+dram_f = [v for (b, dt, ws), v in bw.items() if b == "auto" and ws >= BIG]
 out.append(f"triad single-process DRAM-size bandwidth (auto, 256 MiB to 2 GiB, f32 and f64): min {min(dram_f):.1f}, max {max(dram_f):.1f} GiB/s of counted traffic (2 reads + 1 write)")
 agg = {}
 for f in glob.glob(f"{D}/triadmp_{RS}_k*_p*.csv"):
@@ -65,7 +66,8 @@ for ax, dt in zip(axs, ("f32", "f64")):
     kk = [k for k in g if k[0] == "auto" and k[1] == "saxpy" and k[2] == dt]
     kk = min(kk, key=lambda k: abs(np.log(k[3] * 2 * analyze.SIZEOF[dt] / 2**30))); sx = analyze.derive("saxpy", dt, kk[3], analyze.stats(g[kk])["median"])["gibs"]
     ax.plot(x, np.minimum(pk, x * sx * 2**30 / 1e9), color="gray", ls="-.", lw=1.0, label=f"best observed DRAM-size rate (SAXPY plateau) {sx:.0f} GiB/s")
-    l1 = max(v for (b, d_, ws), v in bw.items() if ws <= 64 * 1024 and d_ == dt)
+    l1c = [v for (b, d_, ws), v in bw.items() if ws <= 64 * 1024 and d_ == dt]
+    l1 = max(l1c) if l1c else max(v for (b, d_, ws), v in bw.items() if d_ == dt)  # QUICK runs have no L1-size triad point
     ax.plot(x, np.minimum(pk, x * l1 * 2**30 / 1e9), "k--", lw=0.9, label=f"L1 triad bandwidth {l1:.0f} GiB/s")
     for kernel in ("saxpy", "mul", "dot", "stencil"):
         for build, fill in (("auto", True), ("fastmath", False)):
