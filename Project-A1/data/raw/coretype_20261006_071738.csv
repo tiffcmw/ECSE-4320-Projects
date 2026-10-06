@@ -1,0 +1,2 @@
+wrap,qos,kind,threads,bg_threads,bg_qos,super_ms,performance_ms,super_share
+/usr/sbin/taskpolicy -c background,none,compute,1,0,none,1.7,9211.6,0.000

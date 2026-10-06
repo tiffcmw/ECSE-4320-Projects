@@ -1,0 +1,6 @@
+wrap,qos,kind,threads,bg_threads,bg_qos,super_ms,performance_ms,super_share
+none,interactive,compute,1,0,none,2819.9,6.9,0.998
+none,initiated,compute,1,0,none,2814.7,0.0,1.000
+none,default,compute,1,0,none,2792.5,23.6,0.992
+none,utility,compute,1,0,none,2811.4,0.0,1.000
+none,background,compute,1,0,none,2880.6,0.0,1.000
