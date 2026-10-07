@@ -131,7 +131,7 @@ Remark for the same loop: `vectorized loop (vectorization width: 4, interleaved 
 
 *Figure 2. f64 speedups, same layout; the dotted-dashed line is the lane count (2) (`plots/exp1_sweep_f64.png`).*
 
-f32 SAXPY runs at 260 GiB/s (0.197 cycles per element) in L1 and at 147 to 154 GiB/s (0.33 to 0.35 cycles) from 256 KiB to 1 GiB, declining slowly to 143 GiB/s at 2 GiB (Figure 3). Multiply (three arrays) declines gradually between 128 KiB and 2 MiB. `native` equals `auto` within 3%. Median CV is 1.8% in cache and 1.6% in DRAM (90th percentile 5%, a few points up to 47%).
+f32 SAXPY runs at 260 GiB/s (0.197 cycles per element) in L1 and at 147 to 154 GiB/s (0.33 to 0.35 cycles) from 256 KiB to 1 GiB, declining slowly to 144 GiB/s at 2 GiB (Figure 3). Multiply (three arrays) declines gradually between 128 KiB and 2 MiB. `native` equals `auto` within 3%. Median CV is 1.8% in cache and 1.6% in DRAM (90th percentile 5%, a few points up to 47%).
 
 ![Figure 3](../plots/exp2_saxpy_locality.png)
 

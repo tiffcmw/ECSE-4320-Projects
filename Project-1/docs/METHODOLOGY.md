@@ -26,7 +26,7 @@ Common: `clang -std=c11` (Apple clang 21.0.0), kernel objects compiled one at a 
 
 FMA contraction: `-ffp-contract=on` (contract within a statement) for every non-fast-math build, so `a*x[i] + y[i]` becomes a fused multiply-add in the scalar and the vector builds alike. This is stated because fused and unfused results differ in the last bit; the correctness tolerance accounts for it.
 
-Primary scalar baseline: `scalar_unroll8`. Reason: in an early smoke run `scalar` and `scalar_nounroll` were identical and about 1.6x slower than the unrolled loop for SAXPY, meaning the assignment-defined scalar build is limited by loop overhead (about one iteration per cycle) and would inflate the SIMD speedup. Both are plotted.
+Primary scalar baseline: `scalar_unroll8`. Reason: in an early smoke run `scalar` and `scalar_nounroll` were identical and about 1.6x slower than the unrolled loop for SAXPY, meaning the default scalar build is limited by loop overhead (about one iteration per cycle) and would inflate the SIMD speedup. Both are plotted.
 
 ## Timing
 - Clock: `clock_gettime_nsec_np(CLOCK_UPTIME_RAW)`. The tick is 41.67 ns (24 MHz counter; `bench timer` shows nonzero back-to-back deltas of 41 ns). Each sample loops the kernel until it lasts at least 1 ms (inner repeat count calibrated from 5 warm calls), so tick quantization is below 0.005%.
