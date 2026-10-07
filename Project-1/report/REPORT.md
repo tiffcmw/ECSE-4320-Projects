@@ -1,6 +1,6 @@
 # SIMD Advantage Profiling on Apple M5 Max (NEON), single thread
 
-ECSE 4320/6320, Class-wide Project 1. All numbers are from this repository; paths in brackets are the evidence (plots in `plots/`, tables in `data/processed/`, raw CSVs in `data/raw/`, compiler evidence in `vecreports/`). Hypotheses were written before the experiments (`docs/HYPOTHESES.md`); each is marked supported, partly supported or refuted there. Anomalies are labelled unverified where I could not test the cause.
+ECSE 4320/6320, Class-wide Project 1. All numbers are from this repository; paths in brackets are the evidence (plots in `plots/`, tables in `data/processed/`, raw CSVs in `data/raw/`, compiler evidence in `vecreports/`). All 15 figures are embedded below (PNG, with PDF versions in `plots/`). Hypotheses were written before the experiments (`docs/HYPOTHESES.md`); each is marked supported, partly supported or refuted there. Anomalies are labelled unverified where I could not test the cause.
 
 ## 1. Summary
 
@@ -46,15 +46,47 @@ Speedup of `auto` over `scalar_unroll8` (over `scalar`), median ratio [`data/pro
 | dot, strict `-O3` | 1.46 (1.63) | 1.52 (1.59) | 1.48 (1.59) | 1.39 (1.56) | 1.40 (1.51) |
 | dot, `-ffast-math` | 13.6 | 11.5 | 10.1 | 6.7 | 5.0 |
 
+![Figure 1. Exp 1, f32: throughput (top) and speedup over the unrolled and the default scalar build (bottom) versus working set, with the L1 and L2 sizes marked; error bars are IQR](../plots/exp1_sweep_f32.png)
+
+*Figure 1. Exp 1, f32: throughput (top) and speedup over the unrolled and the default scalar build (bottom) versus working set, with the L1 and L2 sizes marked; error bars are IQR (`plots/exp1_sweep_f32.png`, vector version `plots/exp1_sweep_f32.pdf`).*
+
+![Figure 2. Exp 1, f64: same layout as Figure 1; the lane-count line is 2](../plots/exp1_sweep_f64.png)
+
+*Figure 2. Exp 1, f64: same layout as Figure 1; the lane-count line is 2 (`plots/exp1_sweep_f64.png`, vector version `plots/exp1_sweep_f64.pdf`).*
+
 - Locality (Exp 2): f32 SAXPY throughput is 260 GiB/s (0.197 cycles per element) in L1 and 147 to 154 GiB/s (0.33 to 0.35 cycles) beyond, a single step at the L1 boundary and a slow decline to 143 GiB/s at 2 GiB [`plots/exp2_saxpy_locality.png`]. Multiply (three arrays) declines gradually between 128 KiB and 2 MiB. The prediction that gain compresses toward 1x only in DRAM and at the L2 boundary (H2, H3) was refuted for SAXPY and mul f32 and partly supported for f64.
 - Data types (Exp 5): the f64 speedup is about half the f32 value in L1 for SAXPY (1.07 vs 2.08) and mul, consistent with lane count; in cycles per element, f64 vector and unrolled scalar are within 7% (0.40 vs 0.43), which points to a memory-operation limit rather than arithmetic (inference from cycle counts, no counters) [`plots/exp5_dtype.png`, `plots/exp5_elements_per_ns.png`]. u32 behaves like f32 (SAXPY 2.65x, mul 2.30x in L1) and its dot product vectorizes without fast-math (5.9x in L1).
 - `native` equals `auto` within 3% for all kernels and sizes [`data/raw/sweep_phase3_B.csv`].
 - Noise: median CV 1.8% in cache and 1.6% in DRAM, 90th percentile 5%, a few points up to 47% [`data/raw/sweep_phase3_*.csv`].
 
+![Figure 3. Exp 2, f32 SAXPY locality sweep: GiB/s (left) and cycles per element (right); one step at the L1 boundary, then a flat plateau to 2 GiB](../plots/exp2_saxpy_locality.png)
+
+*Figure 3. Exp 2, f32 SAXPY locality sweep: GiB/s (left) and cycles per element (right); one step at the L1 boundary, then a flat plateau to 2 GiB (`plots/exp2_saxpy_locality.png`, vector version `plots/exp2_saxpy_locality.pdf`).*
+
+![Figure 4. Exp 5, speedup of auto over unrolled scalar by data type (f32 solid, f64 dashed, u32 dotted)](../plots/exp5_dtype.png)
+
+*Figure 4. Exp 5, speedup of auto over unrolled scalar by data type (f32 solid, f64 dashed, u32 dotted) (`plots/exp5_dtype.png`, vector version `plots/exp5_dtype.pdf`).*
+
+![Figure 5. Exp 5, elements processed per nanosecond by data type (auto build)](../plots/exp5_elements_per_ns.png)
+
+*Figure 5. Exp 5, elements processed per nanosecond by data type (auto build) (`plots/exp5_elements_per_ns.png`, vector version `plots/exp5_elements_per_ns.pdf`).*
+
 ## 5. Alignment and tail (Exp 3)
 
 - Alignment [`plots/exp3_alignment.png`]: for the vector build, offsets that are multiples of 16 B run at the offset-0 speed (within 1%). All other tested offsets (4, 8, 12, 20, 28, 60, 124, 132 B) are 40% slower at 32 KiB, 24% at 4 MiB and 21% at 256 MiB, including 8 B offsets and offsets that do not cross a cache line. The unrolled scalar loop varies by at most 6%. Cause unverified (a split of 16 B accesses is a guess). Both arrays were shifted equally; relative misalignment was not tested.
 - Tail [`plots/exp3_tail_small_n.png`, `plots/exp3_tail_mod16.png`, `data/processed/phase4_summary_phase4.txt`]: f32 SAXPY costs 0.4 to 1.2 cycles per element for N up to 16, 0.35 at N = 32, 0.25 at N = 64 and 0.19 beyond N = 120; fixed cost is about 2 ns (intercept of an affine fit over N = 32 to 160). Around N = 256, 1024 and 4096 there is no visible dependence on N mod 4 or mod 16 above the roughly 1 ns noise. The disassembly predicts three code paths (N < 4, N < 16, N >= 16); I did not see clear steps at those thresholds. Below N = 64 the curve is irregular and I do not claim an explanation.
+
+![Figure 6. Exp 3, SAXPY f32 time relative to a 0-byte offset for 15 start offsets at 32 KiB, 4 MiB and 256 MiB; the vector build is slow at every offset that is not a multiple of 16 B](../plots/exp3_alignment.png)
+
+*Figure 6. Exp 3, SAXPY f32 time relative to a 0-byte offset for 15 start offsets at 32 KiB, 4 MiB and 256 MiB; the vector build is slow at every offset that is not a multiple of 16 B (`plots/exp3_alignment.png`, vector version `plots/exp3_alignment.pdf`).*
+
+![Figure 7. Exp 3, SAXPY time per call (top) and cycles per element (bottom) for N = 1 to 160, f32 and f64](../plots/exp3_tail_small_n.png)
+
+*Figure 7. Exp 3, SAXPY time per call (top) and cycles per element (bottom) for N = 1 to 160, f32 and f64 (`plots/exp3_tail_small_n.png`, vector version `plots/exp3_tail_small_n.pdf`).*
+
+![Figure 8. Exp 3, SAXPY f32 time per call around N = 256, 1024 and 4096; no visible N mod 16 structure](../plots/exp3_tail_mod16.png)
+
+*Figure 8. Exp 3, SAXPY f32 time per call around N = 256, 1024 and 4096; no visible N mod 16 structure (`plots/exp3_tail_mod16.png`, vector version `plots/exp3_tail_mod16.pdf`).*
 
 ## 6. Stride and gather (Exp 4)
 
@@ -64,6 +96,10 @@ Speedup of `auto` over `scalar_unroll8` (over `scalar`), median ratio [`data/pro
 - Useful bandwidth in DRAM (512 MiB footprint): 149 (stride 1), 56, 37.5, 20.3, 9.5, 1.0 GiB/s (stride 2, 4, 8, 16, 32); gather 5.1 GiB/s, 39x slower per element than unit stride. In L1 the loss is milder (265 GiB/s at stride 1 to 67 at stride 2, then flat to stride 8).
 - Anomaly (unverified): from stride 16 (64 B) to stride 32 (128 B, one element per line) time per element grows 10x (1.17 to 11.5 ns) although the line traffic only doubles; a prefetcher or TLB effect is a guess.
 
+![Figure 9. Exp 4, f32 SAXPY with stride 1 to 32 and a random gather: ns per touched element (top) and useful GiB/s (bottom) at five footprints](../plots/exp4_stride_gather.png)
+
+*Figure 9. Exp 4, f32 SAXPY with stride 1 to 32 and a random gather: ns per touched element (top) and useful GiB/s (bottom) at five footprints (`plots/exp4_stride_gather.png`, vector version `plots/exp4_stride_gather.pdf`).*
+
 ## 7. Roofline (Exp 6)
 
 [`plots/exp6_roofline.png`, `plots/exp6_fma_peak.png`, `plots/exp6_bandwidth_scaling.png`, `data/processed/roofline_points_phase5.csv`, `data/processed/phase5_summary_phase5.txt`]
@@ -72,6 +108,18 @@ Speedup of `auto` over `scalar_unroll8` (over `scalar`), median ratio [`data/pro
 - Memory ceiling, one thread: triad 122 GiB/s; SAXPY reaches 150 GiB/s, so triad is not an upper bound for all patterns (both lines are drawn). With 12 concurrent processes the aggregate is 441 GiB/s (3.6x), so one core is the limiting resource, not DRAM. Per-process rates become bimodal (68 to 76 vs 27 to 32 GiB/s), consistent with two core tiers (unverified).
 - Intensity (compulsory bytes): SAXPY 0.167 FLOP/B (f32), dot 0.25, multiply 0.083, stencil 0.625; ridge 1.1. All lie left of the ridge: memory bound in DRAM and L2. Fractions of the 146 GFLOP/s peak in DRAM: SAXPY 18%, mul 7%, fast-math dot 20%, stencil 49%; in L1: 32%, 16%, 28%, 57%. In L1 SAXPY and mul sit on the L1 bandwidth slope, not near the FLOP roof. The strict dot is at 3% of peak and 13% of the memory roof everywhere: it is latency bound, neither compute nor memory bound. No kernel is compute bound.
 
+![Figure 10. Exp 6, FMA throughput versus the number of independent accumulators (fmla per cycle at the estimated clock)](../plots/exp6_fma_peak.png)
+
+*Figure 10. Exp 6, FMA throughput versus the number of independent accumulators (fmla per cycle at the estimated clock) (`plots/exp6_fma_peak.png`, vector version `plots/exp6_fma_peak.pdf`).*
+
+![Figure 11. Exp 6, triad bandwidth versus the number of concurrent single-thread processes](../plots/exp6_bandwidth_scaling.png)
+
+*Figure 11. Exp 6, triad bandwidth versus the number of concurrent single-thread processes (`plots/exp6_bandwidth_scaling.png`, vector version `plots/exp6_bandwidth_scaling.pdf`).*
+
+![Figure 12. Exp 6, single-thread roofline for f32 (left) and f64 (right); colours mark the working-set regime, hollow triangles the fast-math dot product](../plots/exp6_roofline.png)
+
+*Figure 12. Exp 6, single-thread roofline for f32 (left) and f64 (right); colours mark the working-set regime, hollow triangles the fast-math dot product (`plots/exp6_roofline.png`, vector version `plots/exp6_roofline.pdf`).*
+
 ## 8. Negative cases (Exp 7)
 
 A. Reduction without fast-math [`plots/exp7_reduction_accuracy.png`, `data/raw/accuracy_phase5.csv`, `vecreports/VECTORIZATION.md`]: vectorized multiply, serial sum, 1.46x over scalar, independent of working set. Fast-math (16 partial sums) is 10 to 14x faster. Numerically the in-order f32 sum has error 3.3, 86, 139, 1.3e5 and 1.1e7 eps at N = 1e3, 1e5, 1e6, 1e7, 1e8 against a double-double reference, because once the sum exceeds 2^24 additions of terms near 1 are absorbed. Fast-math gives 0.5, 1.8, 2.0, 9.4 and 3.8e3 eps. The faster build is also the more accurate one here; its result differs from the strict one by up to 1e-2 relative at 1e7. `scalar` and `auto` strict results differ slightly (139 vs 137 eps at 1e6) because scalar uses fused `fmadd` and auto uses `fmul` plus `fadd`; `native` equals `auto`.
@@ -79,6 +127,14 @@ A. Reduction without fast-math [`plots/exp7_reduction_accuracy.png`, `data/raw/a
 A2. Aliasing [`plots/exp7_alias_restrict.png`, `data/raw/alias_phase5*.csv`, `data/raw/restrict_smalln_phase5.csv`]: without `restrict` the compiler adds a runtime overlap check. For non-overlapping arrays it costs under 7% at large N and 2% at N = 8 to 1024, but 43% at N = 4. If y = x + 1 element the check fails, the scalar path runs, and the loop-carried dependence costs 9.4 to 12.8 cycles per element (28x to 67x slower than 0.19 to 0.34 cycles). Results stay correct (overlap tests).
 
 B. DRAM-bound SIMD: SAXPY f32 at 1 GiB is vectorized perfectly (12 instructions per 16 elements) and is only 1.35x faster than unrolled scalar [`plots/exp1_sweep_f32.png`].
+
+![Figure 13. Exp 7A, error of the dot product against a double-double reference, in units of machine epsilon](../plots/exp7_reduction_accuracy.png)
+
+*Figure 13. Exp 7A, error of the dot product against a double-double reference, in units of machine epsilon (`plots/exp7_reduction_accuracy.png`, vector version `plots/exp7_reduction_accuracy.pdf`).*
+
+![Figure 14. Exp 7A2, cost of dropping restrict: cycles per element for overlapping and non-overlapping arguments (left) and the small-N cost of the runtime check (right)](../plots/exp7_alias_restrict.png)
+
+*Figure 14. Exp 7A2, cost of dropping restrict: cycles per element for overlapping and non-overlapping arguments (left) and the small-N cost of the runtime check (right) (`plots/exp7_alias_restrict.png`, vector version `plots/exp7_alias_restrict.pdf`).*
 
 ## 9. AI-resilience checkpoint (Exp 8)
 
@@ -89,6 +145,10 @@ A deliberately naive benchmark was written first, with its corrected twin, and b
 - N2 (zero-page reads of a calloc array): the predicted artifact did not appear (83 vs 83 GiB/s); the naive variant had a warm-up pass, so this does not prove the artifact cannot occur.
 - The first fixed N2 still measured 0 ns: a plain memory-clobber barrier does not stop the compiler from hoisting calls on memory that never escaped (the pointer must be passed to the asm). I kept that dataset as `naive_phase5_run1_*.csv`.
 - Unplanned flaws found in my own harness: `restrict` on locals; a non-unrolled `scalar` baseline; `long double` is 64-bit; the last `-Rpass=` option overrides earlier ones (my first remark files were empty). These changed the methodology (see `docs/AI_USE.md`).
+
+![Figure 15. Exp 8, bandwidth claimed by the naive benchmarks and by their corrected versions (log scale); "inf" means the timed region took 0 ns](../plots/exp8_naive_vs_fixed.png)
+
+*Figure 15. Exp 8, bandwidth claimed by the naive benchmarks and by their corrected versions (log scale); "inf" means the timed region took 0 ns (`plots/exp8_naive_vs_fixed.png`, vector version `plots/exp8_naive_vs_fixed.pdf`).*
 
 ## 10. Anomalies, limitations
 
