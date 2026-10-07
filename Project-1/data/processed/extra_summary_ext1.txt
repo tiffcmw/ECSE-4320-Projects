@@ -1,0 +1,85 @@
+session ext1: effective clock 4.547 GHz (IQR half-width 0.037)
+chase: 1155 samples, 0 throttled dropped, page faults in timed regions: 6
+chase plateau L1 (4 to 64 KiB): median 0.66 ns = 3.0 cycles (range of medians 0.65 to 0.67 ns)
+chase plateau L2 (256 KiB to 8 MiB): median 7.09 ns = 32.2 cycles (range of medians 2.63 to 8.13 ns)
+chase plateau 16 to 32 MiB: median 32.22 ns = 146.5 cycles (range of medians 18.78 to 52.28 ns)
+chase plateau 48 to 192 MiB: median 105.00 ns = 477.5 cycles (range of medians 94.35 to 106.91 ns)
+chase plateau DRAM (>= 512 MiB): median 110.77 ns = 503.7 cycles (range of medians 109.37 to 112.68 ns)
+chase steps (> 15% rise between neighbouring sizes): 152 KiB x2.95, 181 KiB x1.17, 1 MiB x2.49, 13 MiB x2.01, 19 MiB x1.32, 22 MiB x1.30, 26 MiB x1.26, 32 MiB x1.29, 45 MiB x1.17, 53 MiB x1.50
+page-granular chase: pages 16 to 152 median 0.67 ns; 215 to 1024 median 2.01 ns (9.1 cycles); 1217 to 1448 median 15.50 ns; 3444 to 16384 median 13.12 ns (59.7 cycles)
+page-granular chase: first page count above 1.4x the 16-to-64 page latency: 181
+implied lines in flight at SAXPY ws 32 KiB: bandwidth 261 GiB/s x latency 0.7 ns / 128 B = 1.4
+implied lines in flight at SAXPY ws 128 KiB: bandwidth 262 GiB/s x latency 0.7 ns / 128 B = 1.5
+implied lines in flight at SAXPY ws 1 MiB: bandwidth 154 GiB/s x latency 2.9 ns / 128 B = 3.7
+implied lines in flight at SAXPY ws 4 MiB: bandwidth 154 GiB/s x latency 7.6 ns / 128 B = 9.9
+implied lines in flight at SAXPY ws 16 MiB: bandwidth 150 GiB/s x latency 18.8 ns / 128 B = 23.6
+implied lines in flight at SAXPY ws 64 MiB: bandwidth 150 GiB/s x latency 94.4 ns / 128 B = 119.1
+implied lines in flight at SAXPY ws 256 MiB: bandwidth 149 GiB/s x latency 107.8 ns / 128 B = 134.5
+implied lines in flight at SAXPY ws 1.0 GiB: bandwidth 147 GiB/s x latency 110.8 ns / 128 B = 136.9
+traffic auto footprint 32 KiB: counted GiB/s read 138.0, incr 263.6, saxpy 263.4, copy 247.7, scale 247.1, add 253.1, triad 261.7, saxpy_oop 262.4
+traffic auto footprint 32 KiB: with write-allocate GiB/s read 138.0, incr 263.6, saxpy 263.4, copy 371.6, scale 370.6, add 337.4, triad 348.9, saxpy_oop 349.8
+traffic scalar_unroll8 footprint 32 KiB: counted GiB/s read 34.1, incr 115.0, saxpy 125.2, copy 104.6, scale 108.8, add 120.8, triad 121.8, saxpy_oop 118.4
+traffic scalar_unroll8 footprint 32 KiB: with write-allocate GiB/s read 34.1, incr 115.0, saxpy 125.2, copy 156.9, scale 163.3, add 161.1, triad 162.5, saxpy_oop 157.9
+traffic auto footprint 4 MiB: counted GiB/s read 111.8, incr 146.3, saxpy 146.5, copy 121.3, scale 120.4, add 124.1, triad 123.3, saxpy_oop 123.4
+traffic auto footprint 4 MiB: with write-allocate GiB/s read 111.8, incr 146.3, saxpy 146.5, copy 182.0, scale 180.5, add 165.5, triad 164.4, saxpy_oop 164.5
+traffic scalar_unroll8 footprint 4 MiB: counted GiB/s read 33.2, incr 104.0, saxpy 111.9, copy 104.3, scale 102.1, add 113.4, triad 114.2, saxpy_oop 117.3
+traffic scalar_unroll8 footprint 4 MiB: with write-allocate GiB/s read 33.2, incr 104.0, saxpy 111.9, copy 156.5, scale 153.2, add 151.1, triad 152.3, saxpy_oop 156.5
+traffic auto footprint 64 MiB: counted GiB/s read 87.5, incr 134.3, saxpy 148.1, copy 114.8, scale 114.9, add 121.8, triad 122.5, saxpy_oop 122.7
+traffic auto footprint 64 MiB: with write-allocate GiB/s read 87.5, incr 134.3, saxpy 148.1, copy 172.1, scale 172.3, add 162.4, triad 163.4, saxpy_oop 163.6
+traffic scalar_unroll8 footprint 64 MiB: counted GiB/s read 33.6, incr 105.2, saxpy 113.3, copy 102.8, scale 101.5, add 103.3, triad 104.7, saxpy_oop 104.6
+traffic scalar_unroll8 footprint 64 MiB: with write-allocate GiB/s read 33.6, incr 105.2, saxpy 113.3, copy 154.1, scale 152.3, add 137.8, triad 139.6, saxpy_oop 139.5
+traffic auto footprint 256 MiB: counted GiB/s read 81.5, incr 131.2, saxpy 146.5, copy 116.2, scale 117.6, add 121.3, triad 117.4, saxpy_oop 121.7
+traffic auto footprint 256 MiB: with write-allocate GiB/s read 81.5, incr 131.2, saxpy 146.5, copy 174.3, scale 176.4, add 161.7, triad 156.5, saxpy_oop 162.2
+traffic scalar_unroll8 footprint 256 MiB: counted GiB/s read 32.6, incr 101.6, saxpy 111.6, copy 100.2, scale 98.6, add 105.5, triad 105.8, saxpy_oop 102.0
+traffic scalar_unroll8 footprint 256 MiB: with write-allocate GiB/s read 32.6, incr 101.6, saxpy 111.6, copy 150.3, scale 148.0, add 140.6, triad 141.1, saxpy_oop 136.0
+traffic auto footprint 1.0 GiB: counted GiB/s read 80.5, incr 127.5, saxpy 139.4, copy 115.1, scale 120.2, add 117.6, triad 113.7, saxpy_oop 118.0
+traffic auto footprint 1.0 GiB: with write-allocate GiB/s read 80.5, incr 127.5, saxpy 139.4, copy 172.6, scale 180.3, add 156.8, triad 151.6, saxpy_oop 157.4
+traffic scalar_unroll8 footprint 1.0 GiB: counted GiB/s read 32.8, incr 100.3, saxpy 108.7, copy 98.8, scale 98.0, add 102.5, triad 100.6, saxpy_oop 101.8
+traffic scalar_unroll8 footprint 1.0 GiB: with write-allocate GiB/s read 32.8, incr 100.3, saxpy 108.7, copy 148.1, scale 147.0, add 136.7, triad 134.1, saxpy_oop 135.8
+dot f32 L1 32 KiB: cycles/elem unroll8 3.01, a1 3.39, a4 0.90, a8 0.46, a16 0.36, a16 NEON 0.23, strict auto 2.09, fastmath 0.21; chain-break gain (unroll8 / best scalar) 8.39x, SIMD gain (best scalar / fastmath) 1.67x, total 14.02x, best scalar / a16 NEON 1.58x
+dot f32 L2 4 MiB: cycles/elem unroll8 3.17, a1 3.39, a4 0.94, a8 0.48, a16 0.38, a16 NEON 0.29, strict auto 2.15, fastmath 0.30; chain-break gain (unroll8 / best scalar) 8.24x, SIMD gain (best scalar / fastmath) 1.29x, total 10.64x, best scalar / a16 NEON 1.34x
+dot f32 DRAM 1 GiB: cycles/elem unroll8 3.20, a1 3.44, a4 0.96, a8 0.49, a16 0.40, a16 NEON 0.32, strict auto 2.23, fastmath 0.32; chain-break gain (unroll8 / best scalar) 7.99x, SIMD gain (best scalar / fastmath) 1.25x, total 10.00x, best scalar / a16 NEON 1.23x
+dot f64 L1 32 KiB: cycles/elem unroll8 2.91, a1 3.38, a4 0.88, a8 0.44, a16 0.37, a16 NEON 0.35, strict auto 2.05, fastmath 0.45; chain-break gain (unroll8 / best scalar) 7.94x, SIMD gain (best scalar / fastmath) 0.81x, total 6.45x, best scalar / a16 NEON 1.04x
+dot f64 L2 4 MiB: cycles/elem unroll8 3.20, a1 3.40, a4 0.94, a8 0.58, a16 0.58, a16 NEON 0.56, strict auto 2.21, fastmath 0.59; chain-break gain (unroll8 / best scalar) 5.52x, SIMD gain (best scalar / fastmath) 0.97x, total 5.38x, best scalar / a16 NEON 1.03x
+dot f64 DRAM 1 GiB: cycles/elem unroll8 3.26, a1 3.47, a4 0.97, a8 0.64, a16 0.64, a16 NEON 0.65, strict auto 2.27, fastmath 0.64; chain-break gain (unroll8 / best scalar) 5.11x, SIMD gain (best scalar / fastmath) 0.99x, total 5.08x, best scalar / a16 NEON 0.99x
+misalign auto ws 32 KiB: x4/y0 1.059; x0/y4 1.260; x4/y4 1.445; x4/y8 1.394; x8/y4 1.411; x8/y8 1.403; x16/y0 1.014; x0/y16 1.039; x16/y4 1.291; x4/y16 1.011; x32/y32 1.009; x64/y64 1.003; x64/y4 1.280
+misalign auto ws 256 MiB: x4/y0 1.074; x0/y4 1.165; x4/y4 1.221; x4/y8 1.209; x8/y4 1.223; x8/y8 1.214; x16/y0 1.001; x0/y16 1.062; x16/y4 1.191; x4/y16 1.042; x32/y32 1.008; x64/y64 0.990; x64/y4 1.180
+misalign scalar_unroll8 ws 32 KiB: x4/y0 1.012; x0/y4 1.025; x4/y4 1.007; x4/y8 1.003; x8/y4 1.013; x8/y8 0.997; x16/y0 0.992; x0/y16 1.010; x16/y4 1.011; x4/y16 1.003; x32/y32 1.011; x64/y64 1.017; x64/y4 1.002
+misalign scalar_unroll8 ws 256 MiB: x4/y0 1.013; x0/y4 1.021; x4/y4 1.053; x4/y8 0.998; x8/y4 1.016; x8/y8 1.002; x16/y0 0.993; x0/y16 0.996; x16/y4 1.036; x4/y16 1.007; x32/y32 1.026; x64/y64 0.989; x64/y4 1.055
+stridejump auto footprint 8 MiB stride 1: 0.076 ns per touched element (IQR 0.075 to 0.079), n=1048576
+stridejump auto footprint 8 MiB stride 16: 1.039 ns per touched element (IQR 1.027 to 1.045), n=65536
+stridejump auto footprint 8 MiB stride 24: 1.059 ns per touched element (IQR 1.052 to 1.076), n=43648
+stridejump auto footprint 8 MiB stride 32: 1.958 ns per touched element (IQR 1.951 to 1.985), n=32768
+stridejump auto footprint 8 MiB stride 48: 0.988 ns per touched element (IQR 0.984 to 1.003), n=21824
+stridejump scalar_unroll8 footprint 8 MiB stride 1: 0.099 ns per touched element (IQR 0.097 to 0.100), n=1048576
+stridejump scalar_unroll8 footprint 8 MiB stride 16: 1.044 ns per touched element (IQR 1.023 to 1.094), n=65536
+stridejump scalar_unroll8 footprint 8 MiB stride 24: 1.058 ns per touched element (IQR 1.056 to 1.065), n=43648
+stridejump scalar_unroll8 footprint 8 MiB stride 32: 2.067 ns per touched element (IQR 1.991 to 2.146), n=32768
+stridejump scalar_unroll8 footprint 8 MiB stride 48: 0.983 ns per touched element (IQR 0.978 to 0.992), n=21824
+stridejump auto footprint 64 MiB stride 1: 0.075 ns per touched element (IQR 0.075 to 0.078), n=8388608
+stridejump auto footprint 64 MiB stride 16: 1.167 ns per touched element (IQR 1.157 to 1.182), n=524288
+stridejump auto footprint 64 MiB stride 24: 1.454 ns per touched element (IQR 1.366 to 1.468), n=349504
+stridejump auto footprint 64 MiB stride 32: 9.608 ns per touched element (IQR 9.299 to 10.747), n=262144
+stridejump auto footprint 64 MiB stride 48: 3.116 ns per touched element (IQR 2.881 to 3.246), n=174720
+stridejump scalar_unroll8 footprint 64 MiB stride 1: 0.100 ns per touched element (IQR 0.099 to 0.101), n=8388608
+stridejump scalar_unroll8 footprint 64 MiB stride 16: 1.163 ns per touched element (IQR 1.156 to 1.179), n=524288
+stridejump scalar_unroll8 footprint 64 MiB stride 24: 1.364 ns per touched element (IQR 1.353 to 1.394), n=349504
+stridejump scalar_unroll8 footprint 64 MiB stride 32: 10.577 ns per touched element (IQR 9.017 to 11.616), n=262144
+stridejump scalar_unroll8 footprint 64 MiB stride 48: 2.805 ns per touched element (IQR 2.665 to 3.066), n=174720
+stridejump auto footprint 512 MiB stride 1: 0.077 ns per touched element (IQR 0.076 to 0.081), n=67108864
+stridejump auto footprint 512 MiB stride 16: 1.172 ns per touched element (IQR 1.168 to 1.175), n=4194304
+stridejump auto footprint 512 MiB stride 24: 1.423 ns per touched element (IQR 1.411 to 1.432), n=2796160
+stridejump auto footprint 512 MiB stride 32: 11.518 ns per touched element (IQR 11.492 to 11.624), n=2097152
+stridejump auto footprint 512 MiB stride 48: 3.955 ns per touched element (IQR 3.930 to 4.083), n=1398080
+stridejump scalar_unroll8 footprint 512 MiB stride 1: 0.104 ns per touched element (IQR 0.103 to 0.107), n=67108864
+stridejump scalar_unroll8 footprint 512 MiB stride 16: 1.210 ns per touched element (IQR 1.187 to 1.252), n=4194304
+stridejump scalar_unroll8 footprint 512 MiB stride 24: 1.423 ns per touched element (IQR 1.411 to 1.493), n=2796160
+stridejump scalar_unroll8 footprint 512 MiB stride 32: 11.692 ns per touched element (IQR 11.515 to 11.771), n=2097152
+stridejump scalar_unroll8 footprint 512 MiB stride 48: 3.783 ns per touched element (IQR 3.743 to 3.816), n=1398080
+stridejump n-probe saxpy_s16 n=2097152: 1.299 ns per element (IQR 1.167 to 1.611)
+stridejump n-probe saxpy_s16 n=2097153: 1.379 ns per element (IQR 1.231 to 1.493)
+stridejump n-probe saxpy_s16 n=2097216: 1.211 ns per element (IQR 1.182 to 1.610)
+stridejump n-probe saxpy_s32 n=2097152: 11.518 ns per element (IQR 11.492 to 11.624)
+stridejump n-probe saxpy_s32 n=2097153: 11.680 ns per element (IQR 11.588 to 11.747)
+stridejump n-probe saxpy_s32 n=2097216: 11.575 ns per element (IQR 11.510 to 11.816)
+throttled samples dropped: ceiling 0, dotdec 0, misalign 0

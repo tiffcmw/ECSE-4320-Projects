@@ -1,0 +1,29 @@
+checks=75018 failures=0
+max ulp f32: saxpy=0 mul=0 stencil=1 strided=0 gather=0 triad=0  worst dot rel err=7.91e-06
+max ulp f64: saxpy=0 mul=0 stencil=1 strided=0 gather=0 triad=0  worst dot rel err=1.41e-14
+extra checks=5544 failures=0 (worst dot rel err f32=7.86e-06 f64=8.14e-15)
+timer: back-to-back delta median 0.0 ns, min nonzero 41 ns, fraction of nonzero deltas 0.3530 (tick granularity)
+call overhead (empty kernel via fn pointer + barrier): 0.877 ns
+session ext1: effective clock 4.547 GHz (IQR half-width 0.037)
+pass 1/3 done (77 sizes), thermal=0
+pass 2/3 done (77 sizes), thermal=0
+pass 3/3 done (77 sizes), thermal=0
+pass 1/3 done (80 configs), thermal=0
+pass 2/3 done (80 configs), thermal=0
+pass 3/3 done (80 configs), thermal=0
+pass 1/3 done (624 configs), thermal=0
+pass 2/3 done (624 configs), thermal=0
+pass 3/3 done (624 configs), thermal=0
+pass 1/3 done (312 configs), thermal=0
+pass 2/3 done (312 configs), thermal=0
+pass 3/3 done (312 configs), thermal=0
+pass 1/3 done (144 configs), thermal=0
+pass 2/3 done (144 configs), thermal=0
+pass 3/3 done (144 configs), thermal=0
+pass 1/3 done (30 configs), thermal=0
+pass 2/3 done (30 configs), thermal=0
+pass 3/3 done (30 configs), thermal=0
+pass 1/3 done (6 configs), thermal=0
+pass 2/3 done (6 configs), thermal=0
+pass 3/3 done (6 configs), thermal=0
+extra experiments ext1 complete

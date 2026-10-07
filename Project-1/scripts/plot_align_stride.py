@@ -6,12 +6,14 @@ import matplotlib; matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 sys.path.insert(0, os.path.dirname(__file__))
 import analyze
+plt.rcParams.update({"font.size": 11, "axes.titlesize": 12, "axes.labelsize": 11, "xtick.labelsize": 10, "ytick.labelsize": 10, "legend.fontsize": 10})
 SID = sys.argv[1] if len(sys.argv) > 1 else "phase4"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 GHZ, _ = analyze.freq_ghz([f"{ROOT}/data/raw/freq_{SID}.csv"])
 COL = {"scalar": "#8c8c8c", "scalar_unroll8": "#1f77b4", "auto": "#d95f02", "auto_forcevec": "#7570b3"}
-def save(fig, name):
-    fig.tight_layout(); fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150); fig.savefig(f"{ROOT}/plots/{name}.pdf"); plt.close(fig)
+def save(fig, name, relayout=True):
+    if relayout: fig.tight_layout()
+    fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
 def ser(g, build, kernel, dtype, key_idx, filt=lambda k: True):
     ks = sorted([k for k in g if k[0] == build and k[1] == kernel and k[2] == dtype and filt(k)], key=lambda k: k[key_idx])
     return ks, [analyze.stats(g[k]) for k in ks]
@@ -82,24 +84,26 @@ nom_present = sorted(set(r["wsn"] for r in rows))
 g, thr = analyze.group(rows, keys=("build", "kernel", "dtype", "wsn", "stride", "n"))
 wss = sorted(set(k[3] for k in g))
 kern_order = ["saxpy_s1", "saxpy_s2", "saxpy_s4", "saxpy_s8", "saxpy_s16", "saxpy_s32", "gather"]
-fig, axs = plt.subplots(2, len(wss), figsize=(4.2 * len(wss), 8))
+fig, axs = plt.subplots(2, 3, figsize=(12.5, 7.6)); axf = axs.ravel()
 for j, ws in enumerate(wss):
+    ax = axf[j]
     for b in ("scalar_unroll8", "auto", "auto_forcevec"):
-        xs, ns_el, gib, glo, ghi = [], [], [], [], []
+        xs, ns_el, nlo, nhi = [], [], [], []
         for ki, k in enumerate(kern_order):
             keys = [kk for kk in g if kk[0] == b and kk[1] == k and kk[3] == ws]
             if not keys: continue
             kk = keys[0]; s = analyze.stats(g[kk]); n = kk[5]
-            d = analyze.derive(k, "f32", n, s["median"]); dl = analyze.derive(k, "f32", n, s["q3"]); dh = analyze.derive(k, "f32", n, s["q1"])
-            xs.append(ki); ns_el.append(s["median"] / n); gib.append(d["gibs"]); glo.append(dl["gibs"]); ghi.append(dh["gibs"])
+            d = analyze.derive(k, "f32", n, s["median"])
+            xs.append(ki); ns_el.append(s["median"] / n); nlo.append(s["q1"] / n); nhi.append(s["q3"] / n)
             out.append(f"stride ws={ws} {b} {k}: {s['median']/n:.4f} ns/elem, {d['gibs']:.1f} GiB/s useful, {s['median']/n*GHZ:.2f} cyc/elem")
-        axs[0, j].plot(xs, ns_el, color=COL[b], marker="o", label=b)
-        axs[1, j].errorbar(xs, gib, yerr=[np.array(gib) - np.array(glo), np.array(ghi) - np.array(gib)], color=COL[b], marker="o", capsize=2, label=b)
-    for r in (0, 1):
-        axs[r, j].set_xticks(range(len(kern_order))); axs[r, j].set_xticklabels(["s1", "s2", "s4", "s8", "s16", "s32", "gather"]); axs[r, j].set_yscale("log")
-    axs[0, j].set_title(f"footprint {ws // 1024} KiB" if ws < 2**20 else f"footprint {ws // 2**20} MiB"); axs[0, j].set_ylabel("ns per touched element")
-    axs[1, j].set_ylabel("useful GiB/s (x, y read, y write, +4 B index for gather)"); axs[1, j].set_xlabel("stride (elements) / gather")
-axs[0, 0].legend(fontsize=7)
+        ns_el, nlo, nhi = map(np.array, (ns_el, nlo, nhi))
+        ax.errorbar(xs, ns_el, yerr=[ns_el - nlo, nhi - ns_el], color=COL[b], marker="o", ms=5, lw=1.4, capsize=2, label=b)
+    ax.set_xticks(range(len(kern_order))); ax.set_xticklabels(["1", "2", "4", "8", "16", "32", "gather"]); ax.set_yscale("log"); ax.grid(alpha=0.25, which="both", lw=0.4)
+    ax.set_title(f"footprint {ws // 1024} KiB" if ws < 2**20 else f"footprint {ws // 2**20} MiB", loc="left"); ax.set_xlabel("stride (f32 elements) or random gather")
+    ax.set_ylabel("ns per touched element")
+for ax in axf[len(wss):]: ax.axis("off")
+h, l = axf[0].get_legend_handles_labels()
+axf[5].legend(h, l, loc="center", frameon=False, fontsize=12, title="build")
 save(fig, "exp4_stride_gather")
 open(f"{ROOT}/data/processed/phase4_summary_{SID}.txt", "w").write("\n".join(out) + "\n")
 print("done", len(out), "summary lines; throttled dropped:", sum(thr.values()))

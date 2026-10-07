@@ -9,6 +9,13 @@ BYTES = {"saxpy": 3, "mul": 3, "dot": 2, "stencil": 2}               # useful by
 for _s in (1, 2, 4, 8, 16, 32):
     FLOPS["saxpy_s%d" % _s] = 2.0; BYTES["saxpy_s%d" % _s] = 3
 FLOPS["triad"] = 2.0; BYTES["triad"] = 3
+for _s in (24, 48):
+    FLOPS["saxpy_s%d" % _s] = 2.0; BYTES["saxpy_s%d" % _s] = 3
+# memory-traffic and dot-decomposition kernels (BYTES = compulsory read + write streams, times dtype size)
+for _k, _f, _b in (("read", 1.0, 1), ("incr", 1.0, 2), ("copy", 0.0, 2), ("scale", 1.0, 2), ("add", 1.0, 3), ("saxpy_oop", 2.0, 3)):
+    FLOPS[_k] = _f; BYTES[_k] = _b
+for _a in (1, 4, 8, 16):
+    FLOPS["dot_a%d" % _a] = 2.0; BYTES["dot_a%d" % _a] = 2
 FLOPS["gather"] = 2.0; BYTES["gather"] = 3     # plus 4 B of index per element, added in derive()
 SIZEOF = {"f32": 4, "f64": 8, "u32": 4}
 THROTTLE_LEVEL = 1  # thermal pressure level >= 1 (moderate or worse) marks a throttled sample

@@ -17,9 +17,10 @@ case "${COLLECT:-none}" in
     ./scripts/exp_sweep.sh
     ./scripts/exp_align_stride.sh
     ./scripts/exp_roofline.sh
+    ./scripts/exp_extra.sh
     clang -O3 -ffast-math -std=c11 src/naive/naive_bench.c -o bin/naive_bench
     caffeinate -dimsu ./bin/naive_bench > data/raw/naive_${SID}.csv
-    ./scripts/make_plots.sh "$SID" "$SID" "$SID" ;;
+    ./scripts/make_plots.sh "$SID" "$SID" "$SID" "$SID" ;;
   *) echo "COLLECT must be none, quick or full"; exit 2 ;;
 esac
 echo "run_all done"

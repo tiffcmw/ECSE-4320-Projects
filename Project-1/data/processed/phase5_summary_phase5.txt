@@ -6,21 +6,23 @@ triad 2 concurrent processes: aggregate 224 GiB/s, per process 111, 112
 triad 4 concurrent processes: aggregate 319 GiB/s, per process 68, 68, 89, 94
 triad 6 concurrent processes: aggregate 365 GiB/s, per process 44, 55, 56, 62, 63, 85
 triad 12 concurrent processes: aggregate 441 GiB/s, per process 27, 27, 28, 29, 30, 31, 31, 32, 32, 32, 68, 76
-roofline f32 saxpy auto L1 (32 KiB): AI 0.167, 46.6 GFLOP/s, 211% of DRAM-roof, 103% of L1-roof
-roofline f32 saxpy auto L2 (4 MiB): AI 0.167, 27.6 GFLOP/s, 125% of DRAM-roof, 61% of L1-roof
-roofline f32 saxpy auto DRAM (1 GiB): AI 0.167, 26.4 GFLOP/s, 119% of DRAM-roof, 58% of L1-roof
-roofline f32 mul auto L1 (32 KiB): AI 0.083, 23.1 GFLOP/s, 210% of DRAM-roof, 102% of L1-roof
-roofline f32 mul auto L2 (4 MiB): AI 0.083, 10.9 GFLOP/s, 99% of DRAM-roof, 48% of L1-roof
-roofline f32 mul auto DRAM (1 GiB): AI 0.083, 10.8 GFLOP/s, 98% of DRAM-roof, 48% of L1-roof
-roofline f32 dot auto L1 (32 KiB): AI 0.250, 4.4 GFLOP/s, 13% of DRAM-roof, 6% of L1-roof
-roofline f32 dot auto L2 (4 MiB): AI 0.250, 4.2 GFLOP/s, 13% of DRAM-roof, 6% of L1-roof
-roofline f32 dot auto DRAM (1 GiB): AI 0.250, 4.2 GFLOP/s, 13% of DRAM-roof, 6% of L1-roof
-roofline f32 dot fastmath L1 (32 KiB): AI 0.250, 40.8 GFLOP/s, 123% of DRAM-roof, 60% of L1-roof
-roofline f32 dot fastmath L2 (4 MiB): AI 0.250, 32.1 GFLOP/s, 97% of DRAM-roof, 47% of L1-roof
-roofline f32 dot fastmath DRAM (1 GiB): AI 0.250, 28.8 GFLOP/s, 87% of DRAM-roof, 43% of L1-roof
-roofline f32 stencil auto L1 (32 KiB): AI 0.625, 83.7 GFLOP/s, 101% of DRAM-roof, 57% of L1-roof
-roofline f32 stencil auto L2 (4 MiB): AI 0.625, 74.6 GFLOP/s, 90% of DRAM-roof, 51% of L1-roof
-roofline f32 stencil auto DRAM (1 GiB): AI 0.625, 71.4 GFLOP/s, 86% of DRAM-roof, 49% of L1-roof
+roofline f32: memory ceiling 147.3 GiB/s (in-place SAXPY at about 1 GiB); triad counted min 121.8 GiB/s over DRAM-size points; L1 253 GiB/s
+roofline f64: memory ceiling 146.2 GiB/s (in-place SAXPY at about 1 GiB); triad counted min 122.5 GiB/s over DRAM-size points; L1 263 GiB/s
+roofline f32 saxpy auto L1 (32 KiB): AI 0.167, 46.6 GFLOP/s, 177% of DRAM-roof, 103% of L1-roof
+roofline f32 saxpy auto L2 (4 MiB): AI 0.167, 27.6 GFLOP/s, 105% of DRAM-roof, 61% of L1-roof
+roofline f32 saxpy auto DRAM (1 GiB): AI 0.167, 26.4 GFLOP/s, 100% of DRAM-roof, 58% of L1-roof
+roofline f32 mul auto L1 (32 KiB): AI 0.083, 23.1 GFLOP/s, 176% of DRAM-roof, 102% of L1-roof
+roofline f32 mul auto L2 (4 MiB): AI 0.083, 10.9 GFLOP/s, 83% of DRAM-roof, 48% of L1-roof
+roofline f32 mul auto DRAM (1 GiB): AI 0.083, 10.8 GFLOP/s, 82% of DRAM-roof, 48% of L1-roof
+roofline f32 dot auto L1 (32 KiB): AI 0.250, 4.4 GFLOP/s, 11% of DRAM-roof, 6% of L1-roof
+roofline f32 dot auto L2 (4 MiB): AI 0.250, 4.2 GFLOP/s, 11% of DRAM-roof, 6% of L1-roof
+roofline f32 dot auto DRAM (1 GiB): AI 0.250, 4.2 GFLOP/s, 11% of DRAM-roof, 6% of L1-roof
+roofline f32 dot fastmath L1 (32 KiB): AI 0.250, 40.8 GFLOP/s, 103% of DRAM-roof, 60% of L1-roof
+roofline f32 dot fastmath L2 (4 MiB): AI 0.250, 32.1 GFLOP/s, 81% of DRAM-roof, 47% of L1-roof
+roofline f32 dot fastmath DRAM (1 GiB): AI 0.250, 28.8 GFLOP/s, 73% of DRAM-roof, 43% of L1-roof
+roofline f32 stencil auto L1 (32 KiB): AI 0.625, 83.7 GFLOP/s, 85% of DRAM-roof, 57% of L1-roof
+roofline f32 stencil auto L2 (4 MiB): AI 0.625, 74.6 GFLOP/s, 75% of DRAM-roof, 51% of L1-roof
+roofline f32 stencil auto DRAM (1 GiB): AI 0.625, 71.4 GFLOP/s, 72% of DRAM-roof, 49% of L1-roof
 accuracy f32 N=1000: scalar=3.29eps scalar_unroll8=3.29eps auto=3.29eps native=3.29eps fastmath=0.497eps
 accuracy f32 N=10000: scalar=2.77eps scalar_unroll8=2.77eps auto=4.4eps native=4.4eps fastmath=2.07eps
 accuracy f32 N=100000: scalar=86eps scalar_unroll8=86eps auto=86eps native=86eps fastmath=1.75eps
