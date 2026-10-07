@@ -95,3 +95,10 @@ Harness commit at writing time: `01a66a9` (kernels and chase command built and t
 | HD2 | At 256 MiB the same pattern holds with smaller magnitude (about 20% when both are shifted). | pending |
 | HE1 | The stride-32 jump is a one-line-per-access threshold, not a power-of-two effect: stride 24 (96 B) sits on the low side (less than 3x the time per element of stride 16 at 512 MiB) and stride 48 (192 B) shows the jump like stride 32 (more than 5x the stride-16 time per element). | pending |
 | HE2 | The jump does not depend on whether the footprint is a multiple of the 16 KiB page: stride 32 at n = 4194304 and at n = 4194304 + 64 differ by less than 5% in time per element. | pending |
+
+## Addendum 5, written 2026-10-07 after the line-granular pointer-chase data (`data/raw/chase_ext1.csv`) and before the page-granular chase was run
+Known when this was written: the line-granular chase shows about 0.65 ns up to 92 KiB, about 2.6 to 2.7 ns from 256 KiB to about 0.7 MiB, and about 7.1 ns from about 1.2 MiB to 2 MiB (step between 0.74 MiB and 1.25 MiB), then 8 to 9 ns up to 10 MiB, a rise through 16 to 48 MiB and about 100 to 113 ns from 80 MiB. The step near 1 MiB was not predicted by HA1 to HA4 (HA2 expected a single L2 plateau). The test uses a chase with one node per 16 KiB page (node spacing 16 KiB + 128 B, so each node is on its own page and the nodes spread over all cache sets); at most 1024 lines are touched, far below L1 capacity, so cache capacity cannot cause a step.
+
+| ID | Hypothesis | Verdict |
+|----|-----------|---------|
+| HA6 | The step near 1 MiB is a TLB-reach effect: in the page-granular chase the latency rises by more than 2x above the L1 value (0.65 ns) between 48 and 80 pages (the page count at which the line-granular chase stepped), although only 48 to 80 cache lines are touched. A rise of the page-granular curve at a different page count, or no rise below 1024 pages, refutes the TLB explanation for this step. | pending |

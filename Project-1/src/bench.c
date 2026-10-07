@@ -5,7 +5,7 @@
  *               [--offsets-xy ox:oy,...]  separate start offsets of x and y (bytes); default: every array uses --offset
  *               [--skew B]  extra bytes between consecutive arrays (default 2176)
  *   bench chase --out F --session S --ws bytes,... [--reps R] [--passes P] [--min-ms X] [--qos name]
- *               (pointer chase over a random single-cycle permutation, one 128 B node per cache line)
+ *               (pointer chase over a random single-cycle permutation, one 128 B node per cache line; --node-bytes B changes the spacing)
  *   bench freq  --out F --session S [--reps R] [--qos name]   (dependent-chain clock estimate)
  *   bench timer                                                 (timer resolution and overhead)
  *   bench list
@@ -231,7 +231,8 @@ static int cmd_fmapeak(int argc, char **argv) {
  * linked into one random cycle (Sattolo shuffle). Each load depends on the previous one, so time per step is load-to-use
  * latency at the level that holds the working set. The cycle is verified before timing: every node visited once and the walk
  * returns to node 0 after exactly n steps (the harness aborts otherwise). */
-#define NODE_BYTES 128
+static size_t g_node = 128;  /* node spacing in bytes; 128 = one node per cache line (default), 16512 = one node per 16 KiB page plus one line */
+#define NODE_BYTES g_node
 static __attribute__((noinline)) void *chase_walk(void *p, uint64_t steps) {
   void **q = (void **)p;
   for (uint64_t i = 0; i < steps; i++) q = (void **)*q;
@@ -265,10 +266,11 @@ static int cmd_chase(int argc, char **argv) {
   int reps = atoi(getarg(argc, argv, "--reps", "5")), passes = atoi(getarg(argc, argv, "--passes", "3"));
   double min_ms = atof(getarg(argc, argv, "--min-ms", "1.0"));
   uint64_t seed = strtoull(getarg(argc, argv, "--seed", "12345"), NULL, 0);
+  g_node = (size_t)atol(getarg(argc, argv, "--node-bytes", "128")); if (g_node < 128 || g_node % 128) { fprintf(stderr, "--node-bytes must be a multiple of 128\n"); return 2; }
   long sizes[512]; int nc = parse_list(wsl, sizes, 512);
   set_qos_named(qos);
   FILE *f = fopen(out, "w"); if (!f) { perror(out); return 1; }
-  fprintf(f, "epoch_ns,session,ws_bytes,nodes,pass,rep,steps,ns_per_load,therm_before,therm_after,qos,minflt_timed\n");
+  fprintf(f, "epoch_ns,session,ws_bytes,nodes,pass,rep,steps,ns_per_load,therm_before,therm_after,qos,minflt_timed,node_bytes\n");
   int *idx = malloc(sizeof(int) * nc); for (int i = 0; i < nc; i++) idx[i] = i;
   uint64_t order_seed = seed * 7919 + 1; void *sinkp = NULL;
   for (int p = 0; p < passes; p++) {
@@ -288,7 +290,7 @@ static int cmd_chase(int argc, char **argv) {
         int th0 = thermal_level(); uint64_t s0 = now_ns();
         q = chase_walk(q, steps);
         uint64_t s1 = now_ns(); int th1 = thermal_level(); getrusage(RUSAGE_SELF, &b);
-        fprintf(f, "%llu,%s,%zu,%zu,%d,%d,%llu,%.4f,%d,%d,%s,%ld\n", (unsigned long long)s0, session, bytes, n, p, r, (unsigned long long)steps, (double)(s1 - s0) / (double)steps, th0, th1, qos, b.ru_minflt - a.ru_minflt);
+        fprintf(f, "%llu,%s,%zu,%zu,%d,%d,%llu,%.4f,%d,%d,%s,%ld,%zu\n", (unsigned long long)s0, session, bytes, n, p, r, (unsigned long long)steps, (double)(s1 - s0) / (double)steps, th0, th1, qos, b.ru_minflt - a.ru_minflt, g_node);
       }
       sinkp = q; barrier(); __asm__ volatile("" ::"r"(sinkp) : "memory");
       munmap(buf, bytes);

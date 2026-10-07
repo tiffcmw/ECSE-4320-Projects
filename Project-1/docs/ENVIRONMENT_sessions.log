@@ -52,3 +52,12 @@ Note: No performance warning level has been recorded
 Note: No CPU power status has been recorded
 thermalpressurelevel: 0
  8:58  up 22 days, 12:32, 4 users, load averages: 0.88 1.42 1.72
+=== 2026-10-07T22:17:46Z ===
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=23724131)	62%; charging; 1:08 remaining present: true
+ powermode            0
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+thermalpressurelevel: 0
+18:17  up 23 days, 21:52, 4 users, load averages: 2.77 6.34 11.10
