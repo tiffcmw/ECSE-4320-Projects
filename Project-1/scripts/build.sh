@@ -11,10 +11,12 @@ REG=build/registry_gen.h
   for b in $BUILDS; do for k in $KERNELS; do for d in $DTYPES; do
     echo "double kern_${k}_${d}_${b}(size_t, double, const void*, void*, void*);"
   done; done; done
+  extra_combos | while read k d b; do echo "double kern_${k}_${d}_${b}(size_t, double, const void*, void*, void*);"; done
   echo "static const struct kentry REGISTRY[] = {"
   for b in $BUILDS; do for k in $KERNELS; do for d in $DTYPES; do
     echo "  {\"$k\",\"$d\",\"$b\",kern_${k}_${d}_${b}},"
   done; done; done
+  extra_combos | while read k d b; do echo "  {\"$k\",\"$d\",\"$b\",kern_${k}_${d}_${b}},"; done
   echo "};"
 } > $REG
 jobs_file=$(mktemp)
@@ -25,6 +27,10 @@ for b in $BUILDS; do
     echo "$CC $COMMON_FLAGS $fl -DKERN=$k -DDT=$d -DBUILD=$b -c src/kernel_tpl.c -o build/obj/$b/${k}_${d}.o" >> $jobs_file
   done; done
 done
+extra_combos | while read k d b; do
+  mkdir -p build/obj/$b
+  echo "$CC $COMMON_FLAGS $(build_flags $b) -DKERN=$k -DDT=$d -DBUILD=$b -c src/kernel_tpl.c -o build/obj/$b/${k}_${d}.o" >> $jobs_file
+done
 xargs -P 8 -I{} sh -c "{}" < $jobs_file
 rm -f $jobs_file
 OBJS=$(ls build/obj/*/*.o)
@@ -32,4 +38,5 @@ HF="-std=c11 -O2 -Wall -Wextra -Wno-unused-parameter -Isrc -Ibuild"
 $CC $HF src/bench.c $OBJS -o bin/bench
 $CC $HF -O2 -ffp-contract=off src/accuracy.c $OBJS -o bin/accuracy
 $CC $HF -ffp-contract=off tests/test_kernels.c $OBJS -o bin/test_kernels
+$CC $HF -ffp-contract=off tests/test_extra.c $OBJS -o bin/test_extra
 echo "build ok: $(ls build/obj/*/*.o | wc -l) kernel objects"

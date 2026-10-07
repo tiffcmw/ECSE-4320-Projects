@@ -25,6 +25,24 @@
 #define K_saxpy_s32 4
 #define K_gather 5
 #define K_triad 6
+#define K_saxpy_s24 4
+#define K_saxpy_s48 4
+#define K_read 7
+#define K_incr 8
+#define K_copy 9
+#define K_scale 10
+#define K_add 11
+#define K_saxpy_oop 12
+#define K_dot_a1 13
+#define K_dot_a4 13
+#define K_dot_a8 13
+#define K_dot_a16 13
+#define A_dot_a1 1
+#define A_dot_a4 4
+#define A_dot_a8 8
+#define A_dot_a16 16
+#define S_saxpy_s24 24
+#define S_saxpy_s48 48
 #define S_saxpy_s1 1
 #define S_saxpy_s2 2
 #define S_saxpy_s4 4
@@ -77,6 +95,42 @@ static inline __attribute__((always_inline)) double body(size_t n, TY a, const T
 #elif KID == 6
   LP for (size_t i = 0; i < n; i++) z[i] = x[i] + a * y[i];
   return 0.0;
+#elif KID == 7
+  /* read-only: sum of the raw 32-bit words (integer add is associative, so this vectorizes without fast-math) */
+  uint32_t s = 0;
+  const uint32_t *RS xu = (const uint32_t *)x;
+  LP for (size_t i = 0; i < n; i++) s += xu[i];
+  return (double)s;
+#elif KID == 8
+  /* in-place increment, one array: y[i] = y[i] + a */
+  LP for (size_t i = 0; i < n; i++) y[i] = y[i] + a;
+  return 0.0;
+#elif KID == 9
+  /* copy; "+ 0" keeps clang from turning the loop into a libc memcpy call (x + 0 is not an identity for -0.0) */
+  LP for (size_t i = 0; i < n; i++) y[i] = x[i] + (TY)0;
+  return 0.0;
+#elif KID == 10
+  LP for (size_t i = 0; i < n; i++) y[i] = a * x[i];
+  return 0.0;
+#elif KID == 11
+  LP for (size_t i = 0; i < n; i++) z[i] = x[i] + y[i];
+  return 0.0;
+#elif KID == 12
+  /* SAXPY with a separate output array: same array count and traffic as triad */
+  LP for (size_t i = 0; i < n; i++) z[i] = a * x[i] + y[i];
+  return 0.0;
+#elif KID == 13
+  /* dot product with NA independent accumulators (explicit source-level partial sums, no reassociation needed) */
+  enum { NA = CAT(A_, KERN) };
+  TY s[NA];
+  for (int k = 0; k < NA; k++) s[k] = 0;
+  size_t i = 0;
+  for (; i + NA <= n; i += NA)
+    for (int k = 0; k < NA; k++) s[k] += x[i + k] * y[i + k];
+  for (; i < n; i++) s[0] += x[i] * y[i];
+  TY t = s[0];
+  for (int k = 1; k < NA; k++) t += s[k];
+  return (double)t;
 #elif KID == 5
   const uint32_t *RS idx = (const uint32_t *)z;
   LP for (size_t i = 0; i < n; i++) y[i] = a * x[idx[i]] + y[i];

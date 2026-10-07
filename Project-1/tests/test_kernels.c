@@ -19,6 +19,11 @@ static double dd_round(dd a) { return a.hi + a.lo; }
 static int64_t ulp_dist_f(float a, float b) { int32_t x, y; memcpy(&x, &a, 4); memcpy(&y, &b, 4); if (x < 0) x = INT32_MIN - x; if (y < 0) y = INT32_MIN - y; return llabs((int64_t)x - y); }
 static int64_t ulp_dist_d(double a, double b) { int64_t x, y; memcpy(&x, &a, 8); memcpy(&y, &b, 8); if (x < 0) x = INT64_MIN - x; if (y < 0) y = INT64_MIN - y; int64_t d = x - y; return d < 0 ? -d : d; }
 
+static int is_extra_kernel(const char *k) {
+  static const char *x[] = {"read", "incr", "copy", "scale", "add", "saxpy_oop", "dot_a1", "dot_a4", "dot_a8", "dot_a16"};
+  for (size_t i = 0; i < sizeof(x) / sizeof(x[0]); i++) if (!strcmp(k, x[i])) return 1;
+  return 0;
+}
 #define GUARD 64
 static const long SIZES[] = {0, 1, 2, 3, 4, 5, 7, 8, 9, 15, 16, 17, 31, 32, 33, 63, 64, 65, 100, 127, 128, 129, 255, 1000, 1023, 1024, 1025, 4097, 100003};
 static const long OFFS[] = {0, 4, 8, 12, 16, 60, 64};
@@ -28,6 +33,7 @@ int main(void) {
   double worst_ulp[3][7] = {{0}}, worst_rel[3] = {0}; /* [dtype][kernel] */
   for (size_t r = 0; r < NREG; r++) {
     const struct kentry *e = &REGISTRY[r];
+    if (is_extra_kernel(e->kernel)) continue; /* covered by tests/test_extra.c */
     int di = !strcmp(e->dtype, "f32") ? 0 : !strcmp(e->dtype, "f64") ? 1 : 2;
     int ki = !strcmp(e->kernel, "saxpy") ? 0 : !strcmp(e->kernel, "mul") ? 1 : !strcmp(e->kernel, "dot") ? 2 : !strcmp(e->kernel, "stencil") ? 3 : !strcmp(e->kernel, "gather") ? 5 : !strcmp(e->kernel, "triad") ? 6 : 4;
     long S = ki == 4 ? atol(e->kernel + 7) : 1;
