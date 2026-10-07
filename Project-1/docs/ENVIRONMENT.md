@@ -1,6 +1,6 @@
-# Environment (captured 2026-10-06, Phase 0)
+# Environment (captured 2026-10-06)
 
-Raw output of the commands requested in the assignment. Re-captured per session by `scripts/capture_env.sh` (Phase 1).
+Raw output of the environment commands. Re-captured per session by `scripts/capture_env.sh`.
 
 ## `uname -a`
 ```
@@ -95,5 +95,13 @@ Note: No CPU power status has been recorded
 - SVE/SME: the chip reports FEAT_SME, SME2 (and `sme_max_svl_b = 64`, a 512-bit streaming vector length). SME needs streaming mode (`smstart`), has its own register file, and only runs in the shared SME unit, so it is not a drop-in SIMD path. It is out of scope; no SVE (non-streaming) is reported. No ASK needed because streaming mode is not trivially usable.
 - Python 3.13.15 with numpy 2.5.2 and matplotlib 3.11.1. pandas is not installed and will not be installed; analysis uses numpy and the csv module.
 - Power: AC attached, battery 80% not charging. Low Power Mode state is checked per session by `scripts/capture_env.sh` (`pmset -g`). `pmset -g therm` reports no warning levels recorded at capture time.
-- Counters: no `perf`. `xctrace` exists at `/usr/bin/xctrace`; whether CPU Counters work will be tried with bounded effort in Phase 1 and the outcome reported plainly.
+- Counters: no `perf`. `xctrace` exists at `/usr/bin/xctrace`; the CPU Counters template was tried with bounded effort; the outcome is in METHODOLOGY.md.
 - Timer: `hw.tbfrequency` = 24 MHz; the harness will use `clock_gettime_nsec_np(CLOCK_UPTIME_RAW)` and measure its overhead.
+
+## Session `ext1` (2026-10-07, pointer chase, traffic, dot decomposition, misalignment, stride-jump)
+- Effective clock 4.547 GHz (IQR half-width 0.037 GHz), 0.8% below the earlier sessions (4.58 to 4.59 GHz); call overhead 0.877 ns.
+- AC power, Low Power Mode off (`powermode 0`), thermal pressure level 0 in every sample, `caffeinate` around every command.
+- Load average 2.8 to 3.4 during the runs (a video player was running). A virtual machine (about 200% CPU) and a torrent client had been closed beforehand; the load had been 5.8 to 15 before that.
+- SMT: none (`hw.perflevel0.logicalcpu` = `hw.perflevel0.physicalcpu` = 6; perflevel1: 12 and 12).
+- Per-session snapshots are appended to `docs/ENVIRONMENT_sessions.log`.
+

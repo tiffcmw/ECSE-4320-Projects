@@ -44,7 +44,7 @@ b.ne  loop
 ```
 12 instructions per 16 elements. f64 (`auto_saxpy_f64.s`) is the same shape with `fmla.2d` and `subs #0x8` (8 elements per iteration).
 
-### SAXPY f32, scalar (`scalar_saxpy_f32.s`): the assignment-defined baseline is not unrolled
+### SAXPY f32, scalar (`scalar_saxpy_f32.s`): the default scalar baseline is not unrolled
 Remark: `loop not vectorized`.
 ```
 ldr   s1, [x1], #0x4           ; x[i]
@@ -67,7 +67,7 @@ scalar loop for the last n mod 4 elements
 So there are three code paths: scalar only (n < 4), 4-wide loop (n < 16), and 16-wide main loop followed by the 4-wide loop and a scalar loop. There is no masking; each remainder level is a separate loop with its own entry cost. This is used for the tail study predictions (docs/HYPOTHESES.md, addendum).
 
 ### Restrict: the main variant has no runtime alias check, `auto_norestrict` does (`vecreports/asm/auto_norestrict_saxpy_f32.s`)
-My first version declared `restrict` on local pointers and the compiler still emitted runtime overlap checks (`cmp x2, x9; b.hs`), because LLVM derives `noalias` from `restrict` only on function parameters. The loop now lives in an always-inlined function with `restrict` parameters; the overlap checks and the scalar fallback path disappeared from `auto` (`summary.md`: 12-instruction main loop, 2 loads and 4 `fmla`) and remain in `auto_norestrict` (51-instruction region with a scalar fallback). The `restrict` experiment (negative case) uses these two builds. The Phase 1 smoke data (`data/raw/smoke_phase1*.csv`) predate this fix and are kept only as pilot data.
+The first version declared `restrict` on local pointers and the compiler still emitted runtime overlap checks (`cmp x2, x9; b.hs`), because LLVM derives `noalias` from `restrict` only on function parameters. The loop now lives in an always-inlined function with `restrict` parameters; the overlap checks and the scalar fallback path disappeared from `auto` (`summary.md`: 12-instruction main loop, 2 loads and 4 `fmla`) and remain in `auto_norestrict` (51-instruction region with a scalar fallback). The `restrict` experiment (negative case) uses these two builds. The early smoke-run data (`data/raw/smoke_phase1*.csv`) predate this fix and are kept only for the record; no plot uses them.
 
 ### Dot product f32, auto: vectorized multiply, strict serial sum (`vecreports/asm/auto_dot_f32.s`, 38 instructions, first 24 shown)
 Remark: `vectorized loop (vectorization width: 4, interleaved count: 4)` (no fast-math).
@@ -84,7 +84,7 @@ fadd  s0, s0, s18              ;     to the single accumulator s0
 fadd  s0, s0, s17              ;     (16 dependent fadds per iteration)
 fadd  s0, s0, s5
 ```
-The compiler vectorizes the multiplication but preserves the original floating-point summation order, so the loop-carried chain of `fadd` remains. The assignment text predicts that a float dot product will not vectorize without fast-math; on this clang it does vectorize, in this reduced form. The consequence is measured in Phase 3 and 5 (a vectorized loop whose throughput is set by `fadd` latency, not by lanes).
+The compiler vectorizes the multiplication but preserves the original floating-point summation order, so the loop-carried chain of `fadd` remains. A strict in-order float reduction cannot be reassociated, so the compiler keeps a serial add chain even when the multiplies are vectorized. The consequence is measured in the locality sweep and the reduction experiments (a vectorized loop whose throughput is set by `fadd` latency, not by lanes).
 
 ### Dot product f32, fastmath: four independent accumulators (`vecreports/asm/fastmath_dot_f32.s`, complete loop)
 ```
@@ -99,7 +99,7 @@ fmla.4s v3, v19, v7            ; acc3: 16 partial sums in flight, summed after t
 subs  x11, x11, #0x10
 b.ne  loop
 ```
-10 instructions per 16 elements. This reassociates the sum (16 partial sums), which changes the rounding; the numerical difference is quantified in the negative case (Phase 5).
+10 instructions per 16 elements. This reassociates the sum (16 partial sums), which changes the rounding; the numerical difference is quantified in the negative-case experiment.
 
 ### Dot product u32, auto: no fast-math needed (`vecreports/asm/auto_dot_u32.s`)
 ```
@@ -125,8 +125,8 @@ fmla.4s v18, v1, v3            ; ... then two fmla with a second coefficient
 fmla.4s v18, v1, v7
 stp  q18, q19, [x12, #-0x20]   ; (stores of 4 output vectors follow per iteration)
 ```
-Per 16 outputs the loop has 4 `fmul.4s` and 8 `fmla.4s` (`summary.md`: fmul.v = 4, fmla.v = 8): 3 vector arithmetic operations per 4 outputs for 5 flops per element. The compiler uses misaligned vector loads (`ldur q`) and `ext` shuffles for the x[i-1] and x[i+1] neighbours; there is no gather and no scalar fallback in the main loop. I did not trace which register holds which stencil weight; correctness against the double-double reference is established by the tests (max 1 ulp for f32), not by reading this listing.
+Per 16 outputs the loop has 4 `fmul.4s` and 8 `fmla.4s` (`summary.md`: fmul.v = 4, fmla.v = 8): 3 vector arithmetic operations per 4 outputs for 5 flops per element. The compiler uses misaligned vector loads (`ldur q`) and `ext` shuffles for the x[i-1] and x[i+1] neighbours; there is no gather and no scalar fallback in the main loop. The register holding which stencil weight; correctness against the double-double reference is established by the tests (max 1 ulp for f32), not by reading this listing.
 
 ## Not vectorized (negative cases, evidence only)
 - All three scalar builds for every kernel: `loop not vectorized` in `vecreports/remarks/scalar*_*.txt`.
-- `auto_norestrict`: vectorized but guarded by runtime overlap checks with a scalar fallback; if the pointers do overlap at run time, the scalar path executes (timed in Phase 5).
+- `auto_norestrict`: vectorized but guarded by runtime overlap checks with a scalar fallback; if the pointers do overlap at run time, the scalar path executes (timed in the aliasing experiment).

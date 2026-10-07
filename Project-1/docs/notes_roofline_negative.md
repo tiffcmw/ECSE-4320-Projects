@@ -1,4 +1,4 @@
-# Phase 5 notes (Exp 6 roofline, Exp 7 negative cases, Exp 8 naive benchmark), session `phase5`
+# Notes on the roofline, negative cases and naive benchmark (Exp 6, 7, 8), session `phase5`
 
 Data: `data/raw/{fmapeak,triad,triadmp_*,alias_*,restrict_smalln,accuracy,naive}_phase5*.csv`; summaries `data/processed/phase5_summary_phase5.txt`, `data/processed/roofline_points_phase5.csv`; plots `exp6_fma_peak`, `exp6_bandwidth_scaling`, `exp6_roofline`, `exp7_reduction_accuracy`, `exp7_alias_restrict`, `exp8_naive_vs_fixed`. Clock 4.57 to 4.59 GHz per session. No sample was throttled.
 
@@ -15,11 +15,11 @@ Strict f32 dot is vectorized but in order (vecreports/VECTORIZATION.md), 1.46x o
 Restrict vs no restrict on non-overlapping arrays: equal within 7% at large N, and equal within 2% at N = 8 to 1024. At N = 4 the runtime check costs 43% (0.53 vs 0.76 ns per call). With y = x + 1 (true loop-carried dependence) the no-restrict vector build takes the scalar fallback and runs at 9.4 to 12.8 cycles per element, 28x to 67x slower than the non-overlapping vector loop and 9x to 12x slower than the scalar loop on non-overlapping data (1.0 cycle per element); this equals the no-restrict scalar build under the same overlap, so the fallback is as good as scalar code gets. The cost is a serial store-to-load chain through memory (guess: store-forwarding latency plus FMA latency; not measured separately). With y = x + 64 elements the fallback also triggers but there is no dependence on the nearby element, speed 1.0 cycle per element. Correctness of all overlapped runs is covered by the overlap tests.
 
 ## Negative case B
-SAXPY f32 at 1 GiB: 1.35x over scalar_unroll8 (3.0x over `scalar`); the vector code is at 150 GiB/s, about the plateau. (Phase 3 notes.)
+SAXPY f32 at 1 GiB: 1.35x over scalar_unroll8 (3.0x over `scalar`); the vector code is at 150 GiB/s, about the plateau. (see notes_locality_dtype.md.)
 
 ## Exp 8: naive benchmark (src/naive/naive_bench.c, kept deliberately)
 - N1 (hoisting): `n1_naive` runs a multiply loop in the same translation unit with no consumer: time measured 0 ns (timer tick 41 ns), up to 1e8 GiB/s or infinity; the timed region in the assembly contains no loop (vecreports/naive/n1_naive_timed_region.txt: two timer calls with only a conversion and a multiply between them). Fixed version: 263 GiB/s, consistent with the 4 KiB point of the main harness (265 GiB/s).
-- N2 (zero page): hypothesis that a never-written calloc array makes a 1 GiB read cache-resident was NOT reproduced: naive 82.9 GiB/s, fixed 82.8 GiB/s. The naive variant has a warm-up pass that faults pages in, which may be why; I did not test without the warm-up.
+- N2 (zero page): hypothesis that a never-written calloc array makes a 1 GiB read cache-resident was NOT reproduced: naive 82.9 GiB/s, fixed 82.8 GiB/s. The naive variant has a warm-up pass that faults pages in, which may be why; the variant without the warm-up was not tested.
 - N2 incident inside the fix: the first version of the "fixed" N2 used a memory-clobber barrier only and still timed 0 ns for all runs (`data/raw/naive_phase5_run1_fix_still_hoisted.csv`): the calloc pointer never escaped, so the compiler legally hoisted the repeated read-only call. Passing the pointer to the asm statement fixed it (`naive_phase5.csv`). Both datasets kept.
 - N3 (first touch): 81 GiB/s naive vs 148 GiB/s fixed for SAXPY on 2 GiB, 1.8x too low, because page faults and initialization are inside the timed region. The fixed number matches the 1 GiB sweep value (150 GiB/s).
 - Real, unplanned flaws found along the way (not constructed): `restrict` on local pointers was ignored by clang (runtime overlap checks stayed), `scalar` baseline was not unrolled, `long double` is 64 bit on this ABI, `-Rpass` flags override each other. See docs/AI_USE.md.
