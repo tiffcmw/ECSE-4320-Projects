@@ -40,39 +40,45 @@ def xfmt(ax):
 
 def save(fig, name, relayout=False):
     if relayout: fig.tight_layout()
-    fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
+    analyze.plain_log_axes(fig); fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
 
 table = []
 KERN = ["saxpy", "mul", "dot", "stencil"]
 # Exp 1: throughput and speedup, fp32 and fp64: one row per kernel (left throughput, right speedup), shared legend above the grid
 from matplotlib.lines import Line2D
 for dtype in ("f32", "f64"):
-    fig, axs = plt.subplots(4, 2, figsize=(10, 11.5))
     lanes = 4 if dtype == "f32" else 2
+    if dtype == "f32": fig, axs = plt.subplots(4, 2, figsize=(10, 11.5))
+    else: fig, axs = plt.subplots(2, 2, figsize=(10, 6.6))   # f64: speedup panels only (throughput is tabulated in the report)
     for j, kernel in enumerate(KERN):
         base = series("scalar_unroll8", kernel, dtype); base0 = series("scalar", kernel, dtype)
+        if dtype == "f32":
+            ax_t, ax_s = axs[j, 0], axs[j, 1]
+        else:
+            ax_t, ax_s = None, axs.ravel()[j]
         for build in ("scalar", "scalar_unroll8", "auto", "fastmath"):
             ws, med, lo, hi, nn = series(build, kernel, dtype)
-            if len(ws) == 0: continue
+            if len(ws) == 0 or ax_t is None: continue
             gib, _ = metric(kernel, dtype, nn, med); glo, _ = metric(kernel, dtype, nn, hi); ghi, _ = metric(kernel, dtype, nn, lo)
-            axs[j, 0].errorbar(ws, gib, yerr=[gib - glo, ghi - gib], color=COL[build], marker="o", ms=2.5, lw=1.2, capsize=1.5)
-        axs[j, 0].set_title(f"{kernel} {dtype}: throughput", loc="left"); axs[j, 0].set_yscale("log"); axs[j, 0].set_ylabel("GiB/s of useful data"); xfmt(axs[j, 0]); vlines(axs[j, 0])
+            ax_t.errorbar(ws, gib, yerr=[gib - glo, ghi - gib], color=COL[build], marker="o", ms=2.5, lw=1.2, capsize=1.5)
+        if ax_t is not None:
+            ax_t.set_title(f"{kernel} {dtype}: throughput", loc="left"); ax_t.set_yscale("log"); ax_t.set_ylabel("GiB/s of useful data"); xfmt(ax_t); vlines(ax_t)
         for build in ("auto", "fastmath"):
             ws, med, lo, hi, nn = series(build, kernel, dtype)
             for bname, bs, ls in (("scalar_unroll8", base, "-"), ("scalar", base0, "--")):
                 if len(ws) == 0 or len(bs[0]) != len(ws): continue
                 sp = bs[1] / med
                 # propagate IQR: ratio of scalar median to (q3, q1) of the vector build
-                axs[j, 1].errorbar(ws, sp, yerr=[sp - bs[1] / hi, bs[1] / lo - sp], color=COL[build], ls=ls, marker="o", ms=2.5, lw=1.2, capsize=1.5)
+                ax_s.errorbar(ws, sp, yerr=[sp - bs[1] / hi, bs[1] / lo - sp], color=COL[build], ls=ls, marker="o", ms=2.5, lw=1.2, capsize=1.5)
                 for w, s_, n_ in zip(ws, sp, nn): table.append((kernel, dtype, build, bname, int(w), int(n_), float(s_)))
-        axs[j, 1].axhline(lanes, color="k", ls="-.", lw=0.9); axs[j, 1].axhline(1, color="gray", lw=0.6)
-        axs[j, 1].set_title(f"{kernel} {dtype}: speedup of the vector build", loc="left"); axs[j, 1].set_ylabel("speedup (median ratio)"); xfmt(axs[j, 1]); vlines(axs[j, 1])
-        if kernel == "dot": axs[j, 1].set_yscale("log")
-    h = [Line2D([], [], color=COL[b], marker="o", ms=4, label=LAB[b]) for b in ("scalar", "scalar_unroll8", "auto", "fastmath")]
+        ax_s.axhline(lanes, color="k", ls="-.", lw=0.9); ax_s.axhline(1, color="gray", lw=0.6)
+        ax_s.set_title(f"{kernel} {dtype}: speedup of the vector build", loc="left"); ax_s.set_ylabel("speedup (median ratio)"); xfmt(ax_s); vlines(ax_s)
+        if kernel == "dot": ax_s.set_yscale("log")
+    h = [Line2D([], [], color=COL[b], marker="o", ms=4, label=LAB[b]) for b in (("scalar", "scalar_unroll8", "auto", "fastmath") if dtype == "f32" else ("auto", "fastmath"))]
     h += [Line2D([], [], color="k", ls="-", label="speedup vs unrolled scalar"), Line2D([], [], color="k", ls="--", label="speedup vs default scalar"),
           Line2D([], [], color="k", ls="-.", label=f"lane count ({lanes})"), Line2D([], [], color="k", ls=":", label="L1D and L2 size")]
     fig.legend(handles=h, loc="upper center", ncol=3, frameon=False, bbox_to_anchor=(0.5, 1.0))
-    fig.tight_layout(rect=[0, 0, 1, 0.925])
+    fig.tight_layout(rect=[0, 0, 1, 0.925 if dtype == "f32" else 0.89])
     save(fig, f"exp1_sweep_{dtype}")
 
 # Exp 2: SAXPY locality with dense region
@@ -89,7 +95,7 @@ h, l = ax[0].get_legend_handles_labels(); fig.legend(h, l, loc="upper center", n
 fig.tight_layout(rect=[0, 0, 1, 0.94]); save(fig, "exp2_saxpy_locality")
 
 # Exp 5: dtypes, speedup of auto vs scalar_unroll8 for f32, f64, u32 (2 x 2 grid, one panel per kernel)
-fig, axs = plt.subplots(2, 2, figsize=(10.5, 7.2)); axs = axs.ravel()
+fig, axs = plt.subplots(2, 2, figsize=(10.5, 6.0)); axs = axs.ravel()
 LS = {"f32": ("-", "#d95f02"), "f64": ("--", "#1b9e77"), "u32": (":", "#7570b3")}
 for j, kernel in enumerate(KERN):
     for dtype in ("f32", "f64", "u32"):

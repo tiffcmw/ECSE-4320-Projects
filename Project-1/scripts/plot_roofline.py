@@ -14,17 +14,17 @@ D = f"{ROOT}/data/raw"
 GHZ, GERR = analyze.freq_ghz([f"{D}/freq_{RS}.csv"])
 def save(fig, name, relayout=True):
     if relayout: fig.tight_layout()
-    fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
+    analyze.plain_log_axes(fig); fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
 out = []
 # ---- FMA peak
 r = list(csv.DictReader(open(f"{D}/fmapeak_{RS}.csv")))
-fig, ax = plt.subplots(figsize=(7, 4.3)); peak = {}
+fig, ax = plt.subplots(figsize=(7, 4.3)); peak = {}; fma_curves = {}
 for arr, col in (("4s", "#d95f02"), ("2d", "#1b9e77")):
     ns, med, lo, hi = [], [], [], []
     for n in range(1, 31):
         v = np.array([float(x["ns_per_fmla"]) for x in r if x["arrangement"] == arr and int(x["accumulators"]) == n])
         ns.append(n); med.append(1 / np.median(v) / GHZ); lo.append(1 / np.percentile(v, 75) / GHZ); hi.append(1 / np.percentile(v, 25) / GHZ)
-    med, lo, hi = map(np.array, (med, lo, hi))
+    med, lo, hi = map(np.array, (med, lo, hi)); fma_curves[arr] = (ns, med, lo, hi, col)
     ax.errorbar(ns, med, yerr=[med - lo, hi - med], color=col, marker="o", ms=3, capsize=1.5, label=f"fmla.{arr}")
     b = int(np.argmax(med)); flop = 8 if arr == "4s" else 4
     peak[arr] = (med[b] * flop * GHZ, lo[b] * flop * GHZ, hi[b] * flop * GHZ); out.append(f"fma peak {arr}: {med[b]:.2f} fmla/cycle at {ns[b]} accumulators = {peak[arr][0]:.1f} GFLOP/s (IQR {peak[arr][1]:.1f}-{peak[arr][2]:.1f}), plateau median over N>=12: {np.median(med[11:]):.2f}")
@@ -48,6 +48,14 @@ fig, ax = plt.subplots(figsize=(6.5, 4.2))
 ks = sorted(agg); ax.plot(ks, [sum(agg[k]) for k in ks], "o-", color="#d95f02", label="aggregate"); ax.plot(ks, [sum(agg[k]) / k for k in ks], "s--", color="#1f77b4", label="mean per process")
 ax.set_xlabel("concurrent single-thread processes"); ax.set_ylabel("GiB/s (triad, f32, 512 MiB per process set)"); ax.set_title("Bandwidth scaling with process count"); ax.legend()
 save(fig, "exp6_bandwidth_scaling")
+# combined figure used in the report: FMA throughput (left) and bandwidth scaling with process count (right)
+fig, axs2 = plt.subplots(1, 2, figsize=(12.5, 4.4))
+for arr, (ns_, med_, lo_, hi_, col_) in fma_curves.items():
+    axs2[0].errorbar(ns_, med_, yerr=[med_ - lo_, hi_ - med_], color=col_, marker="o", ms=3.5, capsize=1.5, lw=1.3, label=f"fmla.{arr} (IQR bars)")
+axs2[0].axhline(4, color="k", lw=0.6, ls=":"); axs2[0].set_xlabel("independent accumulators"); axs2[0].set_ylabel(f"fmla instructions per cycle (at {GHZ:.2f} GHz)"); axs2[0].set_title("(a) FMA throughput", loc="left"); axs2[0].legend(); axs2[0].grid(alpha=0.25, lw=0.4)
+axs2[1].plot(ks, [sum(agg[k]) for k in ks], "o-", color="#d95f02", ms=5, lw=1.4, label="aggregate"); axs2[1].plot(ks, [sum(agg[k]) / k for k in ks], "s--", color="#1f77b4", ms=5, lw=1.4, label="mean per process")
+axs2[1].set_xlabel("concurrent single-thread processes"); axs2[1].set_ylabel("GiB/s (triad, f32, counted bytes)"); axs2[1].set_title("(b) bandwidth scaling, 512 MiB per process", loc="left"); axs2[1].legend(); axs2[1].grid(alpha=0.25, lw=0.4)
+save(fig, "exp6_peaks")
 # ---- roofline
 rows = analyze.load(sorted(glob.glob(f"{D}/sweep_{SW}_*.csv"))); g, _ = analyze.group(rows)
 AI = {("saxpy", "f32"): 2 / 12, ("saxpy", "f64"): 2 / 24, ("mul", "f32"): 1 / 12, ("mul", "f64"): 1 / 24, ("dot", "f32"): 2 / 8, ("dot", "f64"): 2 / 16, ("stencil", "f32"): 5 / 8, ("stencil", "f64"): 5 / 16}

@@ -24,7 +24,7 @@ L1, L2 = 128 * 1024, 16 * 2**20
 
 
 def save(fig, name):
-    fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
+    analyze.plain_log_axes(fig); fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
 
 
 def wsfmt(ax, lo=12, hi=31, step=2):

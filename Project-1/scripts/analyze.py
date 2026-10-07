@@ -46,6 +46,16 @@ def freq_ghz(freq_csv_paths, qos="user-interactive"):
     return q2, (q3 - q1) / 2
 
 
+def plain_log_axes(fig):
+    """Plain numeric tick labels (1, 2, 5, 10, 20, 50, ...) on every log-scaled y axis of a matplotlib figure."""
+    from matplotlib.ticker import FuncFormatter
+    fmt = FuncFormatter(lambda v, _: ("%g" % v))
+    minor = FuncFormatter(lambda v, _: ("%g" % v) if round(v / 10 ** np.floor(np.log10(v))) in (2, 3, 5) else "")
+    for ax in fig.axes:
+        if ax.get_yscale() == "log":
+            ax.yaxis.set_major_formatter(fmt); ax.yaxis.set_minor_formatter(minor); ax.tick_params(axis="y", which="minor", labelsize=8)
+
+
 def stats(x):
     x = np.asarray(x, float)
     q1, med, q3 = np.percentile(x, [25, 50, 75])

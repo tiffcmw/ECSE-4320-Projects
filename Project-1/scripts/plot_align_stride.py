@@ -13,7 +13,7 @@ GHZ, _ = analyze.freq_ghz([f"{ROOT}/data/raw/freq_{SID}.csv"])
 COL = {"scalar": "#8c8c8c", "scalar_unroll8": "#1f77b4", "auto": "#d95f02", "auto_forcevec": "#7570b3"}
 def save(fig, name, relayout=True):
     if relayout: fig.tight_layout()
-    fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
+    analyze.plain_log_axes(fig); fig.savefig(f"{ROOT}/plots/{name}.png", dpi=150, bbox_inches="tight"); fig.savefig(f"{ROOT}/plots/{name}.pdf", bbox_inches="tight"); plt.close(fig)
 def ser(g, build, kernel, dtype, key_idx, filt=lambda k: True):
     ks = sorted([k for k in g if k[0] == build and k[1] == kernel and k[2] == dtype and filt(k)], key=lambda k: k[key_idx])
     return ks, [analyze.stats(g[k]) for k in ks]
