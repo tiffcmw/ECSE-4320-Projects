@@ -53,7 +53,12 @@ def plain_log_axes(fig):
     minor = FuncFormatter(lambda v, _: ("%g" % v) if round(v / 10 ** np.floor(np.log10(v))) in (2, 3, 5) else "")
     for ax in fig.axes:
         if ax.get_yscale() == "log":
-            ax.yaxis.set_major_formatter(fmt); ax.yaxis.set_minor_formatter(minor); ax.tick_params(axis="y", which="minor", labelsize=8)
+            lo, hi = ax.get_ylim()
+            ax.yaxis.set_major_formatter(fmt)
+            if hi / lo < 1e3:   # label 2, 3, 5 only when the axis spans fewer than three decades
+                ax.yaxis.set_minor_formatter(minor); ax.tick_params(axis="y", which="minor", labelsize=8)
+            else:
+                ax.yaxis.set_minor_formatter(FuncFormatter(lambda v, _: ""))
 
 
 def stats(x):

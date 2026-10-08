@@ -111,7 +111,7 @@ for t in tab:
 # ---- accuracy
 rr = list(csv.DictReader(open(f"{D}/accuracy_{RS}.csv"))); gg = collections.defaultdict(list)
 for x in rr: gg[(x["dtype"], int(x["N"]), x["build"])].append(float(x["rel_err_over_eps"]))
-fig, axs = plt.subplots(1, 2, figsize=(11, 4.2))
+fig, axs = plt.subplots(1, 2, figsize=(10, 4.2))
 for ax, dt in zip(axs, ("f32", "f64")):
     for b, col, ls in (("scalar", "#8c8c8c", "-"), ("auto", "#d95f02", "--"), ("native", "#1b9e77", ":"), ("fastmath", "#7570b3", "-")):
         Ns = sorted(set(k[1] for k in gg if k[0] == dt)); 

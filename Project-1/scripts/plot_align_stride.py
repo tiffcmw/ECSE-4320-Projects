@@ -21,7 +21,7 @@ def ser(g, build, kernel, dtype, key_idx, filt=lambda k: True):
 out = []
 # ---- Tail study
 rows = analyze.load([f"{ROOT}/data/raw/tail_{SID}.csv"]); g, thr = analyze.group(rows)
-fig, axs = plt.subplots(2, 2, figsize=(14, 8))
+fig, axs = plt.subplots(2, 2, figsize=(11, 6.8))
 for j, dt in enumerate(("f32", "f64")):
     for b in ("scalar", "scalar_unroll8", "auto"):
         ks, st = ser(g, b, "saxpy", dt, 3, lambda k: k[3] <= 160)
