@@ -32,6 +32,9 @@ def main():
             i = int(np.argmin(np.abs(ws - size)))
             rel = (q3[i] - q1[i]) / m[i]
             check(f"repeatability {name} (IQR/median <= 5%)", rel <= 0.05, f"IQR/median = {100 * rel:.1f}% over n = {int(n[i])}")
+    tl = [r for r in load("e7_tlb") if r["metric"] == "ns_per_load" and r["median"] * f < 2.5]
+    check("no chase latency below 2.5 cycles except degenerate cycles of fewer than 2 nodes", all(r["ws_bytes"] <= 128 for r in tl),
+          "none" if not tl else f"{len(tl)} rows below 2.5 cycles, working sets {sorted({int(r['ws_bytes']) for r in tl})} B (single self-pointing node: hardware forwards or predicts the load)")
     # bandwidth ceiling
     over = []
     for g in ("e5_bw", "e3_mix_bw", "e3_mix_loaded", "e4_loaded", "e4_mlp", "e2_pat", "e6_kern", "pitfall"):

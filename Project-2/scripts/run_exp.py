@@ -40,8 +40,9 @@ def groups(profile):
     sz_bw = [x for x in sz if x <= G]
     half = [x for i, x in enumerate(sz) if i % 2 == 0 or x in (128 * K, 16 * M)] if not q else sz
     L = lambda l: ",".join(fmt(x) for x in l)
-    strides = "64,128,256,512,1024,4096,16384"
-    ws2 = "256M" if q else "1G"
+    strides = "64,128,256,512,1024,2048,4096"
+    LINES = (256 if q else 1024) * K   # distinct lines per stride test: 32 MiB / 128 MiB of lines, kept constant so large strides do not shrink the cache footprint
+    ws2 = lambda s: fmt(max(LINES * s, 256 * M if q else G))
     mixes_all = ["r10w0", "r7w3_st", "r5w5_st", "r0w10_st", "r0w10_nt", "r0w10_zva", "rmw"]
     nt_thr = "0,4,16" if q else "0,2,4,8,16"
     G_ = {}
@@ -56,9 +57,9 @@ def groups(profile):
     G_["e1_chase"] = (rnd(3, 9), lambda r: [["chase", "--sizes", L(sz), "--reps", "1", "--exp", "e1_chase", "--variant", "rand"]])
     G_["e5_bw"] = (rnd(3, 9), lambda r: [["bw", "--sizes", L(sz_bw), "--kernels", "r10w0", "--reps", "1", "--exp", "e5_bw"]])
     # e2: pattern and granularity
-    G_["e2_chase_stride"] = (rnd(2, 5), lambda r: [["chase", "--sizes", ws2, "--stride", str(s), "--mode", md, "--reps", "1",
+    G_["e2_chase_stride"] = (rnd(2, 5), lambda r: [["chase", "--sizes", ws2(s), "--stride", str(s), "--mode", md, "--reps", "1",
                                                      "--exp", "e2_chase_stride", "--variant", md] for s in map(int, strides.split(",")) for md in ("seq", "rand")])
-    G_["e2_pat"] = (rnd(3, 9), lambda r: [["pat", "--ws", ws2, "--strides", strides, "--sizes", "16,32,64,128", "--reps", "1", "--exp", "e2_pat"]])
+    G_["e2_pat"] = (rnd(3, 9), lambda r: [["pat", "--ws", ws2(s), "--strides", str(s), "--sizes", "16,32,64,128", "--reps", "1", "--exp", "e2_pat"] for s in map(int, strides.split(","))])
     # e3: read/write mix
     G_["e3_mix_bw"] = (rnd(2, 5), lambda r: [["bw", "--sizes", "256K,8M,1G" if not q else "8M,256M", "--kernels", "r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw",
                                                "--reps", "1", "--exp", "e3_mix_bw"]])
@@ -75,7 +76,7 @@ def groups(profile):
     mu = "1,16,40503" if q else "1,2,4,8,16,32,64,40503"
     G_["e6_kern"] = (rnd(2, 5), lambda r: [["kern", "--elems", el, "--mults", mu, "--reps", "1", "--exp", "e6_kern"]])
     # e7: TLB
-    pages = ",".join(str(2 ** k) for k in (range(0, 17, 2) if q else range(0, 17)))
+    pages = ",".join(str(2 ** k) for k in (range(2, 17, 2) if q else range(1, 17)))
     G_["e7_tlb"] = (rnd(3, 9), lambda r: [["tlb", "--pages", pages, "--lpp", "1", "--layout", lay, "--reps", "1", "--exp", "e7_tlb_pages"] for lay in ("paged", "packed")]
                     + [["tlb", "--lines", "32768", "--pages", "128,64,32,16,8,4,2,1" if not q else "128,16,1", "--layout", "paged", "--reps", "1", "--exp", "e7_tlb_fixedL"]])
     # e8: pitfalls
@@ -93,7 +94,8 @@ def run_group(name, rounds, mk, sid, meta_acc):
     out = open(path, "w")
     out.write(hdr)
     out_log = open(os.path.join(RAW, f"{name}_{sid}.log"), "w")
-    rec = {"group": name, "rounds": rounds, "thermal_by_round": [], "start": time.time()}
+    rec = {"group": name, "rounds": rounds, "thermal_by_round": [], "start": time.time(), "load_avg_start": os.getloadavg(),
+           "top_processes_start": subprocess.run("ps -Ao pcpu,comm -r | head -5", shell=True, capture_output=True, text=True).stdout}
     for r in range(rounds):
         jobs = mk(r)
         random.Random(1000 * r + len(name)).shuffle(jobs)

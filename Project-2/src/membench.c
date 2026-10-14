@@ -446,7 +446,7 @@ static void cmd_loaded(void) {
         while (ready < N) usleep(1000);
         set_thread_qos(qos); g_qos_seen = get_thread_qos();
         __atomic_store_n(&go, 1, __ATOMIC_RELEASE);
-        usleep(200000);                                          // let threads ramp (frequency, queues)
+        warm_spin(200);   // keep the probe core busy while the bandwidth threads ramp (an idle sleep here lowered its clock; see report)
         uint64_t b0[32]; for (int i = 0; i < N; i++) b0[i] = T[i].bytes;
         uint64_t t0 = now_ns(); size_t loads = 0; long f0 = minor_faults();
         if (probe) { while ((double)(now_ns() - t0) < win) { c.cur = chase_loop(c.cur, 4096); loads += 4096; } }

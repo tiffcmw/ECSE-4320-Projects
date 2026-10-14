@@ -70,4 +70,10 @@ Conventions: Super core = perflevel0 (L1D 128 KB, L2 16 MB). "Median" is over re
 
 ## Amendments
 
-None yet.
+**2026-10-14, after the first full collection (session 20261014-0003, commit 8fd3520).** No hypothesis above was changed. Three methodology defects were found in that session's data and fixed before a second full collection; the first session's raw files stay in the repository, superseded:
+
+1. The loaded-latency harness slept 200 ms before its measurement window, so the probe core's clock ramped down. Idle latency read 119 ns against 109 ns from the chase sweep. Fix: the probe thread spins during the warmup instead.
+2. The stride sweeps kept the footprint in bytes fixed, so at 4 KiB and 16 KiB strides only 8 to 32 MiB of distinct lines were touched and they stayed cache-resident (random chase at 16 KiB stride: 29 ns instead of about 109 ns). Fix: the number of distinct lines is held at 1 Mi (128 MiB of lines) for every stride; the 16 KiB stride was dropped (it would need 16 GiB).
+3. The TLB sweep included a one-node cycle that read 0.12 ns (below L1 latency). That degenerate point is no longer collected; it is reported as an anomaly.
+
+These were found by reading the first session's results, so the hypotheses for Exp 2 stride points and Exp 4 idle latency were not tested blind against the corrected design. Predictions H2b and H2c refer to the corrected design.
