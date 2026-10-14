@@ -55,3 +55,11 @@ MacBook Pro `Mac17,6`, Apple M5 Max (32-core GPU configuration), 36 GB unified m
 ## Verification
 
 `./bin/membench selftest` checks single-cycle chases, the TLB layout, the NEON read kernel against a scalar reference, store variants, mix-kernel coverage, pattern kernels against scalar references, the arithmetic kernels against a scalar reference, the clock, and the frequency estimate. `scripts/validate.py` checks monotonic latency, bandwidth against the published peak, L1 latency in cycles, repeatability, placement, Little's Law consistency, and thermal state; flags are reported in `data/processed/validation.md`.
+
+## Reproduction check
+
+On 2026-10-14 `COLLECT=quick scripts/run_all.sh` was run on a data-free copy of the tree (`git archive HEAD`, with the session data and processed files removed). It exited 0 in 2 min 18 s, passed the self-test, regenerated all 8 figures (PNG and PDF) and reported 0 validation flags. Headline values matched the full run: L1 0.66 vs 0.66 ns, L2 7.65 vs 7.64 ns, DRAM 109.4 vs 109.0 ns, `dc zva` 279 vs 273 GB/s. The quick profile has fewer thread counts, so its maximum bandwidth (290 GB/s at 16 threads) differs from the full run's (301 GB/s at 6 threads). A full-profile re-run from the clean copy was not done.
+
+## Data sessions
+
+`data/raw/*_20261014-0029.*` is the session behind the report. Sessions `20261014-0003` and `20261014-0015` are superseded by methodology fixes (see `hypotheses.md`, Amendments, and report Section 8) and are kept only for transparency; `parse.py` uses the newest full session.
