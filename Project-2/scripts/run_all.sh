@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 ./scripts/diagnostics.sh
 if [ "${COLLECT:-}" = "quick" ] || [ "${COLLECT:-}" = "full" ]; then
   echo "Top CPU users before measuring (close heavy apps, plug in AC power, Low Power Mode off):"
-  ps -Ao pcpu,comm -r | head -6
+  ps -Ao pcpu,comm -r | head -6 || true
   SID=$(date +%Y%m%d-%H%M%S)
   caffeinate -dimsu python3 scripts/run_exp.py --profile "$COLLECT" --sid "$SID"
 fi
