@@ -185,12 +185,13 @@ typedef uint64_t (*mixfn)(uint8_t *A, uint8_t *B, size_t groups);
 // One group = 10 lines: RL read lines from stream A, WL written lines to stream B.
 #define DEF_MIX(NAME, RL, WL, WR)                                                                       \
     static __attribute__((noinline)) uint64_t NAME(uint8_t *A, uint8_t *B, size_t groups) {             \
-        uint32x4_t acc = vdupq_n_u32(0);                                                                \
+        uint32x4_t accs[4] = {vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0)};            \
         for (size_t g = 0; g < groups; g++) {                                                           \
-            LOOP_UNROLL for (int k = 0; k < RL; k++) acc = veorq_u32(acc, rd_line(A + ((g * RL + k) << 7))); \
+            LOOP_UNROLL for (int k = 0; k < RL; k++) accs[k & 3] = veorq_u32(accs[k & 3], rd_line(A + ((g * RL + k) << 7))); \
             LOOP_UNROLL for (int k = 0; k < WL; k++)                                                    \
                 WR(B + ((g * WL + k) << 7), vdupq_n_u32((uint32_t)(g * 16 + k)));                       \
         }                                                                                               \
+        uint32x4_t acc = veorq_u32(veorq_u32(accs[0], accs[1]), veorq_u32(accs[2], accs[3]));            \
         return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1) ^ vgetq_lane_u32(acc, 2) ^ vgetq_lane_u32(acc, 3); \
     }
 DEF_MIX(mix_r10w0, 10, 0, wr_st)
@@ -203,12 +204,14 @@ DEF_MIX(mix_r0w10_nt, 0, 10, wr_nt)
 DEF_MIX(mix_r0w10_zva, 0, 10, wr_zva)
 // Read-modify-write of the same line (50/50 at the bus, no separate allocate fetch for the store).
 static __attribute__((noinline)) uint64_t mix_rmw(uint8_t *A, uint8_t *B, size_t groups) {
-    (void)B; uint32x4_t one = vdupq_n_u32(1); uint32x4_t acc = vdupq_n_u32(0);
+    (void)B; uint32x4_t one = vdupq_n_u32(1); uint32x4_t accs[8];
+    for (int j = 0; j < 8; j++) accs[j] = vdupq_n_u32(0);
     for (size_t g = 0; g < groups; g++)
         LOOP_UNROLL for (int k = 0; k < 10; k++) {
             uint32_t *q = (uint32_t *)(A + ((g * 10 + k) << 7));
-            for (int j = 0; j < 8; j++) { uint32x4_t v = vaddq_u32(vld1q_u32(q + 4 * j), one); vst1q_u32(q + 4 * j, v); acc = veorq_u32(acc, v); }
+            LOOP_UNROLL for (int j = 0; j < 8; j++) { uint32x4_t v = vaddq_u32(vld1q_u32(q + 4 * j), one); vst1q_u32(q + 4 * j, v); accs[j] = veorq_u32(accs[j], v); }
         }
+    uint32x4_t acc = accs[0]; for (int j = 1; j < 8; j++) acc = veorq_u32(acc, accs[j]);
     return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 3);
 }
 typedef struct { const char *name; mixfn fn; int rl, wl; int a_lines, b_lines; } mix_t;
@@ -267,40 +270,41 @@ static void cmd_bw(void) {
 
 // Pattern bandwidth: independent loads of `size` bytes at stride S, sequential or random slots.
 static inline uint32x4_t ld_size(const uint8_t *p, const int sz) {
-    const uint32_t *q = (const uint32_t *)p; uint32x4_t a = vld1q_u32(q);
-    if (sz >= 32) a = veorq_u32(a, vld1q_u32(q + 4));
-    if (sz >= 64) { a = veorq_u32(a, vld1q_u32(q + 8)); a = veorq_u32(a, vld1q_u32(q + 12)); }
-    if (sz >= 128) { for (int k = 4; k < 8; k++) a = veorq_u32(a, vld1q_u32(q + 4 * k)); }
-    return a;
+    const uint32_t *q = (const uint32_t *)p; uint32x4_t v[8];
+    const int nv = sz / 16;
+    for (int k = 0; k < nv; k++) v[k] = vld1q_u32(q + 4 * k);          // independent loads, tree reduction
+    for (int stride = 1; stride < nv; stride *= 2) for (int k = 0; k + stride < nv; k += 2 * stride) v[k] = veorq_u32(v[k], v[k + stride]);
+    return v[0];
 }
 typedef struct { uint8_t *base; size_t ws, stride; size_t nslots; uint64_t st[8]; size_t off; int size, rand; uint64_t sum; } patctx;
 #define DEF_PAT(SZ)                                                                                       \
     static __attribute__((noinline)) uint64_t pat_seq_##SZ(patctx *c, size_t n) {                         \
-        uint32x4_t acc = vdupq_n_u32(0); size_t off = c->off; const size_t S = c->stride;                 \
+        uint32x4_t accs[4] = {vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0)}; size_t off = c->off; const size_t S = c->stride; \
         for (size_t i = 0; i < n; i += 8) {                                                               \
-            LOOP_UNROLL for (int k = 0; k < 8; k++) acc = veorq_u32(acc, ld_size(c->base + off + k * S, SZ)); \
+            LOOP_UNROLL for (int k = 0; k < 8; k++) accs[k & 3] = veorq_u32(accs[k & 3], ld_size(c->base + off + k * S, SZ)); \
             off += 8 * S; if (off >= c->ws) off = 0;                                                      \
         }                                                                                                 \
-        c->off = off; return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1) ^ vgetq_lane_u32(acc, 2) ^ vgetq_lane_u32(acc, 3); \
+        c->off = off; uint32x4_t acc = veorq_u32(veorq_u32(accs[0], accs[1]), veorq_u32(accs[2], accs[3])); return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1) ^ vgetq_lane_u32(acc, 2) ^ vgetq_lane_u32(acc, 3); \
     }                                                                                                     \
     static __attribute__((noinline)) uint64_t pat_rnd_##SZ(patctx *c, size_t n) {                         \
-        uint32x4_t acc = vdupq_n_u32(0); uint64_t s0 = c->st[0], s1 = c->st[1], s2 = c->st[2], s3 = c->st[3]; \
+        uint32x4_t accs[4] = {vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0)}; uint64_t s0 = c->st[0], s1 = c->st[1], s2 = c->st[2], s3 = c->st[3]; \
         uint64_t s4 = c->st[4], s5 = c->st[5], s6 = c->st[6], s7 = c->st[7];                              \
         const uint64_t ns = c->nslots, S = c->stride; const uint8_t *b = c->base;                         \
         const uint64_t M = 6364136223846793005ull, C = 1442695040888963407ull;                            \
         for (size_t i = 0; i < n; i += 8) {                                                               \
             s0 = s0 * M + C; s1 = s1 * M + C; s2 = s2 * M + C; s3 = s3 * M + C;                           \
             s4 = s4 * M + C; s5 = s5 * M + C; s6 = s6 * M + C; s7 = s7 * M + C;                           \
-            acc = veorq_u32(acc, ld_size(b + (((s0 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s1 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s2 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s3 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s4 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s5 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s6 >> 32) * ns) >> 32) * S, SZ));                         \
-            acc = veorq_u32(acc, ld_size(b + (((s7 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[0] = veorq_u32(accs[0], ld_size(b + (((s0 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[1] = veorq_u32(accs[1], ld_size(b + (((s1 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[2] = veorq_u32(accs[2], ld_size(b + (((s2 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[3] = veorq_u32(accs[3], ld_size(b + (((s3 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[0] = veorq_u32(accs[0], ld_size(b + (((s4 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[1] = veorq_u32(accs[1], ld_size(b + (((s5 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[2] = veorq_u32(accs[2], ld_size(b + (((s6 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[3] = veorq_u32(accs[3], ld_size(b + (((s7 >> 32) * ns) >> 32) * S, SZ));                         \
         }                                                                                                 \
         c->st[0] = s0; c->st[1] = s1; c->st[2] = s2; c->st[3] = s3; c->st[4] = s4; c->st[5] = s5; c->st[6] = s6; c->st[7] = s7; \
+        uint32x4_t acc = veorq_u32(veorq_u32(accs[0], accs[1]), veorq_u32(accs[2], accs[3])); \
         return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1) ^ vgetq_lane_u32(acc, 2) ^ vgetq_lane_u32(acc, 3); \
     }
 DEF_PAT(16) DEF_PAT(32) DEF_PAT(64) DEF_PAT(128)
@@ -524,13 +528,20 @@ static void cmd_kern(void) {
 // ---------------------------------------------------------------- pitfalls
 // (1) The result of this loop is unused: the optimizer removes it. (2) The same loop with a sink is real work.
 static __attribute__((noinline)) void read_nosink(const uint8_t *p, size_t bytes) {
-    uint32x4_t acc = vdupq_n_u32(0);
-    for (size_t o = 0; o < bytes; o += LINE) acc = veorq_u32(acc, rd_line(p + o));
-    (void)acc;
+    uint32x4_t a0 = vdupq_n_u32(0), a1 = a0, a2 = a0, a3 = a0;
+    for (size_t o = 0; o < bytes; o += 4 * LINE) {
+        a0 = veorq_u32(a0, rd_line(p + o)); a1 = veorq_u32(a1, rd_line(p + o + LINE));
+        a2 = veorq_u32(a2, rd_line(p + o + 2 * LINE)); a3 = veorq_u32(a3, rd_line(p + o + 3 * LINE));
+    }
+    (void)a0; (void)a1; (void)a2; (void)a3;
 }
 static __attribute__((noinline)) uint64_t read_sink(const uint8_t *p, size_t bytes) {
-    uint32x4_t acc = vdupq_n_u32(0);
-    for (size_t o = 0; o < bytes; o += LINE) acc = veorq_u32(acc, rd_line(p + o));
+    uint32x4_t a0 = vdupq_n_u32(0), a1 = a0, a2 = a0, a3 = a0;
+    for (size_t o = 0; o < bytes; o += 4 * LINE) {
+        a0 = veorq_u32(a0, rd_line(p + o)); a1 = veorq_u32(a1, rd_line(p + o + LINE));
+        a2 = veorq_u32(a2, rd_line(p + o + 2 * LINE)); a3 = veorq_u32(a3, rd_line(p + o + 3 * LINE));
+    }
+    uint32x4_t acc = veorq_u32(veorq_u32(a0, a1), veorq_u32(a2, a3));
     return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1);
 }
 typedef struct { uint8_t *p; size_t bytes; int sink; } dcectx;

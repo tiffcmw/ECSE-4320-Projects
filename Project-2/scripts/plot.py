@@ -95,7 +95,7 @@ def exp1_exp5():
     ax.text(ws[0], 1.6 * p3 * 1.03, "DRAM level", fontsize=7, color=C[1])
     ax.set_xlabel("working set (bytes, log2 scale)"); ax.set_ylabel("latency per dependent load (ns, log)")
     ax.set_title("Exp 1: zero-queue latency vs working set (shaded bands: plateau levels, not counters)", fontsize=9)
-    bytes_axis(ax); ax.legend(loc="upper left", fontsize=7)
+    bytes_axis(ax); ax.legend(loc="lower right", fontsize=7)
     save(fig, "exp1_zero_queue")
 
     # Exp 5: latency + bandwidth with annotated regions
@@ -265,7 +265,8 @@ def exp4():
         ax.axhline(1.5 * idle, color="#777", ls="--", lw=0.9); ax.annotate("1.5 x idle", xy=(0.02, 1.5 * idle), xycoords=("axes fraction", "data"), xytext=(0, 3), textcoords="offset points", fontsize=7, color="#555")
     ax.axvline(A.PEAK_GBPS, color="#777", ls="--", lw=0.9)
     ax.set_xlabel("aggregate read bandwidth (GB/s)"); ax.set_ylabel("loaded latency (ns, probe thread)")
-    ax.set_title("(b) throughput-latency curve", fontsize=9); ax.legend(fontsize=7)
+    ax.set_ylim(top=max(300, 3 * idle) if idle == idle else None)
+    ax.set_title("(b) throughput-latency curve (y clipped; one round of 16 threads had a 700 ns outlier)", fontsize=8); ax.legend(fontsize=7)
     allp = sorted(pts, key=lambda p: p[3]); knee_txt = ""
     if allp and idle == idle:
         below = [p for p in allp if p[4] <= 1.5 * idle]
