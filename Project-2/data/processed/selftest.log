@@ -1,0 +1,23 @@
+ok:   sequential chase is one full cycle
+ok:   random chase is one full cycle (128 B)
+ok:   strided layout offsets stay within their stride block
+ok:   TLB layout visits P pages, P*lpp lines, one cycle
+ok:   NEON read kernel matches scalar xor reference
+ok:   stnp store writes the same bytes as regular store
+ok:   dc zva zeroes a full 128 B line
+ok:   mix kernel r10w0 touches every line it should
+ok:   mix kernel r7w3_st touches every line it should
+ok:   mix kernel r7w3_nt touches every line it should
+ok:   mix kernel r5w5_st touches every line it should
+ok:   mix kernel r5w5_nt touches every line it should
+ok:   mix kernel r0w10_st touches every line it should
+ok:   mix kernel r0w10_nt touches every line it should
+ok:   mix kernel r0w10_zva touches every line it should
+ok:   mix kernel rmw touches every line it should
+ok:   sequential pattern kernel matches scalar reference
+ok:   random pattern kernel matches scalar reference
+ok:   kernels z=x*y and y=a*x+y match scalar reference (unit, stride, scattered)
+ok:   clock advances in under 100 us steps (tick about 41.7 ns)
+ok:   effective frequency estimate 4.54 GHz in [2.0, 6.0]
+ok:   thread QoS readable
+SELFTEST PASSED

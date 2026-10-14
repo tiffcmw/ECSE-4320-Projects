@@ -1,0 +1,721 @@
+{
+  "timestamp": "2026-10-14T00:03:37-04:00",
+  "hardware": {
+    "model": "Mac17,6",
+    "chip": "Apple M5 Max",
+    "ncpu": 18,
+    "perflevel0": {
+      "name": "Super",
+      "cores": "6",
+      "l1d": "131072",
+      "l2": "16777216"
+    },
+    "perflevel1": {
+      "name": "Performance",
+      "cores": "12",
+      "l1d": "65536",
+      "l2": "8388608"
+    },
+    "pagesize": "16384",
+    "cacheline": "128",
+    "memsize": "38654705664",
+    "tbfrequency": "24000000",
+    "smt": "none (no SMT on Apple M-series)"
+  },
+  "os": {
+    "product_version": "26.5.2",
+    "build": "25F84",
+    "kernel": "Darwin 25.5.0 arm64"
+  },
+  "compiler": {
+    "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "flags": "-O2 -std=gnu17 -mcpu=native -ffp-contract=off -Wall -Wextra -Wno-unused-function -pthread"
+  },
+  "python": {
+    "python": "3.13.15",
+    "numpy": "2.5.2",
+    "matplotlib": "3.11.1"
+  },
+  "power": {
+    "batt": "Now drawing from 'AC Power'\n -InternalBattery-0 (id=23724131)\t80%; AC attached; not charging present: true",
+    "powermode": "powermode            0"
+  },
+  "thermal": {
+    "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+    "no_warning": true
+  },
+  "load_avg": [
+    2.7314453125,
+    2.3623046875,
+    2.158203125
+  ],
+  "top_processes": "%CPU COMM\n 17.4 /Library/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python\n 10.6 /System/Library/PrivateFrameworks/CoreDuetContext.framework/Resources/ContextStoreAgent\n  7.8 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  5.2 claude\n  4.7 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension",
+  "policy": {
+    "frequency": "DVFS automatic, no governor control; 300 ms spin warmup at every process start; estimate below is a dependent-add calibration, labeled as an estimate",
+    "pinning": "not available on macOS; QoS class set inside each worker thread (default USER_INTERACTIVE); placement verified by L1D-capacity signature",
+    "huge_pages": "not available (mach_vm_allocate SUPERPAGE flags return invalid argument, see data/raw/hugetest.txt)",
+    "counters": "no PMU access; timing inference only",
+    "warmup": "per-config warm pass before calibration; calibration discards first runs; timed regions >= 25 ms; first process action is a 300 ms spin"
+  },
+  "git": {
+    "commit": "74271ca",
+    "dirty": true
+  },
+  "effective_freq_ghz_estimate": "4.5728",
+  "session": "20261014-0003",
+  "profile": "full",
+  "groups_planned": [
+    "e0_placement",
+    "e1_chase",
+    "e5_bw",
+    "e2_chase_stride",
+    "e2_pat",
+    "e3_mix_bw",
+    "e3_mix_loaded",
+    "e4_mlp",
+    "e4_loaded",
+    "e6_kern",
+    "e7_tlb",
+    "e8_pitfalls"
+  ],
+  "groups_done": [
+    {
+      "group": "e0_placement",
+      "rounds": 5,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950617.78674,
+      "load_avg_start": [
+        2.7314453125,
+        2.3623046875,
+        2.158203125
+      ],
+      "top_processes_start": " %CPU COMM\n  7.8 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  6.9 /usr/libexec/runningboardd\n  4.5 /Library/Frameworks/Python.framework/Versions/3.13/Resources/Python.app/Contents/MacOS/Python\n  4.2 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 8.051204919815063,
+      "raw_file": "e0_placement_20261014-0003.csv"
+    },
+    {
+      "group": "e1_chase",
+      "rounds": 9,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 5,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 6,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 7,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 8,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950626.211092,
+      "load_avg_start": [
+        2.53857421875,
+        2.3330078125,
+        2.150390625
+      ],
+      "top_processes_start": " %CPU COMM\n  7.6 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  5.0 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  1.5 claude\n  1.5 /System/Library/PrivateFrameworks/BackgroundTaskManagement.framework/Resources/backgroundtaskmanagementd\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 73.85294795036316,
+      "raw_file": "e1_chase_20261014-0003.csv"
+    },
+    {
+      "group": "e5_bw",
+      "rounds": 9,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 5,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 6,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 7,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 8,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950700.4378161,
+      "load_avg_start": [
+        2.12890625,
+        2.23046875,
+        2.1240234375
+      ],
+      "top_processes_start": " %CPU COMM\n 13.2 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  8.8 /System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow\n  5.3 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  1.4 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 50.32686471939087,
+      "raw_file": "e5_bw_20261014-0003.csv"
+    },
+    {
+      "group": "e2_chase_stride",
+      "rounds": 5,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950751.138728,
+      "load_avg_start": [
+        2.0673828125,
+        2.1806640625,
+        2.1083984375
+      ],
+      "top_processes_start": " %CPU COMM\n  7.6 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  4.7 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  1.5 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService\n  1.3 /usr/sbin/coreaudiod\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 34.15705704689026,
+      "raw_file": "e2_chase_stride_20261014-0003.csv"
+    },
+    {
+      "group": "e2_pat",
+      "rounds": 9,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 5,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 6,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 7,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 8,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950785.6695948,
+      "load_avg_start": [
+        1.82373046875,
+        2.1103515625,
+        2.083984375
+      ],
+      "top_processes_start": " %CPU COMM\n  8.0 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  3.5 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  2.2 claude\n  2.2 /Applications/Webex.app/Contents/MacOS/Webex\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 18.143128156661987,
+      "raw_file": "e2_pat_20261014-0003.csv"
+    },
+    {
+      "group": "e3_mix_bw",
+      "rounds": 5,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950804.1881752,
+      "load_avg_start": [
+        2.0498046875,
+        2.13623046875,
+        2.09326171875
+      ],
+      "top_processes_start": " %CPU COMM\n  7.6 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  4.1 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  1.6 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService\n  1.3 /usr/sbin/coreaudiod\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 17.696382761001587,
+      "raw_file": "e3_mix_bw_20261014-0003.csv"
+    },
+    {
+      "group": "e3_mix_loaded",
+      "rounds": 4,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950822.260902,
+      "load_avg_start": [
+        2.58544921875,
+        2.24462890625,
+        2.13134765625
+      ],
+      "top_processes_start": " %CPU COMM\n 10.8 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  4.4 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  4.1 /System/Library/CoreServices/loginwindow.app/Contents/MacOS/loginwindow\n  1.4 /usr/sbin/coreaudiod\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 104.14974212646484,
+      "raw_file": "e3_mix_loaded_20261014-0003.csv"
+    },
+    {
+      "group": "e4_mlp",
+      "rounds": 9,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 5,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 6,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 7,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 8,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950926.792649,
+      "load_avg_start": [
+        6.72900390625,
+        3.8173828125,
+        2.75732421875
+      ],
+      "top_processes_start": " %CPU COMM\n  7.0 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  4.5 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  1.5 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService\n  1.3 /usr/libexec/runningboardd\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 8.528923988342285,
+      "raw_file": "e4_mlp_20261014-0003.csv"
+    },
+    {
+      "group": "e4_loaded",
+      "rounds": 7,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 5,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 6,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791950935.69959,
+      "load_avg_start": [
+        5.84765625,
+        3.72412109375,
+        2.736328125
+      ],
+      "top_processes_start": " %CPU COMM\n  8.3 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  5.3 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  1.9 /Applications/Discord.app/Contents/Frameworks/Discord Helper (Renderer).app/Contents/MacOS/Discord Helper (Renderer)\n  1.5 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 141.43765711784363,
+      "raw_file": "e4_loaded_20261014-0003.csv"
+    },
+    {
+      "group": "e6_kern",
+      "rounds": 5,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791951077.516054,
+      "load_avg_start": [
+        10.12548828125,
+        6.365234375,
+        3.95556640625
+      ],
+      "top_processes_start": " %CPU COMM\n  7.7 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  3.9 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  2.4 claude\n  1.4 /usr/sbin/coreaudiod\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 52.12502717971802,
+      "raw_file": "e6_kern_20261014-0003.csv"
+    },
+    {
+      "group": "e7_tlb",
+      "rounds": 9,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 5,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 6,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 7,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 8,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791951130.02031,
+      "load_avg_start": [
+        5.16845703125,
+        5.6484375,
+        3.84033203125
+      ],
+      "top_processes_start": " %CPU COMM\n  8.1 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  5.2 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  4.9 /usr/libexec/runningboardd\n  1.7 /System/Library/PrivateFrameworks/ChronoCore.framework/Support/chronod\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 20.32428503036499,
+      "raw_file": "e7_tlb_20261014-0003.csv"
+    },
+    {
+      "group": "e8_pitfalls",
+      "rounds": 5,
+      "thermal_by_round": [
+        {
+          "round": 0,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 1,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 2,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 3,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        },
+        {
+          "round": 4,
+          "no_warning": true,
+          "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded"
+        }
+      ],
+      "start": 1791951150.723191,
+      "load_avg_start": [
+        4.8662109375,
+        5.54150390625,
+        3.84326171875
+      ],
+      "top_processes_start": " %CPU COMM\n  7.7 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer\n  6.0 /System/Library/ExtensionKit/Extensions/WallpaperAerialsExtension.appex/Contents/MacOS/WallpaperAerialsExtension\n  2.1 /usr/sbin/coreaudiod\n  1.5 /System/Library/Frameworks/VideoToolbox.framework/Versions/A/XPCServices/VTDecoderXPCService.xpc/Contents/MacOS/VTDecoderXPCService\n",
+      "thermal_end": {
+        "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+        "no_warning": true
+      },
+      "elapsed_s": 95.28256106376648,
+      "raw_file": "e8_pitfalls_20261014-0003.csv"
+    }
+  ],
+  "thermal_end": {
+    "text": "Note: No thermal warning level has been recorded\nNote: No performance warning level has been recorded\nNote: No CPU power status has been recorded",
+    "no_warning": true
+  },
+  "effective_freq_ghz_estimate_end": "4.5790"
+}

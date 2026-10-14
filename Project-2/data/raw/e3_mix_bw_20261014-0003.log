@@ -1,0 +1,5 @@
+r0 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw --reps 1 --exp e3_mix_bw 3.5s
+r1 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw --reps 1 --exp e3_mix_bw 3.5s
+r2 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw --reps 1 --exp e3_mix_bw 3.5s
+r3 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw --reps 1 --exp e3_mix_bw 3.5s
+r4 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw --reps 1 --exp e3_mix_bw 3.5s
