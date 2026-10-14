@@ -1,0 +1,7 @@
+config,useful,delivery,processing,discarded
+"mul unit stride, 48 KiB (L1)",6.523,0.017,5.317,0.157
+"mul unit stride, 192 MiB (DRAM)",3.558,0.064,8.421,0.013
+"mul scattered, 48 KiB (L1)",7.877,2.415,1.631,0.003
+"mul scattered, 192 MiB (DRAM)",0.502,0.065,11.462,0.014
+"random chase, 32 KiB (L1)",0.67,0.006,11.313,0.003
+"random chase, 1 GiB (DRAM)",1.153,0.201,14.747,0.24

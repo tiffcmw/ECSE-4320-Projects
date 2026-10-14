@@ -18,6 +18,6 @@ ok:   sequential pattern kernel matches scalar reference
 ok:   random pattern kernel matches scalar reference
 ok:   kernels z=x*y and y=a*x+y match scalar reference (unit, stride, scattered)
 ok:   clock advances in under 100 us steps (tick about 41.7 ns)
-ok:   effective frequency estimate 4.54 GHz in [2.0, 6.0]
+ok:   effective frequency estimate 4.55 GHz in [2.0, 6.0]
 ok:   thread QoS readable
 SELFTEST PASSED

@@ -1,0 +1,45 @@
+r0 chase --sizes 4K,6K,9K,13K,19K,26K,38K,53K,76K,90K,107K,128K,152K,181K,215K,304K,430K,608K,861K,1217K,1722K,2435K,3444K,4870K,6M,7M,9M,10M,12M,14M,16M,18M,20M,24M,32M,46340K,55108K,77935K,96M,128M,185363K,220435K,311743K,384M,512M,741455K,881743K,1246974K,1763487K --mode seq --stride 128 --reps 1 --exp pitfall_seqchase --variant seq 2.6s
+r0 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 16M --exp pitfall_resident_bw --window-ms 300 0.8s
+r0 dce --ws 256M --reps 2 0.5s
+r0 ramp --idle-ms 3000 --chunks 400 --chunk-us 500 --reps 3 10.7s
+r0 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 4M --exp pitfall_resident_bw --window-ms 300 0.8s
+r0 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 1M --exp pitfall_resident_bw --window-ms 300 0.8s
+r0 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256K --exp pitfall_resident_bw --window-ms 300 0.8s
+r0 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256M --exp pitfall_resident_bw --window-ms 300 1.1s
+r0 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 64M --exp pitfall_resident_bw --window-ms 300 0.9s
+r1 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 16M --exp pitfall_resident_bw --window-ms 300 0.8s
+r1 chase --sizes 4K,6K,9K,13K,19K,26K,38K,53K,76K,90K,107K,128K,152K,181K,215K,304K,430K,608K,861K,1217K,1722K,2435K,3444K,4870K,6M,7M,9M,10M,12M,14M,16M,18M,20M,24M,32M,46340K,55108K,77935K,96M,128M,185363K,220435K,311743K,384M,512M,741455K,881743K,1246974K,1763487K --mode seq --stride 128 --reps 1 --exp pitfall_seqchase --variant seq 2.5s
+r1 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 64M --exp pitfall_resident_bw --window-ms 300 0.9s
+r1 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256M --exp pitfall_resident_bw --window-ms 300 1.0s
+r1 ramp --idle-ms 3000 --chunks 400 --chunk-us 500 --reps 3 10.7s
+r1 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256K --exp pitfall_resident_bw --window-ms 300 0.8s
+r1 dce --ws 256M --reps 2 0.5s
+r1 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 1M --exp pitfall_resident_bw --window-ms 300 0.8s
+r1 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 4M --exp pitfall_resident_bw --window-ms 300 0.8s
+r2 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 64M --exp pitfall_resident_bw --window-ms 300 0.9s
+r2 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 1M --exp pitfall_resident_bw --window-ms 300 0.8s
+r2 dce --ws 256M --reps 2 0.5s
+r2 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 4M --exp pitfall_resident_bw --window-ms 300 0.8s
+r2 ramp --idle-ms 3000 --chunks 400 --chunk-us 500 --reps 3 10.7s
+r2 chase --sizes 4K,6K,9K,13K,19K,26K,38K,53K,76K,90K,107K,128K,152K,181K,215K,304K,430K,608K,861K,1217K,1722K,2435K,3444K,4870K,6M,7M,9M,10M,12M,14M,16M,18M,20M,24M,32M,46340K,55108K,77935K,96M,128M,185363K,220435K,311743K,384M,512M,741455K,881743K,1246974K,1763487K --mode seq --stride 128 --reps 1 --exp pitfall_seqchase --variant seq 2.6s
+r2 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 16M --exp pitfall_resident_bw --window-ms 300 0.8s
+r2 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256K --exp pitfall_resident_bw --window-ms 300 0.8s
+r2 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256M --exp pitfall_resident_bw --window-ms 300 1.2s
+r3 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256M --exp pitfall_resident_bw --window-ms 300 1.0s
+r3 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 64M --exp pitfall_resident_bw --window-ms 300 0.9s
+r3 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 4M --exp pitfall_resident_bw --window-ms 300 0.8s
+r3 dce --ws 256M --reps 2 0.5s
+r3 ramp --idle-ms 3000 --chunks 400 --chunk-us 500 --reps 3 10.7s
+r3 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 1M --exp pitfall_resident_bw --window-ms 300 0.8s
+r3 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 16M --exp pitfall_resident_bw --window-ms 300 0.8s
+r3 chase --sizes 4K,6K,9K,13K,19K,26K,38K,53K,76K,90K,107K,128K,152K,181K,215K,304K,430K,608K,861K,1217K,1722K,2435K,3444K,4870K,6M,7M,9M,10M,12M,14M,16M,18M,20M,24M,32M,46340K,55108K,77935K,96M,128M,185363K,220435K,311743K,384M,512M,741455K,881743K,1246974K,1763487K --mode seq --stride 128 --reps 1 --exp pitfall_seqchase --variant seq 2.5s
+r3 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256K --exp pitfall_resident_bw --window-ms 300 0.8s
+r4 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 1M --exp pitfall_resident_bw --window-ms 300 0.8s
+r4 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256M --exp pitfall_resident_bw --window-ms 300 1.1s
+r4 chase --sizes 4K,6K,9K,13K,19K,26K,38K,53K,76K,90K,107K,128K,152K,181K,215K,304K,430K,608K,861K,1217K,1722K,2435K,3444K,4870K,6M,7M,9M,10M,12M,14M,16M,18M,20M,24M,32M,46340K,55108K,77935K,96M,128M,185363K,220435K,311743K,384M,512M,741455K,881743K,1246974K,1763487K --mode seq --stride 128 --reps 1 --exp pitfall_seqchase --variant seq 2.6s
+r4 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 256K --exp pitfall_resident_bw --window-ms 300 0.8s
+r4 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 64M --exp pitfall_resident_bw --window-ms 300 0.9s
+r4 ramp --idle-ms 3000 --chunks 400 --chunk-us 500 --reps 3 10.7s
+r4 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 4M --exp pitfall_resident_bw --window-ms 300 0.8s
+r4 loaded --probe 0 --mix r10w0 --threads 16 --bufsize 16M --exp pitfall_resident_bw --window-ms 300 0.8s
+r4 dce --ws 256M --reps 2 0.5s

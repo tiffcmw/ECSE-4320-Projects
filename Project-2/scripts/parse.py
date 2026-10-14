@@ -54,6 +54,8 @@ def main():
     os.makedirs(a.out, exist_ok=True)
     n = 0
     for path in sorted(glob.glob(os.path.join(a.raw, f"*_{sid}.csv"))):
+        if os.path.basename(path).startswith("xctrace"):
+            continue
         grp = re.sub(rf"_{re.escape(sid)}\.csv$", "", os.path.basename(path))
         rows = read_csv(path)
         if not rows:

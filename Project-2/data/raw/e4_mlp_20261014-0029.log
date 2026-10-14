@@ -1,0 +1,9 @@
+r0 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r1 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r2 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r3 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r4 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r5 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r6 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r7 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s
+r8 mlp --ws 1G --chains 1,2,3,4,6,8,12,16,20,24,32,40,48,64 --reps 1 --exp e4_mlp 0.9s

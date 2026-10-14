@@ -142,6 +142,7 @@ def exp2():
         ax.axvline(128, color="#777", ls=":", lw=0.9); ax.annotate("128 B line", xy=(128, 0.02), xycoords=("data", "axes fraction"), fontsize=7, color="#555", ha="left")
         ax.set_xscale("log", base=2); ax.set_yscale("log"); ax.set_xlabel("stride between accesses (B)")
         ax.set_ylabel("useful bandwidth (GB/s, bytes requested)")
+        ax.yaxis.set_major_formatter(FuncFormatter(lambda v, _: f"{v:g}")); ax.yaxis.set_minor_formatter(FuncFormatter(lambda v, _: f"{v:g}" if v in (2, 3, 5, 20, 30, 50) else ""))
         ax.set_title(f"({'b' if mode == 'seq' else 'c'}) independent loads, {'sequential' if mode == 'seq' else 'random slots'}", fontsize=9)
         ax.legend(fontsize=7); bytes_axis(ax)
     fig.suptitle("Exp 2: pattern and granularity (1 thread, footprint far beyond cache; bars = IQR over rounds)", fontsize=9)
