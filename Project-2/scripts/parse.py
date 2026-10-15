@@ -30,7 +30,7 @@ def summarize(rows):
     for r in rows:
         k = tuple(r[c] for c in KEYS)
         g.setdefault(k, []).append((float(r["value"]), int(r["faults"])))
-    out = []
+    out = []; rounds = []
     for k, v in g.items():
         vals = np.array([x for x, f in v])
         flt = np.array([f for x, f in v])
@@ -40,8 +40,9 @@ def summarize(rows):
             keep = vals
         q1, med, q3 = np.percentile(keep, [25, 50, 75])
         out.append(list(k) + [med, q1, q3, keep.min(), keep.max(), len(keep), nf])
+        rounds.append(dict(zip(KEYS, k), values=[float(x) for x in keep]))
     out.sort(key=lambda r: (r[0], r[1], float(r[2]), float(r[3]), float(r[4]), float(r[5]), float(r[6]), r[7]))
-    return out
+    return out, rounds
 
 
 def main():
@@ -53,19 +54,21 @@ def main():
     sid = a.sid or newest_sid(a.raw)
     os.makedirs(a.out, exist_ok=True)
     n = 0
-    for path in sorted(glob.glob(os.path.join(a.raw, f"*_{sid}.csv"))):
-        if os.path.basename(path).startswith("xctrace"):
-            continue
-        grp = re.sub(rf"_{re.escape(sid)}\.csv$", "", os.path.basename(path))
-        rows = read_csv(path)
-        if not rows:
-            continue
-        out = summarize(rows)
-        with open(os.path.join(a.out, f"{grp}.csv"), "w", newline="") as f:
-            w = csv.writer(f)
-            w.writerow(KEYS + ["median", "q1", "q3", "min", "max", "n", "n_faulted"])
-            w.writerows(out)
-        n += 1
+    for sx in (sid, sid + "-pmu"):   # the privileged counter run, if present, uses the suffix -pmu
+      for path in sorted(glob.glob(os.path.join(a.raw, f"*_{sx}.csv"))):
+          if os.path.basename(path).startswith("xctrace"):
+              continue
+          grp = re.sub(rf"_{re.escape(sx)}\.csv$", "", os.path.basename(path))
+          rows = read_csv(path)
+          if not rows:
+              continue
+          out, rounds = summarize(rows)
+          json.dump(rounds, open(os.path.join(a.out, f"{grp}.rounds.json"), "w"))
+          with open(os.path.join(a.out, f"{grp}.csv"), "w", newline="") as f:
+              w = csv.writer(f)
+              w.writerow(KEYS + ["median", "q1", "q3", "min", "max", "n", "n_faulted"])
+              w.writerows(out)
+          n += 1
     json.dump({"sid": sid}, open(os.path.join(a.out, "SESSION.json"), "w"))
     print(f"parsed {n} groups for session {sid} -> {a.out}")
 

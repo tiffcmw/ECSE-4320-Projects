@@ -7,8 +7,8 @@ PROC = os.environ.get("P2_PROC", os.path.join(ROOT, "data", "processed"))
 RAW = os.environ.get("P2_RAW", os.path.join(ROOT, "data", "raw"))
 PLOTS = os.environ.get("P2_PLOTS", os.path.join(ROOT, "plots"))
 LINE = 128
-PEAK_GBPS = 460.0       # published, 32-core-GPU M5 Max (secondary sources)
-PEAK_UPPER = 614.0      # 40-core-GPU M5 Max
+PEAK_GBPS = 460.0       # Apple tech specs: M5 Max with 18-core CPU and 32-core GPU (this machine: 32 GPU cores, 36 GB)
+PEAK_UPPER = 614.0      # M5 Max with 40-core GPU (not this machine)
 L1D = {"Super": 128 * 1024, "Performance": 64 * 1024}
 L2 = {"Super": 16 * 2**20, "Performance": 8 * 2**20}
 
@@ -39,11 +39,30 @@ def sel(rows, **kw):
     return out
 
 
+SPREAD = ("min", "max")   # spread shown in plots: all rounds lie inside [min, max]; IQR is not meaningful for n < 10
+
+
 def series(rows, xkey, **kw):
     s = sorted(sel(rows, **kw), key=lambda r: r[xkey])
     x = np.array([r[xkey] for r in s]); m = np.array([r["median"] for r in s])
-    q1 = np.array([r["q1"] for r in s]); q3 = np.array([r["q3"] for r in s]); n = np.array([r["n"] for r in s])
+    q1 = np.array([r[SPREAD[0]] for r in s]); q3 = np.array([r[SPREAD[1]] for r in s]); n = np.array([r["n"] for r in s])
     return x, m, q1, q3, n
+
+
+def rounds(name, xkey=None, **kw):
+    """Every per-round value of a group: list of (x, value) for rows matching kw (all rounds, fault-filtered)."""
+    p = os.path.join(PROC, name + ".rounds.json")
+    if not os.path.exists(p):
+        return np.array([]), np.array([])
+    xs, ys = [], []
+    for r in json.load(open(p)):
+        ok = True
+        for k, v in kw.items():
+            ok = ok and (r[k] == v if isinstance(v, str) else float(r[k]) == float(v))
+        if ok:
+            for y in r["values"]:
+                xs.append(float(r[xkey])); ys.append(y)
+    return np.array(xs), np.array(ys)
 
 
 def session():

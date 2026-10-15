@@ -10,6 +10,7 @@
 #include <mach/mach_vm.h>
 #include <mach/vm_statistics.h>
 #include "common.h"
+#include "pmu.h"
 
 #define LINE 128u
 #define PAGE 16384u
@@ -55,6 +56,15 @@ static double freq_ghz(void) {
     qsort(f, 5, sizeof f[0], cmp_dbl); return f[2];
 }
 
+// ---------------------------------------------------------------- optional PMU readout (needs root, see pmu.h)
+static uint64_t g_p0[16];
+#define PMU_BEGIN() do { if (P.on) pmu_snap(g_p0); } while (0)
+static void pmu_end_emit(const char *exp, const char *variant, size_t ws, size_t stride, size_t size, int thr, double param, int rep, double ops) {
+    if (!P.on) return;
+    uint64_t p1[16]; pmu_snap(p1);
+    for (int i = 0; i < P.nev; i++) { char m[96]; snprintf(m, sizeof m, "pmu_%s_per_op", P.names[i]); emit(exp, variant, ws, stride, size, thr, param, rep, m, (double)(p1[i] - g_p0[i]) / ops); }
+}
+
 // ---------------------------------------------------------------- pointer chase
 typedef struct { void *cur; size_t n; } chase_t;
 
@@ -93,7 +103,7 @@ static void chase_measure(chase_t *c, const char *exp, const char *variant, size
     run_chase(c, warm);
     size_t n = calib(run_chase, c, target_ms * 1e6, 8);
     for (int r = 0; r < reps; r++) {
-        long f0 = minor_faults(); double t = run_chase(c, n); g_faults = minor_faults() - f0;
+        long f0 = minor_faults(); PMU_BEGIN(); double t = run_chase(c, n); pmu_end_emit(exp, variant, ws, stride, 8, threads, param, r, (double)n); g_faults = minor_faults() - f0;
         emit(exp, variant, ws, stride, 8, threads, param, r, "ns_per_load", t / (double)n);
     }
 }
@@ -119,13 +129,50 @@ static void cmd_chase(void) {
     }
 }
 
-// TLB: fixed line count L = pages*lpp. "paged": lpp lines in each of `pages` distinct 16 KB pages.
-// "packed": the same L lines contiguous (same cache footprint, fewer pages).
+// Mutating walk (R12): the next node is a hash of the value just loaded, and each visited node gets a fresh pseudo-random
+// value. The address sequence never repeats, so a predictor that learned a repeating pattern (a fixed cycle) cannot follow it.
+// Cost over a plain chase: shift, multiply-high and add on the critical path (about 5 extra cycles per step) and a store off it.
+static __attribute__((noinline)) uint64_t mut_loop(uint8_t *base, uint64_t idx, uint64_t nn, size_t n) {
+    for (size_t i = 0; i < n; i += 4) {
+        for (int k = 0; k < 4; k++) {
+            uint64_t *q = (uint64_t *)(base + (idx << 7)); uint64_t v = *q;
+            *q = v * 6364136223846793005ull + 1442695040888963407ull;
+            idx = ((v >> 32) * nn) >> 32;
+        }
+    }
+    return idx;
+}
+typedef struct { uint8_t *base; uint64_t idx, nn; } mutctx;
+static double run_mut(void *v, size_t n) { mutctx *c = v; uint64_t t0 = now_ns(); c->idx = mut_loop(c->base, c->idx, c->nn, n); return (double)(now_ns() - t0); }
+static void cmd_mut(void) {
+    size_t sizes[256]; int ns = arg_list("--sizes", "64K,1M,64M", sizes, 256);
+    int reps = arg_int("--reps", 3); double tms = arg_dbl("--target-ms", 25); uint64_t seed = (uint64_t)arg_int("--seed", 1);
+    const char *exp = arg_str("--exp", "mut"), *variant = arg_str("--variant", "mutating");
+    for (int i = 0; i < ns; i++) {
+        size_t nn = sizes[i] / LINE;   // one node per 128 B line
+        uint8_t *base = alloc_touch(nn * LINE, 0); uint64_t s = seed * 0x9E3779B97F4A7C15ull + (uint64_t)i;
+        for (size_t j = 0; j < nn; j++) *(uint64_t *)(base + j * LINE) = xs64(&s);
+        mutctx c = {base, 0, nn};
+        run_mut(&c, 1u << 20);
+        size_t n = calib(run_mut, &c, tms * 1e6, 4);
+        for (int r = 0; r < reps; r++) { long f0 = minor_faults(); double t = run_mut(&c, n); g_faults = minor_faults() - f0;
+            emit(exp, variant, nn * LINE, LINE, 8, 1, 0, r, "ns_per_load", t / (double)n); }
+        fflush(stdout); free_map(base, nn * LINE);
+    }
+}
+
+// TLB: fixed line count L = pages*lpp. Layouts (all use L distinct lines, one random cycle through them):
+//   packed      the L lines contiguous (same cache footprint, fewest pages)
+//   paged       lpp lines in each of `pages` 16 KB pages; in-page line offset = (global index mod 128), i.e. cycling through
+//               all 128 offsets in page order (original layout)
+//   paged_rand  as paged, but the in-page line offsets are drawn uniformly at random (distinct within a page), fixed seed
+//   paged_const as paged, but every page uses the same offsets 0..lpp-1 (worst case for cache-set aliasing)
+static uint64_t g_tlb_seed = 12345;
 static void cmd_tlb(void) {
     size_t pgs[64]; int np = arg_list("--pages", "1,16,256,4096", pgs, 64);
     size_t lpp = arg_size("--lpp", 1);
     const char *layout = arg_str("--layout", "paged");
-    int packed = !strcmp(layout, "packed");
+    int packed = !strcmp(layout, "packed"), lrand = !strcmp(layout, "paged_rand"), lconst = !strcmp(layout, "paged_const");
     size_t fixedL = arg_size("--lines", 0);   // if set: L fixed and pages = L / lpp (pages sweep at fixed footprint)
     int reps = arg_int("--reps", 3); double tms = arg_dbl("--target-ms", 25);
     uint64_t seed = (uint64_t)arg_int("--seed", 1);
@@ -141,8 +188,18 @@ static void cmd_tlb(void) {
         void **addrs = (void **)alloc_touch(L * sizeof(void *), 0);
         if (packed) { for (size_t j = 0; j < L; j++) addrs[j] = base + j * LINE; }
         else {
-            for (size_t p = 0; p < P; p++) for (size_t j = 0; j < l; j++)
-                addrs[p * l + j] = base + p * PAGE + (((p * l + j) * LINE) % PAGE);
+            uint64_t rs = g_tlb_seed * 0x9E3779B97F4A7C15ull + 99;   // fixed layout seed, independent of the round seed
+            unsigned char perm[PAGE / LINE];
+            for (size_t p = 0; p < P; p++) {
+                if (lrand) {   // partial Fisher-Yates: l distinct offsets out of 128
+                    for (unsigned k = 0; k < PAGE / LINE; k++) perm[k] = (unsigned char)k;
+                    for (size_t k = 0; k < l; k++) { size_t m = k + mulhi(xs64(&rs), PAGE / LINE - k); unsigned char t = perm[k]; perm[k] = perm[m]; perm[m] = t; }
+                }
+                for (size_t j = 0; j < l; j++) {
+                    size_t off = lrand ? (size_t)perm[j] * LINE : lconst ? j * LINE : (((p * l + j) * LINE) % PAGE);
+                    addrs[p * l + j] = base + p * PAGE + off;
+                }
+            }
         }
         chase_t c; chase_link(&c, addrs, L, 1, seed + (uint64_t)i * 104729);
         free_map(addrs, L * sizeof(void *));
@@ -181,6 +238,19 @@ static inline void wr_zva(uint8_t *p, uint32x4_t v) {
     for (size_t b = 0; b < LINE; b += g_zva_bs) __asm__ volatile("dc zva, %0" : : "r"(p + b) : "memory");
 }
 
+// Content variants for the zero-vs-random write test (same instruction mix, different data). Random content: per-line LCG state.
+static inline void wr_st_z(uint8_t *p, uint32x4_t v) { (void)v; wr_st(p, vdupq_n_u32(0)); }
+static inline void wr_nt_z(uint8_t *p, uint32x4_t v) { (void)v; wr_nt(p, vdupq_n_u32(0)); }
+static inline void wr_st_r(uint8_t *p, uint32x4_t v) {
+    uint32_t *q = (uint32_t *)p; uint32x4_t m = vdupq_n_u32(0x9E3779B1u), a = vaddq_u32(v, vdupq_n_u32(0x7F4A7C15u));
+    for (int k = 0; k < 8; k++) { a = vmlaq_u32(vdupq_n_u32(0x85EBCA6Bu), a, m); vst1q_u32(q + 4 * k, veorq_u32(a, vshrq_n_u32(a, 15))); }
+}
+static inline void wr_nt_r(uint8_t *p, uint32x4_t v) {
+    uint32x4_t m = vdupq_n_u32(0x9E3779B1u), a = vaddq_u32(v, vdupq_n_u32(0x7F4A7C15u)), w[8];
+    for (int k = 0; k < 8; k++) { a = vmlaq_u32(vdupq_n_u32(0x85EBCA6Bu), a, m); w[k] = veorq_u32(a, vshrq_n_u32(a, 15)); }
+    __asm__ volatile("stnp %q1, %q2, [%0]\n stnp %q3, %q4, [%0, #32]\n stnp %q5, %q6, [%0, #64]\n stnp %q7, %q8, [%0, #96]\n"
+                     : : "r"(p), "w"(w[0]), "w"(w[1]), "w"(w[2]), "w"(w[3]), "w"(w[4]), "w"(w[5]), "w"(w[6]), "w"(w[7]) : "memory");
+}
 typedef uint64_t (*mixfn)(uint8_t *A, uint8_t *B, size_t groups);
 // One group = 10 lines: RL read lines from stream A, WL written lines to stream B.
 #define DEF_MIX(NAME, RL, WL, WR)                                                                       \
@@ -202,6 +272,37 @@ DEF_MIX(mix_r5w5_nt, 5, 5, wr_nt)
 DEF_MIX(mix_r0w10_st, 0, 10, wr_st)
 DEF_MIX(mix_r0w10_nt, 0, 10, wr_nt)
 DEF_MIX(mix_r0w10_zva, 0, 10, wr_zva)
+DEF_MIX(mix_r7w3_st_r, 7, 3, wr_st_r)
+DEF_MIX(mix_r7w3_nt_r, 7, 3, wr_nt_r)
+DEF_MIX(mix_r5w5_st_r, 5, 5, wr_st_r)
+DEF_MIX(mix_r5w5_nt_r, 5, 5, wr_nt_r)
+DEF_MIX(mix_r0w10_st_z, 0, 10, wr_st_z)
+DEF_MIX(mix_r0w10_st_r, 0, 10, wr_st_r)
+DEF_MIX(mix_r0w10_nt_z, 0, 10, wr_nt_z)
+DEF_MIX(mix_r0w10_nt_r, 0, 10, wr_nt_r)
+// Read-only with different load instruction mixes (R11): ldp q-pairs vs one ld1 four-register load.
+static __attribute__((noinline)) uint64_t mix_r10w0_ldp(uint8_t *A, uint8_t *B, size_t groups) {
+    (void)B; uint32x4_t a0 = vdupq_n_u32(0), a1 = a0, a2 = a0, a3 = a0;
+    for (size_t g = 0; g < groups; g++) LOOP_UNROLL for (int k = 0; k < 10; k++) {
+        uint32x4_t v0, v1, v2, v3, v4, v5, v6, v7; const uint8_t *p = A + ((g * 10 + k) << 7);
+        __asm__ volatile("ldp %q0, %q1, [%8]\n ldp %q2, %q3, [%8, #32]\n ldp %q4, %q5, [%8, #64]\n ldp %q6, %q7, [%8, #96]\n"
+                         : "=w"(v0), "=w"(v1), "=w"(v2), "=w"(v3), "=w"(v4), "=w"(v5), "=w"(v6), "=w"(v7) : "r"(p) : "memory");
+        a0 = veorq_u32(a0, veorq_u32(v0, v1)); a1 = veorq_u32(a1, veorq_u32(v2, v3)); a2 = veorq_u32(a2, veorq_u32(v4, v5)); a3 = veorq_u32(a3, veorq_u32(v6, v7));
+    }
+    uint32x4_t acc = veorq_u32(veorq_u32(a0, a1), veorq_u32(a2, a3));
+    return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1) ^ vgetq_lane_u32(acc, 2) ^ vgetq_lane_u32(acc, 3);
+}
+static __attribute__((noinline)) uint64_t mix_r10w0_ld4(uint8_t *A, uint8_t *B, size_t groups) {
+    (void)B; uint32x4_t a0 = vdupq_n_u32(0), a1 = a0, a2 = a0, a3 = a0;
+    for (size_t g = 0; g < groups; g++) LOOP_UNROLL for (int k = 0; k < 10; k++) {
+        const uint32_t *p = (const uint32_t *)(A + ((g * 10 + k) << 7));
+        uint32x4x4_t x = vld1q_u32_x4(p), y = vld1q_u32_x4(p + 16);
+        a0 = veorq_u32(a0, veorq_u32(x.val[0], y.val[0])); a1 = veorq_u32(a1, veorq_u32(x.val[1], y.val[1]));
+        a2 = veorq_u32(a2, veorq_u32(x.val[2], y.val[2])); a3 = veorq_u32(a3, veorq_u32(x.val[3], y.val[3]));
+    }
+    uint32x4_t acc = veorq_u32(veorq_u32(a0, a1), veorq_u32(a2, a3));
+    return vgetq_lane_u32(acc, 0) ^ vgetq_lane_u32(acc, 1) ^ vgetq_lane_u32(acc, 2) ^ vgetq_lane_u32(acc, 3);
+}
 // Read-modify-write of the same line (50/50 at the bus, no separate allocate fetch for the store).
 static __attribute__((noinline)) uint64_t mix_rmw(uint8_t *A, uint8_t *B, size_t groups) {
     (void)B; uint32x4_t one = vdupq_n_u32(1); uint32x4_t accs[8];
@@ -221,6 +322,11 @@ static const mix_t MIXES[] = {
     {"r7w3_nt", mix_r7w3_nt, 7, 3, 7, 3},     {"r5w5_st", mix_r5w5_st, 5, 5, 5, 5},
     {"r5w5_nt", mix_r5w5_nt, 5, 5, 5, 5},     {"r0w10_st", mix_r0w10_st, 0, 10, 0, 10},
     {"r0w10_nt", mix_r0w10_nt, 0, 10, 0, 10}, {"r0w10_zva", mix_r0w10_zva, 0, 10, 0, 10},
+    {"r7w3_st_r", mix_r7w3_st_r, 7, 3, 7, 3},     {"r7w3_nt_r", mix_r7w3_nt_r, 7, 3, 7, 3},
+    {"r5w5_st_r", mix_r5w5_st_r, 5, 5, 5, 5},     {"r5w5_nt_r", mix_r5w5_nt_r, 5, 5, 5, 5},
+    {"r0w10_st_z", mix_r0w10_st_z, 0, 10, 0, 10}, {"r0w10_st_r", mix_r0w10_st_r, 0, 10, 0, 10},
+    {"r0w10_nt_z", mix_r0w10_nt_z, 0, 10, 0, 10}, {"r0w10_nt_r", mix_r0w10_nt_r, 0, 10, 0, 10},
+    {"r10w0_ldp", mix_r10w0_ldp, 10, 0, 10, 0},   {"r10w0_ld4", mix_r10w0_ld4, 10, 0, 10, 0},
     {"rmw", mix_rmw, 10, 10, 10, 0},
 };
 #define NMIX ((int)(sizeof MIXES / sizeof MIXES[0]))
@@ -230,10 +336,13 @@ static const mix_t *find_mix(const char *n) {
 }
 
 typedef struct { const mix_t *m; uint8_t *A, *B; size_t groups; } bwctx;
+static int g_fill_rand = 0;   // --fill rand: buffers hold pseudo-random bytes instead of a constant byte (content-dependent effects, R10)
+static void fill_random(uint8_t *p, size_t bytes) { uint64_t s = 0x1234567ull; uint64_t *q = (uint64_t *)p; for (size_t i = 0; i < bytes / 8; i++) q[i] = xs64(&s); }
 static void bw_alloc(bwctx *c, const mix_t *m, size_t ws) {
     c->m = m; c->groups = ws / (10 * LINE);
     c->A = m->a_lines ? alloc_touch(c->groups * m->a_lines * LINE, 0x55) : NULL;
     c->B = m->b_lines ? alloc_touch(c->groups * m->b_lines * LINE, 0x55) : NULL;
+    if (g_fill_rand) { if (c->A) fill_random(c->A, c->groups * m->a_lines * LINE); if (c->B) fill_random(c->B, c->groups * m->b_lines * LINE); }
 }
 static void bw_free(bwctx *c) {
     if (c->A) free_map(c->A, c->groups * c->m->a_lines * LINE);
@@ -276,7 +385,9 @@ static inline uint32x4_t ld_size(const uint8_t *p, const int sz) {
     for (int stride = 1; stride < nv; stride *= 2) for (int k = 0; k + stride < nv; k += 2 * stride) v[k] = veorq_u32(v[k], v[k + stride]);
     return v[0];
 }
-typedef struct { uint8_t *base; size_t ws, stride; size_t nslots; uint64_t st[8]; size_t off; int size, rand; uint64_t sum; } patctx;
+typedef struct { uint8_t *base; size_t ws, stride; size_t nslots; uint64_t st[8]; size_t off; int size, rand; uint64_t sum; int jit; } patctx;
+// Jitter: a hashed line offset inside the stride block (strides of 256 B and up), so that power-of-two strides do not hit the same address bits.
+#define JIT(slot) (c->jit ? ((((slot) * 0x9E3779B97F4A7C15ull) >> 40) * (S / LINE) >> 24) * LINE : 0)
 #define DEF_PAT(SZ)                                                                                       \
     static __attribute__((noinline)) uint64_t pat_seq_##SZ(patctx *c, size_t n) {                         \
         uint32x4_t accs[4] = {vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0), vdupq_n_u32(0)}; size_t off = c->off; const size_t S = c->stride; \
@@ -294,14 +405,14 @@ typedef struct { uint8_t *base; size_t ws, stride; size_t nslots; uint64_t st[8]
         for (size_t i = 0; i < n; i += 8) {                                                               \
             s0 = s0 * M + C; s1 = s1 * M + C; s2 = s2 * M + C; s3 = s3 * M + C;                           \
             s4 = s4 * M + C; s5 = s5 * M + C; s6 = s6 * M + C; s7 = s7 * M + C;                           \
-            accs[0] = veorq_u32(accs[0], ld_size(b + (((s0 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[1] = veorq_u32(accs[1], ld_size(b + (((s1 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[2] = veorq_u32(accs[2], ld_size(b + (((s2 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[3] = veorq_u32(accs[3], ld_size(b + (((s3 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[0] = veorq_u32(accs[0], ld_size(b + (((s4 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[1] = veorq_u32(accs[1], ld_size(b + (((s5 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[2] = veorq_u32(accs[2], ld_size(b + (((s6 >> 32) * ns) >> 32) * S, SZ));                         \
-            accs[3] = veorq_u32(accs[3], ld_size(b + (((s7 >> 32) * ns) >> 32) * S, SZ));                         \
+            accs[0] = veorq_u32(accs[0], ld_size(b + (((s0 >> 32) * ns) >> 32) * S + JIT(((s0 >> 32) * ns) >> 32), SZ));                         \
+            accs[1] = veorq_u32(accs[1], ld_size(b + (((s1 >> 32) * ns) >> 32) * S + JIT(((s1 >> 32) * ns) >> 32), SZ));                         \
+            accs[2] = veorq_u32(accs[2], ld_size(b + (((s2 >> 32) * ns) >> 32) * S + JIT(((s2 >> 32) * ns) >> 32), SZ));                         \
+            accs[3] = veorq_u32(accs[3], ld_size(b + (((s3 >> 32) * ns) >> 32) * S + JIT(((s3 >> 32) * ns) >> 32), SZ));                         \
+            accs[0] = veorq_u32(accs[0], ld_size(b + (((s4 >> 32) * ns) >> 32) * S + JIT(((s4 >> 32) * ns) >> 32), SZ));                         \
+            accs[1] = veorq_u32(accs[1], ld_size(b + (((s5 >> 32) * ns) >> 32) * S + JIT(((s5 >> 32) * ns) >> 32), SZ));                         \
+            accs[2] = veorq_u32(accs[2], ld_size(b + (((s6 >> 32) * ns) >> 32) * S + JIT(((s6 >> 32) * ns) >> 32), SZ));                         \
+            accs[3] = veorq_u32(accs[3], ld_size(b + (((s7 >> 32) * ns) >> 32) * S + JIT(((s7 >> 32) * ns) >> 32), SZ));                         \
         }                                                                                                 \
         c->st[0] = s0; c->st[1] = s1; c->st[2] = s2; c->st[3] = s3; c->st[4] = s4; c->st[5] = s5; c->st[6] = s6; c->st[7] = s7; \
         uint32x4_t acc = veorq_u32(veorq_u32(accs[0], accs[1]), veorq_u32(accs[2], accs[3])); \
@@ -321,7 +432,7 @@ static double run_pat(void *v, size_t n) {
     sink_u64(s); return (double)(t1 - t0);
 }
 static void pat_init(patctx *c, uint8_t *base, size_t ws, size_t stride, int size, int rnd, uint64_t seed) {
-    c->base = base; c->ws = ws; c->stride = stride; c->nslots = ws / stride; c->off = 0; c->size = size; c->rand = rnd;
+    c->base = base; c->ws = ws; c->stride = stride; c->nslots = ws / stride; c->off = 0; c->size = size; c->rand = rnd; c->jit = arg_int("--jit", 0);
     uint64_t s = seed * 0x9E3779B97F4A7C15ull + 7; for (int i = 0; i < 8; i++) c->st[i] = xs64(&s);
 }
 static void cmd_pat(void) {
@@ -340,7 +451,7 @@ static void cmd_pat(void) {
     uint64_t rs = seed * 0x9E3779B97F4A7C15ull + 11;
     for (int k = ncf - 1; k > 0; k--) { int m = (int)mulhi(xs64(&rs), (uint64_t)k + 1); cfg_t t = cf[k]; cf[k] = cf[m]; cf[m] = t; }
     for (int q = 0; q < ncf; q++) {
-        const char *pn = cf[q].a ? "rand" : "seq"; size_t S = strides[cf[q].i]; int sz = (int)sizes[cf[q].j];
+        const char *pn = cf[q].a ? (arg_int("--jit", 0) ? "randj" : "rand") : "seq"; size_t S = strides[cf[q].i]; int sz = (int)sizes[cf[q].j];
         patctx c; pat_init(&c, base, ws, S, sz, cf[q].a, seed);
         pat_dispatch(&c, 1u << 16);
         size_t n = calib(run_pat, &c, tms * 1e6, 8);
@@ -434,6 +545,7 @@ static void cmd_loaded(void) {
     int reps = arg_int("--reps", 1); uint64_t seed = (uint64_t)arg_int("--seed", 1);
     const char *exp = arg_str("--exp", "loaded");
     int maxt = 0; for (int i = 0; i < nt; i++) if ((int)thr[i] > maxt) maxt = (int)thr[i];
+    int W = arg_int("--wthreads", 0); const mix_t *wm = find_mix(arg_str("--wmix", "r0w10_nt"));   // optional concurrent writer threads (R11)
     // probe chain
     chase_t c = {0}; uint8_t *cbase = NULL;
     if (probe) {
@@ -442,38 +554,43 @@ static void cmd_loaded(void) {
         chase_link(&c, addrs, n, 1, seed); free_map(addrs, n * sizeof(void *));
     }
     // per-thread buffers (allocated once, reused)
-    bwthr *T = calloc((size_t)(maxt ? maxt : 1), sizeof *T);
+    bwthr *T = calloc((size_t)(maxt + W + 1), sizeof *T);
     for (int i = 0; i < maxt; i++) { bwctx b; bw_alloc(&b, m, bufsz); T[i].A = b.A; T[i].B = b.B; T[i].groups = b.groups; T[i].m = m; }
+    for (int i = 0; i < W; i++) { bwctx b; bw_alloc(&b, wm, bufsz); T[maxt + i].A = b.A; T[maxt + i].B = b.B; T[maxt + i].groups = b.groups; T[maxt + i].m = wm; }
     for (int di = 0; di < nd; di++) for (int ti = 0; ti < nt; ti++) for (int r = 0; r < reps; r++) {
-        int N = (int)thr[ti]; volatile int go = 0, stop = 0, ready = 0; pthread_t th[32];
+        int N = (int)thr[ti]; volatile int go = 0, stop = 0, ready = 0; pthread_t th[64];
         for (int i = 0; i < N; i++) { T[i].delay = dly[di]; T[i].bytes = 0; T[i].qos = qos; T[i].go = &go; T[i].stop = &stop; T[i].ready = &ready; pthread_create(&th[i], NULL, bw_thread, &T[i]); }
-        while (ready < N) usleep(1000);
+        for (int i = 0; i < W; i++) { bwthr *w = &T[maxt + i]; w->delay = 0; w->bytes = 0; w->qos = qos; w->go = &go; w->stop = &stop; w->ready = &ready; pthread_create(&th[N + i], NULL, bw_thread, w); }
+        while (ready < N + W) usleep(1000);
         set_thread_qos(qos); g_qos_seen = get_thread_qos();
         __atomic_store_n(&go, 1, __ATOMIC_RELEASE);
         warm_spin(200);   // keep the probe core busy while the bandwidth threads ramp (an idle sleep here lowered its clock; see report)
-        uint64_t b0[32]; for (int i = 0; i < N; i++) b0[i] = T[i].bytes;
+        uint64_t b0[32]; for (int i = 0; i < N; i++) b0[i] = T[i].bytes; uint64_t wb0 = 0; for (int i = 0; i < W; i++) wb0 += T[maxt + i].bytes;
         uint64_t t0 = now_ns(); size_t loads = 0; long f0 = minor_faults();
         if (probe) { while ((double)(now_ns() - t0) < win) { c.cur = chase_loop(c.cur, 4096); loads += 4096; } }
         else usleep((useconds_t)(win / 1000));
         uint64_t t1 = now_ns(); g_faults = minor_faults() - f0;
         uint64_t b1[32]; for (int i = 0; i < N; i++) b1[i] = T[i].bytes;
         __atomic_store_n(&stop, 1, __ATOMIC_RELEASE);
-        for (int i = 0; i < N; i++) pthread_join(th[i], NULL);
-        sink_ptr(c.cur);
+        uint64_t w1 = 0, w0s = 0; for (int i = 0; i < W; i++) w1 += T[maxt + i].bytes;
+        for (int i = 0; i < N + W; i++) pthread_join(th[i], NULL);
+        sink_ptr(c.cur); (void)w0s;
         double el = (double)(t1 - t0), tot = 0, mn = 1e18, mx = 0;
         for (int i = 0; i < N; i++) { double g = (double)(b1[i] - b0[i]) / el; tot += g; if (g < mn) mn = g; if (g > mx) mx = g; }
         double dl = (double)dly[di];
         emit(exp, m->name, bufsz, 0, LINE, N, dl, r, "bw_gbps", tot);
         if (N) { emit(exp, m->name, bufsz, 0, LINE, N, dl, r, "bw_thread_min", mn); emit(exp, m->name, bufsz, 0, LINE, N, dl, r, "bw_thread_max", mx); }
         if (probe) emit(exp, m->name, cws, LINE, 8, N, dl, r, "lat_ns", el / (double)loads);
+        if (W) emit(exp, m->name, bufsz, 0, LINE, N, dl, r, "bw_writer_gbps", (double)(w1 - wb0) / el);
         fflush(stdout);
     }
     for (int i = 0; i < maxt; i++) { bwctx b = {m, T[i].A, T[i].B, T[i].groups}; bw_free(&b); }
+    for (int i = 0; i < W; i++) { bwctx b = {wm, T[maxt + i].A, T[maxt + i].B, T[maxt + i].groups}; bw_free(&b); }
     free(T); if (cbase) free_map(cbase, cws);
 }
 
 // ---------------------------------------------------------------- simple kernels: z=x*y, y=a*x+y with three index patterns
-typedef struct { float *x, *y, *z; size_t n; float a; int kernel; size_t mult; uint64_t pos; } kctx;
+typedef struct { float *x, *y, *z; size_t n; float a; int kernel; size_t mult; uint64_t pos; int jit; } kctx;
 #define KMUL_UNIT 1
 static __attribute__((noinline)) void k_unit(kctx *c, size_t count) {
     size_t n = c->n; float *restrict x = c->x, *restrict y = c->y, *restrict z = c->z; const float a = c->a;
@@ -488,6 +605,12 @@ static __attribute__((noinline)) void k_unit(kctx *c, size_t count) {
 }
 static __attribute__((noinline)) void k_idx(kctx *c, size_t count) {
     size_t mask = c->n - 1, m = c->mult; float *x = c->x, *y = c->y, *z = c->z; const float a = c->a; uint64_t i = c->pos;
+    if (c->jit && m >= 64) {   // jitter: hashed 128 B line offset inside each stride block (m*4 bytes), still one element per visit
+        const size_t nl = m / 32;
+        if (c->kernel == 0) for (size_t k = 0; k < count; k++, i++) { size_t j = ((size_t)(i * m) & mask) + 32 * ((((i * 0x9E3779B97F4A7C15ull) >> 40) * nl) >> 24); z[j] = x[j] * y[j]; }
+        else for (size_t k = 0; k < count; k++, i++) { size_t j = ((size_t)(i * m) & mask) + 32 * ((((i * 0x9E3779B97F4A7C15ull) >> 40) * nl) >> 24); y[j] = a * x[j] + y[j]; }
+        c->pos = i; return;
+    }
     if (c->kernel == 0) for (size_t k = 0; k < count; k++, i++) { size_t j = (size_t)(i * m) & mask; z[j] = x[j] * y[j]; }
     else for (size_t k = 0; k < count; k++, i++) { size_t j = (size_t)(i * m) & mask; y[j] = a * x[j] + y[j]; }
     c->pos = i;
@@ -497,14 +620,14 @@ static double run_kern(void *v, size_t count) {
     kctx *c = v; uint64_t t0 = now_ns(); k_run(c, count); uint64_t t1 = now_ns(); return (double)(t1 - t0);
 }
 static void kern_init(kctx *c, size_t n, int kernel, size_t mult) {
-    c->n = n; c->kernel = kernel; c->mult = mult; c->pos = 0; c->a = 0.5f;
+    c->n = n; c->kernel = kernel; c->mult = mult; c->pos = 0; c->a = 0.5f; c->jit = arg_int("--jit", 0);
     c->x = (float *)alloc_touch(n * 4, 0); c->y = (float *)alloc_touch(n * 4, 0); c->z = (float *)alloc_touch(n * 4, 0);
     for (size_t i = 0; i < n; i++) { c->x[i] = 1.0f + (float)(i % 97) * 0.01f; c->y[i] = 0.5f + (float)(i % 31) * 0.02f; }
 }
 static void kern_free(kctx *c) { free_map(c->x, c->n * 4); free_map(c->y, c->n * 4); free_map(c->z, c->n * 4); }
 static void cmd_kern(void) {
     size_t ns_[64]; int nn = arg_list("--elems", "4096,1048576", ns_, 64);   // elements per array, power of two
-    size_t mults[16]; int nm = arg_list("--mults", "1,16,40503", mults, 16); // 1 unit; 2^k stride; odd = scattered
+    size_t mults[32]; int nm = arg_list("--mults", "1,16,40503", mults, 32); // 1 unit; 2^k stride; odd = scattered
     int reps = arg_int("--reps", 3); double tms = arg_dbl("--target-ms", 25);
     const char *exp = arg_str("--exp", "kern");
     for (int kernel = 0; kernel < 2; kernel++) for (int i = 0; i < nn; i++) {
@@ -515,9 +638,9 @@ static void cmd_kern(void) {
             k_run(&c, n < (1u << 20) ? n : (1u << 20));
             size_t count = calib(run_kern, &c, tms * 1e6, 1);
             for (int r = 0; r < reps; r++) {
-                long f0 = minor_faults(); double t = run_kern(&c, count); g_faults = minor_faults() - f0;
-                emit(exp, kernel ? "saxpy" : "mul", foot, mults[j] * 4, 4, 1, (double)n, r, "ns_per_elem", t / (double)count);
-                emit(exp, kernel ? "saxpy" : "mul", foot, mults[j] * 4, 4, 1, (double)n, r, "gbps_useful", 12.0 * (double)count / t);
+                long f0 = minor_faults(); PMU_BEGIN(); double t = run_kern(&c, count); pmu_end_emit(exp, kernel ? "saxpy" : "mul", foot, mults[j] * 4, 4, 1, (double)n, r, (double)count); g_faults = minor_faults() - f0;
+                emit(exp, kernel ? (c.jit ? "saxpy_j" : "saxpy") : (c.jit ? "mul_j" : "mul"), foot, mults[j] * 4, 4, 1, (double)n, r, "ns_per_elem", t / (double)count);
+                emit(exp, kernel ? (c.jit ? "saxpy_j" : "saxpy") : (c.jit ? "mul_j" : "mul"), foot, mults[j] * 4, 4, 1, (double)n, r, "gbps_useful", 12.0 * (double)count / t);
             }
             fflush(stdout);
         }
@@ -708,15 +831,18 @@ int main(int argc, char **argv) {
     if (argc < 2) { fprintf(stderr, "usage: membench <cmd> [--key value]...\n"); return 1; }
     const char *cmd = argv[1];
     zva_init();
-    g_round = arg_int("--round", 0);
+    g_round = arg_int("--round", 0); g_fill_rand = !strcmp(arg_str("--fill", "const"), "rand");
     int q = qos_from_name(arg_str("--qos", "interactive"));
+    const char *pmu_csv = arg_str("--pmu", NULL);
     set_thread_qos(q); g_qos_seen = get_thread_qos();
     if (!strcmp(cmd, "header")) { emit_header(); return 0; }
+    if (pmu_csv && pmu_init(pmu_csv)) { fprintf(stderr, "PMU unavailable (needs sudo and kperf)\n"); return 3; }
     if (strcmp(cmd, "ramp") && strcmp(cmd, "freq") && !arg_int("--no-warm", 0)) warm_spin(300);
     if (!strcmp(cmd, "freq")) { printf("%.4f\n", freq_ghz()); return 0; }
     if (!strcmp(cmd, "zva")) { printf("%zu\n", g_zva_bs); return 0; }
     if (!strcmp(cmd, "chase")) cmd_chase();
     else if (!strcmp(cmd, "tlb")) cmd_tlb();
+    else if (!strcmp(cmd, "mut")) cmd_mut();
     else if (!strcmp(cmd, "bw")) cmd_bw();
     else if (!strcmp(cmd, "pat")) cmd_pat();
     else if (!strcmp(cmd, "mlp")) cmd_mlp();
