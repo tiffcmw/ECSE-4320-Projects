@@ -1,0 +1,9 @@
+r0 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.2s
+r1 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.2s
+r2 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.4s
+r3 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.3s
+r4 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.3s
+r5 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.4s
+r6 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.4s
+r7 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.3s
+r8 bw --sizes 256K,8M,1G --kernels r10w0,r7w3_st,r7w3_nt,r5w5_st,r5w5_nt,r0w10_st,r0w10_nt,r0w10_zva,rmw,r7w3_st_r,r7w3_nt_r,r5w5_st_r,r5w5_nt_r,r0w10_st_r,r0w10_nt_r,r0w10_st_z,r0w10_nt_z --reps 1 --exp e3_mix_bw 6.6s

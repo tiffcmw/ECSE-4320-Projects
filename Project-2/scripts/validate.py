@@ -30,7 +30,7 @@ def main():
         check("L1 latency within 2.5 to 6.5 cycles (typical 3 to 5)", 2.5 <= m[0] * f <= 6.5, f"{m[0]:.3f} ns = {m[0] * f:.1f} cycles")
         for name, size in (("L1 plateau 32 KiB", 32 * 1024), ("L2 plateau 4 MiB", 4 * 2**20), ("DRAM plateau 1 GiB", 2**30)):
             i = int(np.argmin(np.abs(ws - size)))
-            rel = (q3[i] - q1[i]) / m[i]
+            rr = sel(ch, ws_bytes=ws[i], metric="ns_per_load")[0]; rel = (rr["q3"] - rr["q1"]) / rr["median"]
             check(f"repeatability {name} (IQR/median <= 5%)", rel <= 0.05, f"IQR/median = {100 * rel:.1f}% over n = {int(n[i])}")
     tl = [r for r in load("e7_tlb") if r["metric"] == "ns_per_load" and r["median"] * f < 2.5]
     check("no chase latency below 2.5 cycles except degenerate cycles of at most 8 nodes", all(r["ws_bytes"] <= 1024 for r in tl),
@@ -47,7 +47,7 @@ def main():
                 over.append((g, r["variant"], r["exp"], fb(foot), round(r["median"], 0), foot))
     hard = [o for o in over if o[5] >= 256 * 2**20]
     soft = [o for o in over if o[5] < 256 * 2**20]
-    check("no DRAM-resident (>= 256 MiB total) bandwidth above 460 GB/s published peak", not hard,
+    check("no DRAM-resident (>= 256 MiB total) bandwidth above 460 GB/s peak (Apple spec, 32-core GPU configuration)", not hard,
           "none" if not hard else f"{len(hard)} rows: {hard[:5]}")
     OUT.append(f"| NOTE | cache-resident bandwidth above 460 GB/s (expected, not DRAM) | {len(soft)} rows, e.g. {soft[:3]} |")
     # placement

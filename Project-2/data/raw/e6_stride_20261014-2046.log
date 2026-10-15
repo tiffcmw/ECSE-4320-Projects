@@ -1,0 +1,14 @@
+r0 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.5s
+r0 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.3s
+r1 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.3s
+r1 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.5s
+r2 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.5s
+r2 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.3s
+r3 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.5s
+r3 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.2s
+r4 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.6s
+r4 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.3s
+r5 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.5s
+r5 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.3s
+r6 kern --elems 262144,16777216,67108864 --mults 64,128,256 --jit 1 --reps 1 --exp e6_stride 1.3s
+r6 kern --elems 262144,16777216,67108864 --mults 1,2,4,8,16,24,32,48,64,80,96,128,160,256 --reps 1 --exp e6_stride 3.5s

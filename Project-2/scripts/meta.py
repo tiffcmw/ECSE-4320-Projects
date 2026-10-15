@@ -54,7 +54,7 @@ def collect(extra=None):
             "frequency": "DVFS automatic, no governor control; 300 ms spin warmup at every process start; estimate below is a dependent-add calibration, labeled as an estimate",
             "pinning": "not available on macOS; QoS class set inside each worker thread (default USER_INTERACTIVE); placement verified by L1D-capacity signature",
             "huge_pages": "not available (mach_vm_allocate SUPERPAGE flags return invalid argument, see data/raw/hugetest.txt)",
-            "counters": "no PMU access; timing inference only",
+            "counters": "timing inference for all experiments; PMU counters only in the optional privileged run (scripts/run_privileged.sh, needs root)",
             "warmup": "per-config warm pass before calibration; calibration discards first runs; timed regions >= 25 ms; first process action is a 300 ms spin",
         },
         "git": {"commit": sh(f"git -C {ROOT} rev-parse --short HEAD"), "dirty": bool(sh(f"git -C {ROOT} status --porcelain src scripts")),},

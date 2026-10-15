@@ -1,0 +1,59 @@
+## 1. PMU event database
+$ ls /usr/share/kpep | grep as5
+as5-1.plist
+as5-2.plist
+as5.plist
+$ sysctl -n hw.cpufamily  (-> 0xf76c5b1a, maps to as5-1.plist)
+-143893734
+events found in as5-1.plist: L1D_CACHE_MISS_LD_NONSPEC, L1D_TLB_MISS_NONSPEC, L2_TLB_MISS_DATA, LD_SRC_LL_CACHE_NONSPEC, LD_SRC_MEMSYS_NONSPEC (full list: kpep_events.txt)
+
+## 2. xctrace / Instruments custom events
+$ xcrun xctrace list templates | grep -i counter
+CPU Counters
+$ xcrun xctrace record --template "CPU Counters" --time-limit 2s --launch -- /usr/bin/true  (default configuration)
+Ctrl-C to stop the recording
+Target app exited, ending recording...
+Recording completed. Saving output file...
+Output file saved as: cc.trace
+$ xcrun xctrace export --input cc.trace --toc | grep -i schema
+schema="CoreTypeByProcess"
+schema="CoreTypeByThread"
+schema="CounterMetricAggregatedForProcess"
+schema="CounterMetricAggregatedForSystem"
+schema="CounterMetricByCore"
+schema="CounterMetricByThread"
+schema="CountingModeSamples"
+schema="MetricAggregationForProcess"
+schema="MetricAggregationForThread"
+schema="MetricTable"
+schema="MetricTableForThread"
+schema="RemarksByCore"
+schema="RemarksByThread"
+schema="context-switch"
+schema="cpu-narrative"
+schema="cpu-state"
+schema="dyld-library-load"
+schema="gcd-perf-event"
+schema="global-poi-layout"
+schema="global-roi-layout"
+$ strings on the template for configurable event settings
+CPU Counters.tracetemplate
+
+## 3. kperf from user space without root (own tool, src/pmu.h)
+pmu: kpc_force_all_ctrs_set failed (not root?)
+PMU unavailable (needs sudo and kperf)
+sudo -n true:
+sudo: a password is required
+== CounterMetricAggregatedForProcess
+<?xml version="1.0"?>
+<trace-query-result>
+<node xpath='//trace-toc[1]/run[1]/data[1]/table[29]'><schema name="CounterMetricAggregatedForProcess"><col><mnemonic>timestamp</mnemonic><name>Timestamp</name><engineering-type>start-time</engineering-type></col><col><mnemonic>duration</mnemonic><name>Duration</name><engineering-type>duration</engineering-type></col><col><mnemonic>process</mnemonic><name>Process</name><engineering-type>process</engineering-type></col><col><mnemonic>value</mnemonic><name>Value</name><engineering-type>uint64-array</engineering-type></col><col><mnemonic>is-precise</mnemonic><name>Is Precise</name><engineering-type>boolean</engineering-type></col></schema><row><start-time id="1" fmt="00:00.810.000">810000000</start-time><duration id="2" fmt="10.00 ms">10000000</duration><process id="3" fmt="true (741)"><pid id="4" fmt="741">741</pid><device-session id="5" fmt="TODO
+== CounterMetricByCore
+<?xml version="1.0"?>
+<trace-query-result>
+<node xpath='//trace-toc[1]/run[1]/data[1]/table[21]'><schema name="CounterMetricByCore"><col><mnemonic>timestamp</mnemonic><name>Timestamp</name><engineering-type>start-time</engineering-type></col><col><mnemonic>duration</mnemonic><name>Duration</name><engineering-type>duration</engineering-type></col><col><mnemonic>core-index</mnemonic><name>Core Index</name><engineering-type>core</engineering-type></col><col><mnemonic>value</mnemonic><name>Value</name><engineering-type>uint64-array</engineering-type></col></schema><row><start-time id="1" fmt="00:00.818.143">818143791</start-time><duration id="2" fmt="206.25 µs">206250</duration><core id="3" fmt="CPU 12 (S Core)">12</core><uint64-array id="4" fmt="0x99d 0x417 0x1539 0x424">2461 1047 5433 1060</uint64-array></row>
+<row><start-time id="5" fmt="00:00.818.523">818523791</start-time><duration id=
+== MetricTable
+<?xml version="1.0"?>
+<trace-query-result>
+<node xpath='//trace-toc[1]/run[1]/data[1]/table[58]'><schema name="MetricTable"><col><mnemonic>timestamp</mnemonic><name>Timestamp</name><engineering-type>start-time</engineering-type></col><col><mnemonic>duration</mnemonic><name>Duration</name><engineering-type>duration</engineering-type></col><col><mnemonic>pmi-event</mnemonic><name>Pmi Event</name><engineering-type>string</engineering-type></col><col><mnemonic>metric-display-name</mnemonic><name>Metric Display Name</name><engineering-type>string</engineering-type></col><col><mnemonic>thread</mnemonic><name>Thread</name><engineering-type>thread</engineering-type></col><col><mnemonic>process</mnemonic><name>Process</name><engineering-type>process</engineering-type></col><col><mnemonic>metric-value</mnemonic><name>Metric Value</name><engineering-type>fixed-decimal</engineering-type></col><col><

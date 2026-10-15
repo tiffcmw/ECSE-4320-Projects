@@ -1,0 +1,42 @@
+r0 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 6.1s
+r0 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.7s
+r0 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.7s
+r0 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 3.5s
+r0 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.0s
+r0 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.0s
+r1 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.1s
+r1 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.0s
+r1 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.7s
+r1 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.7s
+r1 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 3.5s
+r1 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 5.8s
+r2 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 5.8s
+r2 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.7s
+r2 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.1s
+r2 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.7s
+r2 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 3.5s
+r2 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.1s
+r3 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.1s
+r3 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.9s
+r3 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 5.7s
+r3 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 3.4s
+r3 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.1s
+r3 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.8s
+r4 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 5.8s
+r4 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.1s
+r4 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 4.0s
+r4 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.7s
+r4 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.1s
+r4 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.8s
+r5 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.1s
+r5 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.7s
+r5 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 5.7s
+r5 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.1s
+r5 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.7s
+r5 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 3.8s
+r6 loaded --mix r10w0_ldp --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ldp --window-ms 300 4.7s
+r6 loaded --mix r10w0 --threads 0,4,6,16 --fill rand --exp e11_fillrand --window-ms 300 3.5s
+r6 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_st_r --exp e11_writer_st --window-ms 300 2.1s
+r6 loaded --mix r10w0 --threads 0,4,6 --wthreads 2 --wmix r0w10_nt_r --exp e11_writer_nt --window-ms 300 2.1s
+r6 loaded --mix r10w0_ld4 --threads 0,1,2,4,6,8,12,16 --exp e11_r10w0_ld4 --window-ms 300 4.7s
+r6 loaded --mix r10w0 --threads 0,1,2,4,6,8,12,16 --qos background --exp e11_bgqos --window-ms 300 5.9s

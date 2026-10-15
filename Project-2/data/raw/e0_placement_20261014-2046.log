@@ -1,0 +1,15 @@
+r0 chase --sizes 48K,96K,6M,12M --qos interactive --reps 2 --exp e0_placement --variant interactive 0.5s
+r0 chase --sizes 48K,96K,6M,12M --qos background --reps 2 --exp e0_placement --variant background 0.6s
+r0 chase --sizes 48K,96K,6M,12M --qos default --reps 2 --exp e0_placement --variant default 0.5s
+r1 chase --sizes 48K,96K,6M,12M --qos background --reps 2 --exp e0_placement --variant background 0.5s
+r1 chase --sizes 48K,96K,6M,12M --qos interactive --reps 2 --exp e0_placement --variant interactive 0.5s
+r1 chase --sizes 48K,96K,6M,12M --qos default --reps 2 --exp e0_placement --variant default 0.5s
+r2 chase --sizes 48K,96K,6M,12M --qos background --reps 2 --exp e0_placement --variant background 0.6s
+r2 chase --sizes 48K,96K,6M,12M --qos default --reps 2 --exp e0_placement --variant default 0.5s
+r2 chase --sizes 48K,96K,6M,12M --qos interactive --reps 2 --exp e0_placement --variant interactive 0.5s
+r3 chase --sizes 48K,96K,6M,12M --qos background --reps 2 --exp e0_placement --variant background 0.6s
+r3 chase --sizes 48K,96K,6M,12M --qos interactive --reps 2 --exp e0_placement --variant interactive 0.5s
+r3 chase --sizes 48K,96K,6M,12M --qos default --reps 2 --exp e0_placement --variant default 0.5s
+r4 chase --sizes 48K,96K,6M,12M --qos background --reps 2 --exp e0_placement --variant background 0.6s
+r4 chase --sizes 48K,96K,6M,12M --qos default --reps 2 --exp e0_placement --variant default 0.5s
+r4 chase --sizes 48K,96K,6M,12M --qos interactive --reps 2 --exp e0_placement --variant interactive 0.5s
