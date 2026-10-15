@@ -1,0 +1,43 @@
+HV1 || The L1 to L2 step is at 144 KiB (sweep step above 128 KiB); user-interactive threads show Super-core signatures (Section 1.5). || Confirmed
+HV2 || Interquartile range over median: 0.4% (L1), 0.4% (L2), 1.6% (DRAM). In the system-level-cache ramp the range over 12 rounds at 64 MiB is {{nr('e1_chase','ns_per_load',2**26,field='min')|.0f}} to {{nr('e1_chase','ns_per_load',2**26,field='max')|.0f}} ns (median {{v['SLC64']|.0f}}). || Confirmed for plateaus; ramp within about 15% of the median
+HV3 || No DRAM-resident bandwidth above 460 GB/s; maximum {{v['maxbw']|.0f}} GB/s read and {{v['mix_r0w10_st_z']|.0f}} GB/s for zero-data stores (flagged as not DRAM bandwidth). || Confirmed
+H1a || {{v['L1']|.2f}} ns, {{cyc(v['L1'])|.1f}} cycles (estimated). || Confirmed
+H1b || L2 {{v['L2_2M']|.1f}} ns ({{cyc(v['L2_2M'])|.0f}} cycles, estimated) at 2 MiB; plateau of {{v['plateau']|.1f}} ns between 144 KiB and 1.1 MiB recurs; the ramp toward SLC starts at {{v['edgeL2']/2**20|.1f}} MiB, not at 16 MiB. || Latency confirmed; capacity prediction partly (13.5 MiB)
+H1c || Ramp from 13.5 MiB to 76 MiB, no plateau; DRAM level reached before 512 MiB. || Confirmed
+H1d || {{v['DRAM']|.1f}} ns, {{cyc(v['DRAM'])|.0f}} cycles (estimated). || Confirmed
+H1e || No violation of monotonicity within 5%. || Confirmed
+H2a || Sequential chase {{v['seq128']|.1f}} ns against {{v['rand128']|.1f}} ns: {{v['rand128']/v['seq128']|.1f}}x. || Confirmed
+H2b || Random chase 108 to 114 ns for 64 B to 4 KiB strides (1 Mi lines, amended design). || Confirmed (amended)
+H2c || Sequential chase at 2 KiB and 4 KiB strides: {{v['seq2048']|.0f}} and {{v['seq4096']|.0f}} ns, no benefit; benefit ends between 1 and 2 KiB. 16 KiB was not tested. || Refuted within the tested range (amended)
+H2d || One-core sequential DRAM read {{v['bw1G']|.0f}} GB/s (in range). Random-line rate 8% of sequential for independent 128 B loads (below the range) and 23% for the random-chain test. || Partly
+H2e || A 16 B access at 128 B stride gives 1/{{v['pat_seq_128_128']/v['pat_seq_16_128']|.0f}} (sequential) and 1/{{v['pat_rand_128_128']/v['pat_rand_16_128']|.1f}} (random) of the whole-line rate. || Refuted
+H3a || 100% read {{v['mix_r10w0']|.0f}}, 70/30 {{v['mix_r7w3_st_r']|.0f}}, 50/50 {{v['mix_r5w5_st_r']|.0f}}, 100% write {{v['mix_r0w10_st_r']|.0f}} GB/s: mixed traffic beats read-only; write/read = {{v['mix_r0w10_st_r']/v['mix_r10w0']|.2f}}. || Refuted (ordering); write ratio confirmed
+H3b || The modeled DRAM rate of 100% write ({{2*v['mix_r0w10_st_r']|.0f}} GB/s) is farther from the read rate than the uncorrected {{v['mix_r0w10_st_r']|.0f}} GB/s. The model is not testable without DRAM counters. || Refuted as phrased; write-allocate not established
+H3c || `stnp` with random data is {{100*(v['mix_r0w10_nt_r']/v['mix_r0w10_st_r']-1)|.0f}}% faster (not within 15%); `dc zva` is {{v['mix_r0w10_zva']/v['mix_r0w10_st_r']|.1f}}x faster than plain stores of random data but equals plain stores of zero data ({{v['mix_r0w10_st_z']|.0f}} GB/s). || Refuted (stnp); zva speed confirmed but not evidence of write-allocate
+H3d || Not tested at matched application rates. At 16 threads write-heavy mixes show higher probe latency per GB/s than read-only. || Not tested
+H4a || Plateau {{v['mlp_plateau']|.1f}} GB/s from K about 20 (range 16 to 64, 20 to 60 GB/s); K = 1: {{v['mlp_bw1']|.1f}} GB/s. || Confirmed
+H4b || Saturation at {{pk(v['maxbw'])|.0f}}% of 460 GB/s, reached with 5 to 6 threads. || Partly (range yes, 8 to 14 threads no)
+H4c || Latency {{v['lat4']/v['idle']|.2f}}x idle at 4 threads (93% of maximum bandwidth) and {{v['lat6']/v['idle']|.2f}}x at the maximum; 2x only at 14 threads. || Refuted as phrased
+H4d || N = {{v['bw5']*v['lat5']/128|.0f}} lines at K1; N keeps rising to {{v['bw16']*v['lat16']/128|.0f}} at 16 threads while bandwidth is flat. || Partly
+H4e || Per-thread rate falls with threads, but saturation alone explains it; placement above 6 threads is not observable. || Not separable
+H5a || L1 edge at 144 KiB (128 KiB expected), ramp from {{v['edgeL2']/2**20|.1f}} MiB (16 expected), DRAM plateau from {{v['edgeDRAM']/2**20|.0f}} MiB; one-core L1 bandwidth {{v['bw32K']|.0f}} GB/s (not above 300). || Partly
+H6a || Unit-stride rise {{g('e6_kern','ns_per_elem',variant='mul',ws_bytes=1610612736,stride=4.0)/v['k_unit_small']|.1f}}x (first kernel) and {{g('e6_kern','ns_per_elem',variant='saxpy',ws_bytes=1073741824,stride=4.0)/g('e6_kern','ns_per_elem',variant='saxpy',ws_bytes=8192,stride=4.0)|.1f}}x (second); cost not flat inside L2. || Refuted
+H6b || Cost rises to 128 B strides but is not flat beyond (192 B: {{v['kmul192']|.1f}}, 384 B: {{v['kmul384']|.1f}} ns per element). || Partly
+H6c || Scattered {{v['k_scat_ratio']|.0f}}x unit stride at 1.5 GiB ({{v['k_scat_ratio_small']|.1f}}x at 12 KiB). || Confirmed at DRAM footprints
+H6d || Measured/predicted: scattered {{v['am_mul_scattered']|.1f}} and {{v['am_saxpy_scattered']|.1f}}; unit stride {{v['am_mul_unit']|.2f}} and {{v['am_saxpy_unit']|.2f}}. || Partly
+H6e || Self-test: both kernels match the scalar reference. || Confirmed
+H7a || Translation penalty (random offsets minus packed) {{pen('paged_rand',256)|+.2f}} ns at 256 pages, none at 128. || Confirmed
+H7b || Step between 2048 and 4096 pages; penalty at 65536 pages {{pen('paged_rand',65536)|+.1f}} ns (below 10 to 30 ns); small non-monotonic wiggles up to 1.6 ns. || Partly (magnitude below range)
+H7c || Not attempted: superpage allocations fail on this system. || Not possible
+H8a || 4 MiB total: {{v['res4']|.0f}} GB/s against {{v['res256']|.0f}} GB/s DRAM, {{v['res4']/v['res256']|.1f}}x. || Confirmed
+H8b || {{v['DRAM']/v['seq1g']|.0f}}x lower latency for a sequential chase. || Confirmed
+H8c || Function removed from the binary; claims {{v['nosink']|.2g}} GB/s against {{v['sink']|.1f}} GB/s with a sink. || Confirmed
+H8d || First 5 ms at {{100*v['ramp5']|.0f}}% of steady clock. || Confirmed (effect far larger than 1.1x)
+H7d || The constant-offset layout is slowest at every size from 128 pages up ({{tl('paged_const',65536)|.0f}} ns against {{tl('paged_rand',65536)|.1f}} ns at 65536 pages). The original layout is above random offsets from 2048 pages on, equal at 16384, and below at 1024 ({{tl('paged',1024)|.2f}} against {{tl('paged_rand',1024)|.2f}} ns). The dip at 16384 pages is smaller with random offsets, not absent; the hump in the fixed-footprint panel disappears. || Partly confirmed
+H2f || 192 B and 320 B strides are {{v['al192']/v['al128']|.1f}}x faster than 128 B and 256 B although not powers of two; 384 B and 640 B are as slow as 128 B. A hashed line offset changes random 16 B loads by {{100*(v['alj256']/v['al256']-1)|.0f}}%, {{100*(v['alj512']/v['al512']-1)|.0f}}% and {{100*(v['alj1024']/v['al1024']-1)|.0f}}% (256, 512, 1024 B) and the kernels by 5 to 14% at the largest footprints. || Refuted for the non-power-of-two part; confirmed for the offset part
+H3e || Zero data {{v['mix_r0w10_st_z']/v['mix_r0w10_st_r']|.1f}}x faster than random for plain stores; `stnp` random {{v['mix_r0w10_nt_r']/v['mix_r0w10_st_r']|.2f}}x plain random; read bandwidth with random buffers within 4% of constant buffers. || Confirmed
+H4f || K1 = 5 threads (within 4 to 6), K2 = 4 threads (at most K1, differing by one thread). In-flight lines per thread are {{v['bw1']*v['lat1']/128|.0f}} to {{v['bw16']*v['lat16']/128/16|.0f}}, not within 30% of the one-core plateau of {{v['Ncore']|.0f}}; the delay series decreases. || Partly
+H11 || `ldp` and `ld1` four-register kernels reach 292 to 301 GB/s against 289 to 293 (within 10%); background-QoS threads reach at most 46 GB/s; two `stnp` writers raise total traffic to 336 to 355 GB/s, two plain-store writers do not (261 to 282 GB/s). || Confirmed (causes excluded, none identified)
+H12 || Both plateau edges are at the same footprints in bytes for 64, 128 and 256 B node spacing. The mutating walk is {{nr('e12_plateau','ns_per_load',271*1024,exp='e12_mut')-nr('e12_plateau','ns_per_load',49152,exp='e12_mut')|.1f}} ns above its L1 value at 271 KiB and rises smoothly instead of forming a plateau. || Bytes confirmed; predictor test inconclusive
+H9 || {{pm_verdict()}} || {{pm_verdict_label()}}
+H13 || {{pmu_verdict()}} || {{pmu_verdict_label()}}

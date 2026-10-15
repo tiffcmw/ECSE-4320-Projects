@@ -22,12 +22,12 @@ def _nosuptitle(fig, *a, **k):
 
 
 def panels(n):
-    """2x2 grid (n = 3 leaves the fourth cell empty) sized for a portrait page; returns the n used axes."""
-    fig, ax = plt.subplots(2, 2, figsize=(7.6, 6.6), layout="constrained")
-    ax = ax.flatten()
-    for a in ax[n:]:
-        a.set_axis_off()
-    return fig, ax[:n]
+    """Portrait-page layout: 2x2 grid; with n = 3 the third panel spans the bottom row. Returns the n axes."""
+    fig = plt.figure(figsize=(7.6, 6.4), layout="constrained")
+    gs = fig.add_gridspec(2, 2)
+    if n == 3:
+        return fig, np.array([fig.add_subplot(gs[0, 0]), fig.add_subplot(gs[0, 1]), fig.add_subplot(gs[1, :])])
+    return fig, np.array([fig.add_subplot(gs[i // 2, i % 2]) for i in range(n)])
 
 
 def save(fig, name):
