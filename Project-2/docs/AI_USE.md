@@ -20,4 +20,4 @@ Placeholder to be confirmed by the student after review: Claude Code (model clau
 5. Several figures quoted in the first report draft did not match the final session's tables (for example a `dc zva` ratio and TLB values); they were checked against `data/processed/tables.md` and corrected.
 
 ## Disclosures made by Claude Code during the work
-See `report/REPORT.md`, section "Anomalies and unresolved items", and the "Claims not fully confident" list. Development smoke tests were run before data collection; benchmarks were not tuned to match hypotheses.
+See the report (`report/ECSE4320_Project2_Report.pdf`), Sections 11 to 13. Development smoke tests were run before data collection; benchmarks were not tuned to match hypotheses.
