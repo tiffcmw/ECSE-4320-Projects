@@ -1,0 +1,3 @@
+kern.aiomax: 90
+kern.aioprocmax: 16
+kern.aiothreads: 4

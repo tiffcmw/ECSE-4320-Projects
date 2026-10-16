@@ -1,0 +1,4 @@
+scratch.noindex/
+data/smoke/
+*.tmp
+.DS_Store

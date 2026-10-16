@@ -1,0 +1,5 @@
+engine libaio: NOT available on this platform
+engine io_uring: NOT available on this platform
+engine posixaio: available
+engine psync: available
+fio-3.43
