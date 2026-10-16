@@ -1,0 +1,26 @@
+# EXP 1: zero-queue baselines. Fixed: QD1 (numjobs=1, iodepth=1), psync, direct=1, whole 32 GiB range,
+# incompressible data, 30 s + 5 s ramp, 3 trials. Varied: RW (randread|randwrite|read|write) and BS (4k|128k).
+[global]
+filename=${TESTFILE}
+direct=1
+ioengine=${ENGINE}
+thread=1
+group_reporting=1
+bs=${BS}
+rw=${RW}
+numjobs=${NUMJOBS}
+iodepth=${IODEPTH}
+size=${JOBSIZE}
+offset=0
+offset_increment=${OFFINC}
+time_based=1
+runtime=${RUNTIME}
+ramp_time=${RAMP}
+randrepeat=0
+norandommap=1
+refill_buffers=1
+buffer_compress_percentage=0
+lat_percentiles=1
+percentile_list=50:90:95:99:99.9:99.99
+
+[job]

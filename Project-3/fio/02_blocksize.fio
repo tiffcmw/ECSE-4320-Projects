@@ -1,0 +1,27 @@
+# EXP 2: block-size sweep. Fixed: effective QD16 (psync, numjobs=16, iodepth=1), direct=1, whole 32 GiB range,
+# incompressible data. Varied: RW (randread|randwrite|read|write), BS (4k..256k, seq also 512k,1m).
+# Sequential jobs each stream their own 1/16 of the file (OFFINC=JOBSIZE). Random offsets are bs-aligned (fio default).
+[global]
+filename=${TESTFILE}
+direct=1
+ioengine=${ENGINE}
+thread=1
+group_reporting=1
+bs=${BS}
+rw=${RW}
+numjobs=${NUMJOBS}
+iodepth=${IODEPTH}
+size=${JOBSIZE}
+offset=0
+offset_increment=${OFFINC}
+time_based=1
+runtime=${RUNTIME}
+ramp_time=${RAMP}
+randrepeat=0
+norandommap=1
+refill_buffers=1
+buffer_compress_percentage=0
+lat_percentiles=1
+percentile_list=50:90:95:99:99.9:99.99
+
+[job]

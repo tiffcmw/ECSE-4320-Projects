@@ -1,0 +1,26 @@
+# EXP 6a: working-set size. Fixed: 4 KiB, effective QD16 (psync, numjobs=16), direct=1, 20 s + 3 s ramp.
+# Varied: RW (randread|randwrite) and JOBSIZE (1g vs 32g address range starting at offset 0).
+[global]
+filename=${TESTFILE}
+direct=1
+ioengine=${ENGINE}
+thread=1
+group_reporting=1
+bs=${BS}
+rw=${RW}
+numjobs=${NUMJOBS}
+iodepth=${IODEPTH}
+size=${JOBSIZE}
+offset=0
+offset_increment=${OFFINC}
+time_based=1
+runtime=${RUNTIME}
+ramp_time=${RAMP}
+randrepeat=0
+norandommap=1
+refill_buffers=1
+buffer_compress_percentage=0
+lat_percentiles=1
+percentile_list=50:90:95:99:99.9:99.99
+
+[job]

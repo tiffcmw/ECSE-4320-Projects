@@ -1,0 +1,18 @@
+# PRECONDITION: sequentially write the whole 32 GiB test file once with incompressible data,
+# so every later read hits allocated blocks. Not a measurement.
+# Fixed: 1 MiB blocks, direct=1, 4 jobs each writing its own 8 GiB quarter, psync. Varied: none.
+[global]
+filename=${TESTFILE}
+direct=1
+ioengine=psync
+thread=1
+bs=1m
+rw=write
+refill_buffers=1
+buffer_compress_percentage=0
+group_reporting=1
+numjobs=4
+size=8g
+offset_increment=8g
+
+[fill]

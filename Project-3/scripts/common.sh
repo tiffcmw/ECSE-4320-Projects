@@ -106,3 +106,38 @@ TRIALS="${TRIALS:-3}"
 # rt FULL_RUNTIME: runtime in seconds, 3 in smoke mode
 rt() { if [ "${SMOKE:-0}" = "1" ]; then echo 3; else echo "$1"; fi; }
 ramp() { if [ "${SMOKE:-0}" = "1" ]; then echo 1; else echo "$1"; fi; }
+
+# is_random RW
+is_random() { case "$1" in rand*) return 0;; *) return 1;; esac; }
+# geom RW NUMJOBS -> sets JOBSIZE / OFFINC.  Random jobs share the whole range; sequential jobs get
+# disjoint 1/NUMJOBS slices so that each job stays sequential.
+geom() {
+  if is_random "$1"; then JOBSIZE="${SIZE_GIB}g"; OFFINC=0
+  else JOBSIZE="$(( SIZE_GIB / $2 ))g"; OFFINC="$JOBSIZE"; fi
+}
+
+# run_multi JOBFILE OUTPUT_PREFIX K [VAR=value ...]: K concurrent fio processes -> PREFIX__p0.json .. PREFIX__p{K-1}.json
+# (fio allows <= 16 jobs per process on macOS because of the 4 MB System V shm limit)
+run_multi() {
+  local job="$1" pre="$2" k="$3"; shift 3
+  guard_path "$TESTFILE"; mkdir -p "$(dirname "$pre")"
+  [ -f "${pre}__p0.json" ] && { echo "  exists, skip: $(basename "$pre")"; return 0; }
+  echo "  fio x$k $(basename "$job") -> $(basename "$pre")__p*.json"
+  local pids=() i
+  for ((i=0;i<k;i++)); do
+    env TESTFILE="$TESTFILE" ENGINE="$ENGINE" "$@" fio --output-format=json --output="${pre}__p$i.json.tmp" "$job" &
+    pids+=($!)
+  done
+  local fail=0; for p in "${pids[@]}"; do wait "$p" || fail=1; done
+  [ $fail = 0 ] || { rm -f "${pre}"__p*.json.tmp; die "a fio process failed for $pre"; }
+  for ((i=0;i<k;i++)); do mv "${pre}__p$i.json.tmp" "${pre}__p$i.json"; done
+  sleep "${SETTLE:-3}"
+}
+
+# stage_begin NAME / stage_end NAME: health snapshots + SMART bytes written for the whole stage
+stage_begin() { STAGE_B0=$(smart_bytes_written); health_log "$1" before; echo "stage $1 start $(date '+%H:%M:%S')"; }
+stage_end() {
+  health_log "$1" after
+  local b1; b1=$(smart_bytes_written)
+  echo "stage $1 end $(date '+%H:%M:%S'); SMART host bytes written this stage: $(( b1 - STAGE_B0 ))" | tee -a "$RAW/health/${1}_bytes_written.txt"
+}

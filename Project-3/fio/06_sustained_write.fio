@@ -1,0 +1,26 @@
+# EXP 6b: sustained sequential write for 5 minutes, to look for cache exhaustion / throttling.
+# Fixed: 1 MiB sequential writes, 4 jobs x 8 GiB (each job loops over its own quarter of the 32 GiB file),
+# psync, direct=1, incompressible data, runtime 300 s, no ramp (we want the start). 1 trial (user-capped).
+# Time series: bandwidth and IOPS averaged over 1 s windows (log_avg_msec=1000).
+# Expected write volume: 300 s x (3 to 6 GB/s) = 0.9 to 1.8 TB. Actual bytes are logged (fio io_bytes + SMART delta).
+[global]
+filename=${TESTFILE}
+direct=1
+ioengine=psync
+thread=1
+group_reporting=1
+bs=1m
+rw=write
+numjobs=4
+size=8g
+offset_increment=8g
+time_based=1
+runtime=300
+refill_buffers=1
+buffer_compress_percentage=0
+lat_percentiles=1
+log_avg_msec=1000
+write_bw_log=${LOGPREFIX}
+write_iops_log=${LOGPREFIX}
+
+[sustained]

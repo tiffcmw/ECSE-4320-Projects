@@ -1,0 +1,27 @@
+# EXP 7: misleading setups, shown next to the correct one. 4 KiB random read, whole range = 1 GiB (fits in RAM).
+# Fixed: bs=4k, randread, 20 s + 5 s ramp, 1 GiB range. Varied (env):
+#   A correct:   ENGINE=psync    DIRECT=1 NUMJOBS=1 IODEPTH=1   (QD1, bypasses page cache)
+#   B flawed:    ENGINE=psync    DIRECT=0 NUMJOBS=1 IODEPTH=1   (buffered: page cache serves the reads)
+#   C correct:   ENGINE=psync    DIRECT=1 NUMJOBS=16 IODEPTH=1  (real QD16)
+#   D flawed:    ENGINE=posixaio DIRECT=1 NUMJOBS=1 IODEPTH=64  ("QD64" that is really ~16: macOS aio limit)
+[global]
+filename=${TESTFILE}
+direct=${DIRECT}
+ioengine=${ENGINE}
+thread=1
+group_reporting=1
+bs=4k
+rw=randread
+numjobs=${NUMJOBS}
+iodepth=${IODEPTH}
+size=1g
+offset=0
+time_based=1
+runtime=${RUNTIME}
+ramp_time=${RAMP}
+randrepeat=0
+norandommap=1
+lat_percentiles=1
+percentile_list=50:90:95:99:99.9:99.99
+
+[job]

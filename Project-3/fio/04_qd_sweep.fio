@@ -1,0 +1,28 @@
+# EXP 4: queue-depth sweep. Fixed: 4 KiB random read, direct=1, whole 32 GiB range, 20 s + 3 s ramp.
+# Varied: effective QD = numjobs (psync) up to 16 per fio process; QD 32/64/128 = 2/4/8 fio processes started together
+# (fio supports max 16 jobs per process on this Mac), each process writes its own JSON (suffix __p<k>).
+# Cross-check: ENGINE=posixaio with IODEPTH=1..64, numjobs=1 (kernel caps it near 16).
+[global]
+filename=${TESTFILE}
+direct=1
+ioengine=${ENGINE}
+thread=1
+group_reporting=1
+bs=${BS}
+rw=${RW}
+numjobs=${NUMJOBS}
+iodepth=${IODEPTH}
+size=${JOBSIZE}
+offset=0
+offset_increment=${OFFINC}
+time_based=1
+runtime=${RUNTIME}
+ramp_time=${RAMP}
+randrepeat=0
+norandommap=1
+refill_buffers=1
+buffer_compress_percentage=0
+lat_percentiles=1
+percentile_list=50:90:95:99:99.9:99.99
+
+[job]

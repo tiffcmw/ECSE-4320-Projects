@@ -1,0 +1,35 @@
+#!/bin/bash
+# Stage: Exp 6 (working set, sustained write) and Exp 7 (misleading setups).
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
+preflight; stage_begin exp67
+# Exp 7 first (reads only), then Exp 6a, then idle, then 6b last (heaviest write)
+geom randread 1
+for cfg in "A:psync:1:1:1" "B:psync:0:1:1" "C:psync:1:16:1" "D:posixaio:1:1:64"; do
+  IFS=: read -r tag eng direct nj qd <<<"$cfg"
+  for t in $(seq 1 "$TRIALS"); do
+    run_fio "$FIO_DIR/07_misleading.fio" "$RAW/exp7/exp7__cfg=$tag__eng=$eng__direct=$direct__nj=$nj__qd=$qd__t$t.json" \
+      ENGINE=$eng DIRECT=$direct NUMJOBS=$nj IODEPTH=$qd RUNTIME=$(rt 20) RAMP=$(ramp 5)
+  done
+done
+for rw in randread randwrite; do for sz in 1 32; do
+  for t in $(seq 1 "$TRIALS"); do
+    run_fio "$FIO_DIR/06_workingset.fio" "$RAW/exp6a/exp6a__rw=$rw__range=${sz}g__t$t.json" \
+      RW=$rw BS=4k NUMJOBS=16 IODEPTH=1 JOBSIZE=${sz}g OFFINC=0 RUNTIME=$(rt 20) RAMP=$(ramp 3)
+  done
+done; done
+# Exp 6b: rested drive (idle 120 s) -> 300 s sustained 1 MiB sequential write, 1 s time series + SMART temperature
+echo "idle before sustained write"; [ "${SMOKE:-0}" = 1 ] || sleep 120
+OUT="$RAW/exp6b"; mkdir -p "$OUT"
+if [ ! -f "$OUT/exp6b__sustained.json" ]; then
+  B0=$(smart_bytes_written)
+  ( while true; do echo "$(date +%s) $(smartctl -a disk0 2>/dev/null | awk '/^Temperature:/{print $2}')" >> "$OUT/temperature.log"; sleep 10; done ) &
+  TPID=$!
+  if [ "${SMOKE:-0}" = 1 ]; then RTS=5; else RTS=300; fi
+  sed "s/^runtime=300/runtime=$RTS/" "$FIO_DIR/06_sustained_write.fio" > "$SCRATCH/06_sustained_write.run.fio"
+  ( cd "$OUT" && env TESTFILE="$TESTFILE" LOGPREFIX="$OUT/exp6b" fio --output-format=json --output="$OUT/exp6b__sustained.json.tmp" "$SCRATCH/06_sustained_write.run.fio" ) \
+     || { kill $TPID; die "sustained fio failed"; }
+  kill $TPID; wait $TPID 2>/dev/null || true
+  mv "$OUT/exp6b__sustained.json.tmp" "$OUT/exp6b__sustained.json"
+  echo "SMART host bytes written during sustained write: $(( $(smart_bytes_written) - B0 ))" | tee "$OUT/bytes_written.txt"
+fi
+stage_end exp67
