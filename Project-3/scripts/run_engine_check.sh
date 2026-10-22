@@ -3,7 +3,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 preflight nofile
 CHECKFILE="$SCRATCH/engine_check.bin"; guard_path "$CHECKFILE"
-OUT="$RAW/engine_check"; mkdir -p "$OUT"
+OUT="$RAW/engine_check_macos$(sw_vers -productVersion)"; mkdir -p "$OUT"
 for e in libaio io_uring posixaio psync; do
   fio --enghelp 2>&1 | grep -qw "$e" && echo "engine $e: available" || echo "engine $e: NOT available on this platform"
 done | tee "$OUT/engines.txt"
@@ -13,13 +13,15 @@ if [ ! -f "$CHECKFILE" ] || [ "$(stat -f %z "$CHECKFILE")" != 1073741824 ]; then
   fio --name=fill --filename="$CHECKFILE" --size=1g --rw=write --bs=1m --direct=1 --ioengine=psync \
       --refill_buffers=1 --buffer_compress_percentage=0 --output="$OUT/fill.log" >/dev/null
 fi
-sysctl kern.aiomax kern.aioprocmax kern.aiothreads > "$OUT/aio_sysctl.txt"
+sysctl kern.aiomax kern.aioprocmax kern.aiothreads kern.sysv.shmmax kern.sysv.shmall > "$OUT/aio_sysctl.txt"
 export CHECKFILE
 run_chk() { # engine iodepth numjobs
   run_fio "$FIO_DIR/engine_check.fio" "$OUT/chk__eng=$1__iodepth=$2__numjobs=$3.json" ENGINE="$1" IODEPTH="$2" NUMJOBS="$3" CHECKFILE="$CHECKFILE"
 }
-for qd in 1 4 16 32 64; do run_chk posixaio $qd 1; done
-for nj in 1 4 16 64; do run_chk psync 1 $nj; done
+for qd in 1 4 16 32 64 128 256; do run_chk posixaio $qd 1; done
+for nj in 1 4 16; do run_chk psync 1 $nj; done
+# numjobs=64 is expected to FAIL ("failed to setup shm segment", kern.sysv.shmall = 4 MB); recorded, not fatal
+( run_chk psync 1 64 ) 2>&1 | tail -2 | tee "$OUT/psync_numjobs64_expected_failure.txt" || true
 python3 -I - "$OUT" <<'PY'
 import json,glob,sys,os
 for f in sorted(glob.glob(sys.argv[1]+"/chk__*.json")):

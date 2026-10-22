@@ -3,7 +3,7 @@
 #   A correct:   ENGINE=psync    DIRECT=1 NUMJOBS=1 IODEPTH=1   (QD1, bypasses page cache)
 #   B flawed:    ENGINE=psync    DIRECT=0 NUMJOBS=1 IODEPTH=1   (buffered: page cache serves the reads)
 #   C correct:   ENGINE=psync    DIRECT=1 NUMJOBS=16 IODEPTH=1  (real QD16)
-#   D flawed:    ENGINE=posixaio DIRECT=1 NUMJOBS=1 IODEPTH=64  ("QD64" that is really ~16: macOS aio limit)
+#   D flawed:    ENGINE=psync    DIRECT=1 NUMJOBS=1 IODEPTH=64  (iodepth is ignored by a synchronous engine: real QD is 1)
 [global]
 filename=${TESTFILE}
 direct=${DIRECT}

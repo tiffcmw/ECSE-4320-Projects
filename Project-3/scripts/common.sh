@@ -52,7 +52,7 @@ check_power() {
 
 # SMART "Data Units Written" (1 unit = 512000 bytes) -> bytes written by host since manufacture
 smart_bytes_written() {
-  smartctl -a disk0 2>/dev/null | awk -F: '/Data Units Written/{gsub(/[ ,]/,"",$2); sub(/\[.*/,"",$2); print $2*512000}'
+  { smartctl -a disk0 2>/dev/null || true; } | awk -F: '/Data Units Written/{gsub(/[ ,]/,"",$2); sub(/\[.*/,"",$2); print $2*512000}'
 }
 
 # health_log TAG PHASE: snapshot of drive/power/thermal state to data/raw/health/TAG_PHASE.txt
@@ -68,7 +68,7 @@ health_log() {
     echo "== free space:"; df -h "$SCRATCH" | tail -1
     echo "== smartctl:"; smartctl -a disk0 2>&1 | grep -E "Model Number|Firmware|Temperature|Percentage Used|Data Units|Host (Read|Write)|Available Spare:|Critical Warning|self-assessment" || echo "smartctl unreadable"
     echo "== smart_bytes_written: $(smart_bytes_written)"
-    echo "== top CPU consumers:"; ps -Aro pcpu,comm | head -6
+    echo "== top CPU consumers:"; ps -Aro pcpu,comm | head -6 || true
   } > "$out" 2>&1
 }
 
@@ -114,24 +114,6 @@ is_random() { case "$1" in rand*) return 0;; *) return 1;; esac; }
 geom() {
   if is_random "$1"; then JOBSIZE="${SIZE_GIB}g"; OFFINC=0
   else JOBSIZE="$(( SIZE_GIB / $2 ))g"; OFFINC="$JOBSIZE"; fi
-}
-
-# run_multi JOBFILE OUTPUT_PREFIX K [VAR=value ...]: K concurrent fio processes -> PREFIX__p0.json .. PREFIX__p{K-1}.json
-# (fio allows <= 16 jobs per process on macOS because of the 4 MB System V shm limit)
-run_multi() {
-  local job="$1" pre="$2" k="$3"; shift 3
-  guard_path "$TESTFILE"; mkdir -p "$(dirname "$pre")"
-  [ -f "${pre}__p0.json" ] && { echo "  exists, skip: $(basename "$pre")"; return 0; }
-  echo "  fio x$k $(basename "$job") -> $(basename "$pre")__p*.json"
-  local pids=() i
-  for ((i=0;i<k;i++)); do
-    env TESTFILE="$TESTFILE" ENGINE="$ENGINE" "$@" fio --output-format=json --output="${pre}__p$i.json.tmp" "$job" &
-    pids+=($!)
-  done
-  local fail=0; for p in "${pids[@]}"; do wait "$p" || fail=1; done
-  [ $fail = 0 ] || { rm -f "${pre}"__p*.json.tmp; die "a fio process failed for $pre"; }
-  for ((i=0;i<k;i++)); do mv "${pre}__p$i.json.tmp" "${pre}__p$i.json"; done
-  sleep "${SETTLE:-3}"
 }
 
 # stage_begin NAME / stage_end NAME: health snapshots + SMART bytes written for the whole stage

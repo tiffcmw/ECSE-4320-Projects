@@ -1,0 +1,5 @@
+kern.aiomax: 1024
+kern.aioprocmax: 256
+kern.aiothreads: 4
+kern.sysv.shmmax: 4194304
+kern.sysv.shmall: 1024

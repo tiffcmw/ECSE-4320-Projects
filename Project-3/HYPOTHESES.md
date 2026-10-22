@@ -63,3 +63,22 @@ Tail: p99 about 1.5 to 3 times p50; p95 close to p50. Writes will have a heavier
 - 4 KiB random read, QD1, on a 1 GiB range that fits in RAM: buffered (`direct=0`) reads show 1 to 5 us mean latency and 50 to 300 times the IOPS of direct reads (70 us), once the pages are warm. This is a measurement of the page cache and memory, not the SSD.
 - Proof by difference: same job, same file, only `direct` changes. If the buffered number is not far above the direct number, then `direct=1` is not doing what I think (this is also the pre-run direct-I/O check).
 - Second misleading setup: `posixaio` with `iodepth=64`. Predicted effective QD is about 16, not 64, so throughput is no higher than at `iodepth=16`.
+
+## Amendment A (made after the smoke tests and before any experiment data was collected)
+
+Smoke tests (3 s runs, `data/smoke/`, not used for any result) showed three things that change the design, not the predictions:
+
+1. fio cannot run two 16-job processes at once on this Mac (`kern.sysv.shmall` is 4 MB for the whole system), so "several fio processes" is replaced by forked `posixaio` jobs (`thread=0`, `numjobs=k`, `iodepth=16`, configured QD = 16k). A 4 s probe gave effective depths of 31 (k=2) and 62 (k=4) by Little's Law, with 209 k and 231 k IOPS, against 187 k for `psync` at QD16. So the device was not yet saturated at QD16, and my "no more than 10% extra beyond QD16" prediction is at risk (the probe suggests about +20%). This is stated so the miss, if it happens, is not a surprise rewrite.
+2. The knee rule is unchanged (smallest effective QD with at least 90% of peak IOPS) but is now evaluated over all Exp 4 points whose Little's-law check passes, across `psync` and forked `posixaio`. Engines differ in overhead, so the engine of each point is stated in the figure.
+3. The sustained-write run measured about 12 GB/s in a 5 s probe (SMART host-bytes delta agreed with fio to 0.01%), twice my 3 to 6 GB/s guess, and a 300 s run would write about 3.7 TB. It is now capped at 2.2 TB (4 x 512 GiB) or 300 s, whichever comes first. Exp 2 write runs are shortened to 4 s (+1 s ramp) to keep write traffic near 1.5 TB. The 12 GB/s figure is an unplanned observation, so my Exp 2 / Exp 6 write-plateau predictions (2 to 5 GB/s, 4 to 6 GB/s burst) are probably too low; I leave them as written.
+
+## Amendment B (also before any experiment data; supersedes parts of the engine facts and Amendment A item 1)
+
+Between the first engine check and the smoke tests the Mac was upgraded from macOS 26.5.2 to 27.0.1 (found when the smoke data contradicted my engine-check conclusion). The OS limits changed: `kern.aiomax` 90 -> 1024 and `kern.aioprocmax` 16 -> 256. The 26.5.2 engine check is kept in `data/raw/engine_check_macos26.5.2/` and marked superseded; the engine check was repeated on 27.0.1 (`data/raw/engine_check_macos27.0.1/`). All experiment data, and the 32 GiB precondition, are taken on 27.0.1. fio's own limit of about 16 jobs (4 MB System V shared memory, `kern.sysv.shmall`, unchanged) still holds.
+
+Consequences for the plan:
+
+1. On 27.0.1 single-process `posixaio` reaches the configured depth (Little's Law: 15.8, 31.7, 63.7, 127.8, 255.2 for iodepth 16, 32, 64, 128, 256). So the "posixaio effective QD stays near 16" prediction in Exp 4 is withdrawn, and the forked-process design in Amendment A is dropped. Exp 4 is now: `psync` numjobs 1 to 16, plus `posixaio` iodepth 1 to 256 in one process. The Little's-law check still flags any point where effective and configured depth differ by more than 10%.
+2. New Exp 4 prediction (made knowing the engine check on a 1 GiB file gave a plateau of 188 to 194 k IOPS from QD32 up, and 192 k for psync QD16): on the 32 GiB range, IOPS saturates between QD16 and QD64 at 180 to 250 k, past the plateau latency grows as QD / peak IOPS (QD256 about 1.0 to 1.4 ms mean), and the knee (90% of peak rule) falls at QD 8 to 32.
+3. The Exp 7 "wrong effective queue depth" example becomes `psync` with `iodepth=64`: a synchronous engine ignores `iodepth`, so the real depth is 1. Prediction: IOPS and latency equal to the correct QD1 run (config A), about 14 k IOPS, and Little's Law reports an effective depth of 1.0 against a configured 64.
+4. The 128 KiB sequential and write-plateau predictions in Exp 1, 2 and 6 are unchanged, with the caveat in Amendment A item 3 (writes appear faster than I guessed).

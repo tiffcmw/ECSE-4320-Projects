@@ -4,16 +4,16 @@ source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 preflight; stage_begin exp67
 # Exp 7 first (reads only), then Exp 6a, then idle, then 6b last (heaviest write)
 geom randread 1
-for cfg in "A:psync:1:1:1" "B:psync:0:1:1" "C:psync:1:16:1" "D:posixaio:1:1:64"; do
+for cfg in "A:psync:1:1:1" "B:psync:0:1:1" "C:psync:1:16:1" "D:psync:1:1:64"; do
   IFS=: read -r tag eng direct nj qd <<<"$cfg"
   for t in $(seq 1 "$TRIALS"); do
-    run_fio "$FIO_DIR/07_misleading.fio" "$RAW/exp7/exp7__cfg=$tag__eng=$eng__direct=$direct__nj=$nj__qd=$qd__t$t.json" \
+    run_fio "$FIO_DIR/07_misleading.fio" "$RAW/exp7/exp7__cfg=${tag}__eng=${eng}__direct=${direct}__nj=${nj}__qd=${qd}__t$t.json" \
       ENGINE=$eng DIRECT=$direct NUMJOBS=$nj IODEPTH=$qd RUNTIME=$(rt 20) RAMP=$(ramp 5)
   done
 done
 for rw in randread randwrite; do for sz in 1 32; do
   for t in $(seq 1 "$TRIALS"); do
-    run_fio "$FIO_DIR/06_workingset.fio" "$RAW/exp6a/exp6a__rw=$rw__range=${sz}g__t$t.json" \
+    run_fio "$FIO_DIR/06_workingset.fio" "$RAW/exp6a/exp6a__rw=${rw}__range=${sz}g__t$t.json" \
       RW=$rw BS=4k NUMJOBS=16 IODEPTH=1 JOBSIZE=${sz}g OFFINC=0 RUNTIME=$(rt 20) RAMP=$(ramp 3)
   done
 done; done

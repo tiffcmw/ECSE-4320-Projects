@@ -1,12 +1,13 @@
 # EXP 4: queue-depth sweep. Fixed: 4 KiB random read, direct=1, whole 32 GiB range, 20 s + 3 s ramp.
-# Varied: effective QD = numjobs (psync) up to 16 per fio process; QD 32/64/128 = 2/4/8 fio processes started together
-# (fio supports max 16 jobs per process on this Mac), each process writes its own JSON (suffix __p<k>).
-# Cross-check: ENGINE=posixaio with IODEPTH=1..64, numjobs=1 (kernel caps it near 16).
+# Varied: effective QD, built two ways (macOS 27.0.1 limits, see README):
+#   psync, thread=1, numjobs=QD, iodepth=1 (QD 1..16; fio allows ~16 jobs because kern.sysv.shmall is 4 MB system wide)
+#   posixaio, thread=1, numjobs=1, iodepth=QD (QD 1..256; kern.aioprocmax=256)
+# The Little's-law check (IOPS x mean latency) tests whether the configured depth is the depth actually achieved.
 [global]
 filename=${TESTFILE}
 direct=1
 ioengine=${ENGINE}
-thread=1
+thread=${THREAD}
 group_reporting=1
 bs=${BS}
 rw=${RW}

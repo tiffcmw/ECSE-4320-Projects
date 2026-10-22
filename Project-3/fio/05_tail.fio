@@ -1,10 +1,10 @@
 # EXP 5: tail latency. Fixed: 4 KiB random read, direct=1, whole 32 GiB range, 60 s + 5 s ramp, 3 trials.
-# Varied: QD (mid = 4, knee = from Exp 4 per knee rule), psync numjobs=QD. p50..p99.99 from lat_ns percentiles.
+# Varied: QD (mid = 4 psync jobs; knee = from Exp 4 per knee rule, engine and thread mode as found there); THREAD env. p50..p99.99 from lat_ns percentiles.
 [global]
 filename=${TESTFILE}
 direct=1
 ioengine=${ENGINE}
-thread=1
+thread=${THREAD}
 group_reporting=1
 bs=${BS}
 rw=${RW}
