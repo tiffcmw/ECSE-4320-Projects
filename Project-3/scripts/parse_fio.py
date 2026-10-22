@@ -13,7 +13,7 @@ import numpy as np
 
 P3 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RAW = os.path.join(P3, os.environ.get("RAW_SUBDIR", "data/raw"))
-OUT = os.path.join(P3, "data", "processed")
+OUT = os.path.join(P3, os.environ.get("PROC_SUBDIR", "data/processed"))
 PCTS = ["50", "90", "95", "99", "99.9", "99.99"]
 
 def load(path):

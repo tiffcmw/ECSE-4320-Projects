@@ -2,6 +2,7 @@
 # Stage: Exp 5 (tail latency) at mid QD (4) and at the knee QD found from Exp 4.
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 preflight
+export RAW_SUBDIR="${RAW#$P3/}"; [ "${SMOKE:-0}" = 1 ] && export PROC_SUBDIR=data/smoke/processed
 python3 -I "$P3/scripts/parse_fio.py" >/dev/null
 KNEE=$(python3 -I "$P3/scripts/find_knee.py") || die "knee not found; run Exp 4 first"
 echo "knee QD (smallest QD with >=90% of peak IOPS, psync): $KNEE"
