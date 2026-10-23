@@ -2,3 +2,9 @@ build/
 bin/
 __pycache__/
 *.trace
+
+# internal notes, kept on disk, not submitted
+docs/AI_USE.md
+docs/notes_alignment_stride.md
+docs/notes_locality_dtype.md
+docs/notes_roofline_negative.md

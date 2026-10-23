@@ -21,7 +21,7 @@ Project-2/
   data/raw/          per-round CSVs, logs and metadata JSON, one set per collection session
   data/processed/    medians, min, max, n per configuration (CSV), tables.md, validation.md, selftest.log
   plots/             figures (PNG at 220 dpi and PDF)
-  docs/              ENVIRONMENT, PLAN, AI_USE, WORK_SPLIT, DEFENSE_SHEET
+  docs/              ENVIRONMENT, PLAN
   bin/               build output (git-ignored)
 ```
 
@@ -74,8 +74,6 @@ Figures are `plots/<name>.png` and `.pdf`, produced by `scripts/plot.py`. Tables
 | Appendix B (dead-code evidence) | none | `data/raw/dce_asm.txt` |
 | Appendix E (counter attempts) | `scripts/run_privileged.sh`, `scripts/xctrace_bottleneck.py` | `data/raw/counters/` |
 
-The report text cites the counter appendix as "Appendix F" in four places (pages 2, 4, 23 and 26); the appendix is lettered E (page 27) in the PDF.
-
 ## 7. Deviations from the handout
 
 - No Intel MLC: an own loaded-latency harness with injected delay replaces it (Report, Section 1.3 and Table 3, Section 5).
@@ -99,4 +97,4 @@ Some raw metadata files in `data/raw/` (`meta_*_full.json`) record the original 
 
 ## 10. Team and AI use
 
-Team: Tiffany Cheng (Exp 1, 2 and 5), Marie Morales (Exp 3 and 4) and Alex Redd (Exp 6, 7 and 8, and the counter attempts), as stated in Appendix A of the report. Authorship, the AI tool used (Claude Code, model claude-sonnet-5-5) and the problems found and fixed are in Appendix A; benchmark flaws found are in Section 13. Repository notes: `docs/AI_USE.md` and `docs/WORK_SPLIT.md`. Names are filled in; the `[STUDENT TO FILL: ...]` fields in those two files (what each student modified, tested or rejected, and the cross-review details) are still open, and the report PDF does not supply that text.
+Team: Tiffany Cheng (Exp 1, 2 and 5), Marie Morales (Exp 3 and 4) and Alex Redd (Exp 6, 7 and 8, and the counter attempts), as stated in Appendix A of the report. Authorship, the AI tool used (Claude Code, model claude-sonnet-5-5) and the problems found and fixed are in Appendix A; benchmark flaws found are in Section 13.

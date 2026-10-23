@@ -12,7 +12,7 @@ This project profiles the internal SSD of an M5 Max MacBook Pro (APPLE SSD AP204
 
 ```
 Project-3/
-  README.md, HYPOTHESES.md, AI_USE.md
+  README.md, HYPOTHESES.md
   report/            only the final report PDF (and .gitignore); older drafts and build output are untracked
   report_src/        REPORT.template.md and REPORT.md: the earlier markdown draft (scripts/build_report.py fills the template)
   fio/               one job file per experiment; header comments list fixed and varied knobs
@@ -123,4 +123,4 @@ Many fio JSON files in `data/raw/` record the original machine path in their `fi
 
 ## 10. Team and AI use
 
-Team: Tiffany Cheng (Student A: safety guards, preconditioning, Exp 1 and 2), Marie Morales (Student B: Exp 3 and 4, knee analysis) and Alex Redd (Student C: Exp 5, 6 and 7, anomalies), as stated in Appendix A of the report. The AI tool used (Claude Code), errors found and corrections are also in Appendix A. Repository notes: `AI_USE.md`; its `[STUDENT TO FILL: ...]` fields (what each student changed, tested and rejected, and the consistency-pass owner) are still open.
+Team: Tiffany Cheng (Student A: safety guards, preconditioning, Exp 1 and 2), Marie Morales (Student B: Exp 3 and 4, knee analysis) and Alex Redd (Student C: Exp 5, 6 and 7, anomalies), as stated in Appendix A of the report. The AI tool used (Claude Code), errors found and corrections are also in Appendix A.

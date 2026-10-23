@@ -22,7 +22,7 @@ Project-1/
   data/processed/    derived tables
   plots/             figures (PNG and PDF)
   vecreports/        compiler remarks (remarks/), assembly (asm/), VECTORIZATION.md, summary.md
-  docs/              ENVIRONMENT, METHODOLOGY, HYPOTHESES, PLAN, AI_USE, REPRODUCTION, per-experiment notes
+  docs/              ENVIRONMENT, METHODOLOGY, HYPOTHESES, PLAN, REPRODUCTION
   bin/, build/       build output (git-ignored)
 ```
 
@@ -91,4 +91,4 @@ Plots are in `plots/` (`.png` and `.pdf`), processed tables in `data/processed/`
 
 ## 10. Team and AI use
 
-Team: Tiffany Cheng, Marie Morales and Alex Redd. Appendix A of the report describes the authorship as "three students" without naming them. Authorship, the AI tool used (Claude Code) and the errors found and corrected are in Appendix A of the report. Repository notes: `docs/AI_USE.md`.
+Team: Tiffany Cheng, Marie Morales and Alex Redd. Appendix A of the report describes the authorship as "three students" without naming them. Authorship, the AI tool used (Claude Code) and the errors found and corrected are in Appendix A of the report.

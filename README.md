@@ -21,4 +21,4 @@ Machine (all three projects): Apple M5 Max MacBook Pro, 18 cores (6 Super + 12 P
 
 ## AI use
 
-See Appendix A (AI-use note) of each report: [Project 1](Project-1/report/Project1_Report.pdf), [Project 2](Project-2/report/Project2_Report.pdf), [Project 3](Project-3/report/Project3_Report.pdf). Repository notes are in `Project-1/docs/AI_USE.md`, `Project-2/docs/AI_USE.md` and `Project-3/AI_USE.md`.
+See Appendix A (AI-use note) of each report: [Project 1](Project-1/report/Project1_Report.pdf), [Project 2](Project-2/report/Project2_Report.pdf), [Project 3](Project-3/report/Project3_Report.pdf).

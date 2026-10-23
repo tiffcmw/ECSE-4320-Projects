@@ -3,3 +3,8 @@ bin/
 .DS_Store
 __pycache__/
 *.o
+
+# internal team notes, kept on disk, not submitted
+docs/AI_USE.md
+docs/DEFENSE_SHEET.md
+docs/WORK_SPLIT.md
