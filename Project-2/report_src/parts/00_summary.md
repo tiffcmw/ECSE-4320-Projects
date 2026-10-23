@@ -1,7 +1,7 @@
 ---
 title: "Cache and Memory Performance Profiling on an Apple M5 Max"
 subtitle: "ECSE 4320/6320 Class-wide Project 2"
-author: "[Member A], [Member B], [Member C]"
+author: "Tiffany Cheng, Marie Morales, Alex Redd"
 date: "October 2026"
 ---
 

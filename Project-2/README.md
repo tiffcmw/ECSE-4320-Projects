@@ -74,7 +74,7 @@ Figures are `plots/<name>.png` and `.pdf`, produced by `scripts/plot.py`. Tables
 | Appendix B (dead-code evidence) | none | `data/raw/dce_asm.txt` |
 | Appendix E (counter attempts) | `scripts/run_privileged.sh`, `scripts/xctrace_bottleneck.py` | `data/raw/counters/` |
 
-The report text cites the counter appendix as "Appendix F" in four places; the appendix is lettered E in the PDF.
+The report text cites the counter appendix as "Appendix F" in four places (pages 2, 4, 23 and 26); the appendix is lettered E (page 27) in the PDF.
 
 ## 7. Deviations from the handout
 
@@ -95,6 +95,8 @@ The report text cites the counter appendix as "Appendix F" in four places; the a
 
 `scripts/run_all.sh` runs `bin/membench selftest` (`data/processed/selftest.log`) and `scripts/validate.py` (`data/processed/validation.md`: sanity checks on every configuration). `scripts/check_report.py` recomputes the report's derived numbers from the raw per-round CSVs and fails on mismatch (50 checks pass). The unused-result read loop is shown to be removed by the compiler with `otool` evidence in Appendix B of the report.
 
+Some raw metadata files in `data/raw/` (`meta_*_full.json`) record the original machine path and were not altered.
+
 ## 10. Team and AI use
 
-Authorship, the AI tool used (Claude Code, model claude-sonnet-5-5) and the problems found and fixed are in Appendix A of the report; benchmark flaws found are in Section 13. Repository notes: `docs/AI_USE.md` and `docs/WORK_SPLIT.md`. Both still contain unfilled placeholders (`[Member A]`, `[Member B]`, `[Member C]`, `[STUDENT TO FILL: ...]`) that the team must complete; the report PDF does not.
+Team: Tiffany Cheng (Exp 1, 2 and 5), Marie Morales (Exp 3 and 4) and Alex Redd (Exp 6, 7 and 8, and the counter attempts), as stated in Appendix A of the report. Authorship, the AI tool used (Claude Code, model claude-sonnet-5-5) and the problems found and fixed are in Appendix A; benchmark flaws found are in Section 13. Repository notes: `docs/AI_USE.md` and `docs/WORK_SPLIT.md`. Names are filled in; the `[STUDENT TO FILL: ...]` fields in those two files (what each student modified, tested or rejected, and the cross-review details) are still open, and the report PDF does not supply that text.

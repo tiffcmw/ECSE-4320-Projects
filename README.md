@@ -2,7 +2,7 @@
 
 Course: ECSE 4320/6320 (Advanced Computer Systems), class-wide projects, October 2026.
 
-Team: three students (Member A, B and C); the split of work is in Appendix A of each report. The report PDFs do not print names.
+Team: Tiffany Cheng (Student A, Member A), Marie Morales (Student B, Member B) and Alex Redd (Student C, Member C). The Project 2 and Project 3 reports name them in Appendix A; the Project 1 report says only "three students" there. The split of work is in Appendix A of each report.
 
 | Project | What was measured | Headline results (from the report) | Folder | Report |
 |---|---|---|---|---|

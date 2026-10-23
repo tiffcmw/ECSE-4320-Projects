@@ -36,16 +36,16 @@ Claude Code generated most of the code and the first-draft text. The students ar
 
 | Role | Owner | Scope | What they validate and defend |
 |---|---|---|---|
-| Student A | [STUDENT TO FILL: name] | Safety guards, preconditioning, Exp 1 (QD1 baselines), Exp 2 (block size) | Reviews every guard in the scripts, confirms the direct I/O verification, defends the latency table |
-| Student B | [STUDENT TO FILL: name] | Exp 3 (read/write mix), Exp 4 (queue-depth sweep), knee analysis, Little's law check | Explains the knee from device and interface saturation and why Little's law is a validity check here |
-| Student C | [STUDENT TO FILL: name] | Exp 5 (tail latency), Exp 6 (device state, working set), Exp 7 (misleading setup), anomalies including the 189 k against 222 k split, sustained-write caveat | Defends the tail, device-state and anomaly sections and the limits of the sustained-write result |
+| Student A | Tiffany Cheng | Safety guards, preconditioning, Exp 1 (QD1 baselines), Exp 2 (block size) | Reviews every guard in the scripts, confirms the direct I/O verification, defends the latency table |
+| Student B | Marie Morales | Exp 3 (read/write mix), Exp 4 (queue-depth sweep), knee analysis, Little's law check | Explains the knee from device and interface saturation and why Little's law is a validity check here |
+| Student C | Alex Redd | Exp 5 (tail latency), Exp 6 (device state, working set), Exp 7 (misleading setup), anomalies including the 189 k against 222 k split, sustained-write caveat | Defends the tail, device-state and anomaly sections and the limits of the sustained-write result |
 | Joint | All three | Hypotheses and their scoring; section edits for owned experiments; each student's own AI-use paragraph; final consistency pass | Final consistency pass owner: [STUDENT TO FILL: name] |
 | Claude Code | AI tool | Generated fio job files, run and parse scripts, plotting code; drafted `report_src/REPORT.md` and the Word report (final: `report/Project3_Report.pdf`); proofreading and consistency checks; flagged anomalies and errors in its own earlier work (for example the invalid sleep-affected Exp 2 write runs) | Not a substitute for student validation |
 
-**[STUDENT TO FILL: Student A name]: what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
+**Tiffany Cheng (Student A): what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
 
-**[STUDENT TO FILL: Student B name]: what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
+**Marie Morales (Student B): what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
 
-**[STUDENT TO FILL: Student C name]: what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
+**Alex Redd (Student C): what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
 
 **Claude Code.** Generated the job files, scripts, plots and the first drafts of the report and the Word document, ran the benchmarks through the driver scripts, and found and reported errors in its own earlier work: a stale engine conclusion after the macOS upgrade, sleep-invalidated write runs, shell bugs that made scripts exit silently, and a write-volume estimate that the project owner had to correct. **Independent checks recorded in the repository and data:** direct against buffered latency (87 times, with a stop rule); SMART read and write counters against fio byte counts; quarantine and rerun of the sleep-affected Exp 2 write runs; the `psync` `iodepth=64` check (effective depth 1.00 against 64 configured).

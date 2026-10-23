@@ -4,13 +4,13 @@ Names are placeholders. Each member owns the listed experiments and report secti
 
 | Member | Experiments and review items | Report sections |
 |---|---|---|
-| [Member A], latency and locality | Exp 1, Exp 2 (including stride aliasing), Exp 5 (including plateau tests), core placement, frequency cross-check | 2, 3, 6 |
-| [Member B], bandwidth and concurrency | Exp 3 (including content test), Exp 4 (loaded latency, knee, Little's Law, read-ceiling tests), peak bandwidth | 4, 5 |
-| [Member C], misses, TLB and pitfalls | Exp 6, Exp 7 (including layout controls and the huge-page attempt), Exp 8, counters attempt | 7, 8, 9 |
+| Tiffany Cheng, latency and locality | Exp 1, Exp 2 (including stride aliasing), Exp 5 (including plateau tests), core placement, frequency cross-check | 2, 3, 6 |
+| Marie Morales, bandwidth and concurrency | Exp 3 (including content test), Exp 4 (loaded latency, knee, Little's Law, read-ceiling tests), peak bandwidth | 4, 5 |
+| Alex Redd, misses, TLB and pitfalls | Exp 6, Exp 7 (including layout controls and the huge-page attempt), Exp 8, counters attempt | 7, 8, 9 |
 | Shared | Hypothesis amendments (each member for their own experiments), rounds and statistics, limitations, proofreading, AI-use note | 1, 10 to 13, Appendices |
 | Claude Code | Benchmark and plotting code and fixes, approved re-collection, the numeric consistency check, figure regeneration, report assembly. It proposes verdicts with the evidence; the owning member confirms each verdict. | all (drafting) |
 
-Cross-review: [Member A] reviews [Member B]'s experiments, [Member B] reviews [Member C]'s, [Member C] reviews [Member A]'s. Each reviewer reproduces one headline number from the raw data with the provided scripts. [STUDENT TO FILL: reviewer, number reproduced, date, for each pair]
+Cross-review: Tiffany Cheng reviews Marie Morales's experiments, Marie Morales reviews Alex Redd's, Alex Redd reviews Tiffany Cheng's. Each reviewer reproduces one headline number from the raw data with the provided scripts. [STUDENT TO FILL: reviewer, number reproduced, date, for each pair]
 
 # Appendix H. Hardware-counter attempts
 

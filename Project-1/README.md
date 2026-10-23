@@ -91,4 +91,4 @@ Plots are in `plots/` (`.png` and `.pdf`), processed tables in `data/processed/`
 
 ## 10. Team and AI use
 
-Authorship, the AI tool used (Claude Code) and the errors found and corrected are in Appendix A of the report. Repository notes: `docs/AI_USE.md`.
+Team: Tiffany Cheng, Marie Morales and Alex Redd. Appendix A of the report describes the authorship as "three students" without naming them. Authorship, the AI tool used (Claude Code) and the errors found and corrected are in Appendix A of the report. Repository notes: `docs/AI_USE.md`.
