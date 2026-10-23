@@ -51,14 +51,15 @@ def main():
     rows = []
     for (knobs, trial), fl in groups.items():
         row = dict(knobs); row["trial"] = trial; row["merged_procs"] = len(fl)
-        sides = {"r": [], "w": []}; cfg_qd = 0; engine = None; runtime = []
+        sides = {"r": [], "w": []}; cfg_qd = 0; engine = None; runtime = []; usr = []; sysc = []; ts = []
         for f in fl:
             J = load(f); j = J["jobs"][0]; o = {**J.get("global options", {}), **j.get("job options", {})}
             cfg_qd += int(o.get("numjobs", 1)) * int(o.get("iodepth", 1)); engine = o.get("ioengine", "?")
-            runtime.append(j["read"]["runtime"] or j["write"]["runtime"])
+            runtime.append(j["read"]["runtime"] or j["write"]["runtime"]); usr.append(j["usr_cpu"]); sysc.append(j["sys_cpu"]); ts.append(J["timestamp"])
             for k, d in (("r", "read"), ("w", "write")): sides[k].append(side(j, d))
             row["fio_version"] = J.get("fio version", "")
             row["direct"] = o.get("direct", "")
+        row["timestamp"] = min(ts); row["usr_cpu_pct"] = sum(usr); row["sys_cpu_pct"] = sum(sysc)   # fio: percent of one core, summed over threads
         row["ioengine"] = engine; row["cfg_qd"] = cfg_qd; row["runtime_ms"] = int(np.mean(runtime))
         littles = 0.0
         for k in ("r", "w"):
