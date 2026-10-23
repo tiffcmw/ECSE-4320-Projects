@@ -1,0 +1,349 @@
+2026-10-22 19:02:31 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 58)
+2026-10-22 19:07:07 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 6
+2026-10-22 19:07:08 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 61)
+2026-10-22 19:18:59 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 7
+2026-10-22 19:19:00 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 72)
+2026-10-22 19:25:06 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 7
+2026-10-22 19:25:07 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 77)
+2026-10-22 19:25:10 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 7
+2026-10-22 19:25:23 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 77)
+2026-10-22 19:47:46 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 19:47:53 -0400 Notification        	Display is turned off                                          
+2026-10-22 19:47:54 -0400 Assertions          	Summary- [System: PrevIdle DeclUser SRPrevSleep kCPU kDisp] Usi
+2026-10-22 19:47:58 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 19:47:58 -0400 Sleep               	Entering Sleep state due to 'Clamshell Sleep':TCPKeepAlive=acti
+2026-10-22 19:48:14 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:48:14 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:48:14 -0400 WakeTime            	WakeTime: 0.403 sec                                            
+2026-10-22 19:48:15 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SRPrevSleep kCPU k
+2026-10-22 19:48:16 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:48:22 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:48:38 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:48:38 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:48:38 -0400 WakeTime            	WakeTime: 0.312 sec                                            
+2026-10-22 19:48:40 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:48:43 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:49:00 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:49:00 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:49:00 -0400 WakeTime            	WakeTime: 0.321 sec                                            
+2026-10-22 19:49:02 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:49:05 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:49:49 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:49:49 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:49:49 -0400 WakeTime            	WakeTime: 0.333 sec                                            
+2026-10-22 19:49:51 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:50:04 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:50:37 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:50:37 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:50:37 -0400 WakeTime            	WakeTime: 0.308 sec                                            
+2026-10-22 19:50:39 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:50:42 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:50:48 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:50:48 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:50:48 -0400 WakeTime            	WakeTime: 0.315 sec                                            
+2026-10-22 19:50:50 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:51:09 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:51:16 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:51:16 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:51:16 -0400 WakeTime            	WakeTime: 0.332 sec                                            
+2026-10-22 19:51:18 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:51:24 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:52:19 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:52:19 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:52:19 -0400 WakeTime            	WakeTime: 0.304 sec                                            
+2026-10-22 19:52:21 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:52:38 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:56:04 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:56:04 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:56:04 -0400 WakeTime            	WakeTime: 0.268 sec                                            
+2026-10-22 19:56:06 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:56:13 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:56:46 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:56:46 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:56:46 -0400 WakeTime            	WakeTime: 0.291 sec                                            
+2026-10-22 19:56:48 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:57:00 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:57:17 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:57:17 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:57:17 -0400 WakeTime            	WakeTime: 0.297 sec                                            
+2026-10-22 19:57:19 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:57:22 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:57:37 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:57:37 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:57:37 -0400 WakeTime            	WakeTime: 0.309 sec                                            
+2026-10-22 19:57:39 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:57:45 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:57:49 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:57:49 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:57:49 -0400 WakeTime            	WakeTime: 0.306 sec                                            
+2026-10-22 19:57:51 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:57:59 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:59:31 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:59:31 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:59:31 -0400 WakeTime            	WakeTime: 0.308 sec                                            
+2026-10-22 19:59:33 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:59:36 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 19:59:43 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 19:59:43 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 19:59:43 -0400 WakeTime            	WakeTime: 0.316 sec                                            
+2026-10-22 19:59:45 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 19:59:48 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:00:01 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:00:01 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:00:01 -0400 WakeTime            	WakeTime: 0.318 sec                                            
+2026-10-22 20:00:03 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:00:06 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:00:15 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:00:15 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:00:15 -0400 WakeTime            	WakeTime: 0.309 sec                                            
+2026-10-22 20:00:17 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:00:20 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:00:33 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:00:33 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:00:33 -0400 WakeTime            	WakeTime: 0.310 sec                                            
+2026-10-22 20:00:35 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:00:38 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:04:00 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:04:00 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:04:00 -0400 WakeTime            	WakeTime: 0.307 sec                                            
+2026-10-22 20:04:02 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:04:10 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:04:12 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:04:12 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:04:12 -0400 WakeTime            	WakeTime: 0.310 sec                                            
+2026-10-22 20:04:14 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:04:18 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:05:51 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:05:51 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:05:51 -0400 WakeTime            	WakeTime: 0.305 sec                                            
+2026-10-22 20:05:53 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:05:56 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:07:42 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:07:42 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:07:42 -0400 WakeTime            	WakeTime: 0.307 sec                                            
+2026-10-22 20:07:44 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:07:47 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:10:37 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:10:37 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:10:37 -0400 WakeTime            	WakeTime: 0.300 sec                                            
+2026-10-22 20:10:39 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:10:42 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:10:47 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:10:47 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:10:47 -0400 WakeTime            	WakeTime: 0.302 sec                                            
+2026-10-22 20:10:49 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:10:53 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:11:03 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:11:03 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:11:03 -0400 WakeTime            	WakeTime: 0.305 sec                                            
+2026-10-22 20:11:05 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:11:23 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:16:41 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:16:41 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:16:41 -0400 WakeTime            	WakeTime: 0.286 sec                                            
+2026-10-22 20:16:43 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:16:51 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:18:14 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:18:14 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:18:14 -0400 WakeTime            	WakeTime: 0.330 sec                                            
+2026-10-22 20:18:16 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:18:19 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:18:27 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 20:18:27 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:18:27 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:18:27 -0400 WakeTime            	WakeTime: 0.324 sec                                            
+2026-10-22 20:18:28 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SRPrevSleep kCPU k
+2026-10-22 20:18:29 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:18:35 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:19:08 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:19:08 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:19:08 -0400 WakeTime            	WakeTime: 0.321 sec                                            
+2026-10-22 20:19:10 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:19:20 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:19:23 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:19:23 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:19:23 -0400 WakeTime            	WakeTime: 0.333 sec                                            
+2026-10-22 20:19:25 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:19:29 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:28:02 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:28:02 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:28:02 -0400 WakeTime            	WakeTime: 0.326 sec                                            
+2026-10-22 20:28:04 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:28:08 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:44:16 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:44:16 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to NUB.SPMI0Sw3IRQ nub-spm
+2026-10-22 20:44:16 -0400 WakeTime            	WakeTime: 0.319 sec                                            
+2026-10-22 20:44:18 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:44:18 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 20:44:18 -0400 Sleep               	Entering Sleep state due to 'Sleep Service Back to Sleep':TCPKe
+2026-10-22 20:47:53 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:47:53 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to NUB.SPMI0Sw3IRQ nub-spm
+2026-10-22 20:47:53 -0400 WakeTime            	WakeTime: 0.323 sec                                            
+2026-10-22 20:47:54 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SRPrevSleep kCPU k
+2026-10-22 20:47:55 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:47:58 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 20:51:56 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 20:51:56 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 20:51:56 -0400 WakeTime            	WakeTime: 0.326 sec                                            
+2026-10-22 20:51:59 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 20:52:06 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:04:14 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:04:14 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:04:14 -0400 WakeTime            	WakeTime: 0.328 sec                                            
+2026-10-22 21:04:16 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:04:39 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:19:18 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:19:18 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:19:18 -0400 WakeTime            	WakeTime: 0.314 sec                                            
+2026-10-22 21:19:20 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:19:49 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:20:00 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:20:00 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:20:00 -0400 WakeTime            	WakeTime: 0.315 sec                                            
+2026-10-22 21:20:02 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:20:10 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:20:21 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:20:21 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:20:21 -0400 WakeTime            	WakeTime: 0.326 sec                                            
+2026-10-22 21:20:23 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:20:26 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:20:28 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:20:28 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:20:30 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:20:33 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:20:37 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:20:37 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:20:37 -0400 WakeTime            	WakeTime: 0.322 sec                                            
+2026-10-22 21:20:39 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:20:47 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:20:50 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:20:50 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:20:50 -0400 WakeTime            	WakeTime: 0.327 sec                                            
+2026-10-22 21:20:52 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:21:00 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:22:40 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:22:40 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:22:40 -0400 WakeTime            	WakeTime: 0.318 sec                                            
+2026-10-22 21:22:42 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:22:48 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:38:47 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:38:47 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to NUB.SPMI0Sw3IRQ nub-spm
+2026-10-22 21:38:47 -0400 WakeTime            	WakeTime: 0.325 sec                                            
+2026-10-22 21:38:49 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:38:49 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 21:38:49 -0400 Sleep               	Entering Sleep state due to 'Sleep Service Back to Sleep':TCPKe
+2026-10-22 21:45:28 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:45:28 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 21:45:28 -0400 WakeTime            	WakeTime: 0.317 sec                                            
+2026-10-22 21:45:29 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SRPrevSleep kCPU k
+2026-10-22 21:45:30 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:45:42 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 21:48:54 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 21:48:54 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to NUB.SPMI0Sw3IRQ nub-spm
+2026-10-22 21:48:54 -0400 WakeTime            	WakeTime: 0.336 sec                                            
+2026-10-22 21:48:56 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 21:49:03 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:06:28 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:06:28 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to NUB.SPMI0Sw3IRQ nub-spm
+2026-10-22 22:06:28 -0400 WakeTime            	WakeTime: 0.332 sec                                            
+2026-10-22 22:06:30 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:06:30 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 22:06:30 -0400 Sleep               	Entering Sleep state due to 'Sleep Service Back to Sleep':TCPKe
+2026-10-22 22:09:31 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:09:31 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:09:31 -0400 WakeTime            	WakeTime: 0.329 sec                                            
+2026-10-22 22:09:32 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SRPrevSleep kCPU k
+2026-10-22 22:09:33 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:09:36 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:09:39 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:09:39 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:09:39 -0400 WakeTime            	WakeTime: 0.331 sec                                            
+2026-10-22 22:09:41 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:09:44 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:10:36 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:10:36 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:10:36 -0400 WakeTime            	WakeTime: 0.332 sec                                            
+2026-10-22 22:10:38 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:10:41 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:10:56 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:10:56 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:10:56 -0400 WakeTime            	WakeTime: 0.335 sec                                            
+2026-10-22 22:10:58 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:11:06 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:12:28 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:12:28 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:12:28 -0400 WakeTime            	WakeTime: 0.334 sec                                            
+2026-10-22 22:12:30 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:12:33 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:12:36 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:12:36 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:12:36 -0400 WakeTime            	WakeTime: 0.332 sec                                            
+2026-10-22 22:12:38 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:12:41 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:13:06 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:13:06 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:13:06 -0400 WakeTime            	WakeTime: 0.322 sec                                            
+2026-10-22 22:13:08 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:13:12 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:13:13 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:13:13 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:13:15 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:13:18 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:20:00 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:20:00 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:20:00 -0400 WakeTime            	WakeTime: 0.317 sec                                            
+2026-10-22 22:20:02 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:20:05 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:20:06 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using Batt(Charge: 8
+2026-10-22 22:20:11 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:20:11 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:20:11 -0400 WakeTime            	WakeTime: 0.333 sec                                            
+2026-10-22 22:20:12 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SysAct SRPrevSleep
+2026-10-22 22:20:13 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:20:16 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:20:30 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:20:30 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:20:30 -0400 WakeTime            	WakeTime: 0.323 sec                                            
+2026-10-22 22:20:32 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:20:39 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:21:09 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:21:09 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:21:09 -0400 WakeTime            	WakeTime: 0.334 sec                                            
+2026-10-22 22:21:11 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:21:14 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:21:15 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:21:15 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:21:17 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:21:20 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:21:24 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:21:24 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:21:24 -0400 WakeTime            	WakeTime: 0.325 sec                                            
+2026-10-22 22:21:26 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:21:33 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:21:42 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:21:42 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:21:42 -0400 WakeTime            	WakeTime: 0.321 sec                                            
+2026-10-22 22:21:44 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:21:50 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:22:13 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:22:13 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:22:13 -0400 WakeTime            	WakeTime: 0.340 sec                                            
+2026-10-22 22:22:15 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:22:18 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:23:09 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:23:09 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:23:09 -0400 WakeTime            	WakeTime: 0.341 sec                                            
+2026-10-22 22:23:11 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:23:22 -0400 Sleep               	Entering Sleep state due to 'Maintenance Sleep':TCPKeepAlive=ac
+2026-10-22 22:24:06 -0400 com.apple.sleepservices.sessionStarted	SleepService: window begins with cap time=180
+2026-10-22 22:24:06 -0400 DarkWake            	DarkWake from Deep Idle [CDNP] : due to smc.sysState.Wake(0x700
+2026-10-22 22:24:06 -0400 WakeTime            	WakeTime: 0.333 sec                                            
+2026-10-22 22:24:06 -0400 Assertions          	Summary- [System: PrevIdle DeclUser PushSrvc SRPrevSleep IPushS
+2026-10-22 22:24:06 -0400 com.apple.sleepservices.sessionTerminated	SleepService: window has terminated.      
+2026-10-22 22:24:07 -0400 Wake                	DarkWake to FullWake from Deep Idle [CDNVAP] : due to Notificat
+2026-10-22 22:24:07 -0400 Notification        	Display is turned on                                           
+2026-10-22 22:24:40 -0400 Notification        	Display is turned off                                          
+2026-10-22 22:24:43 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 80)
+2026-10-22 22:25:48 -0400 Assertions          	Summary- [System: PrevIdle PrevSleep DeclUser SysAct kCPU kDisp
+2026-10-22 22:31:56 -0400 Notification        	Display is turned on                                           
+2026-10-22 23:52:52 -0400 Assertions          	Summary- [System: PrevIdle DeclUser kDisp] Using AC(Charge: 80)

@@ -8,4 +8,4 @@
 | mean throughput, last 30 s | 11.04 GB/s |
 | slowest 1 s window | 8.96 GB/s |
 | p99.9 / max single-write latency | 4,047 µs / 19.6 ms |
-| SMART temperature start → end | 34 → 65 °C (max 65) |
+| SMART temperature start → end | 34 to 65 °C (max 65) |

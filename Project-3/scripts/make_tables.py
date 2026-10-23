@@ -69,6 +69,6 @@ smart = open(P3 + "/data/raw/exp6b/bytes_written.txt").read().split(":")[-1].str
 rows = [["fio bytes written (io_bytes)", f"{w['io_bytes']/1e12:.3f} TB"], ["SMART host bytes written delta", f"{int(smart)/1e12:.3f} TB"], ["duration (1 s log windows)", f"{len(xs)} s"],
         ["mean throughput, first 10 s", f"{gb[:10].mean():.2f} GB/s"], ["mean throughput, 10 to 60 s", f"{gb[10:60].mean():.2f} GB/s"], ["mean throughput, last 30 s", f"{gb[-30:].mean():.2f} GB/s"],
         ["slowest 1 s window", f"{gb.min():.2f} GB/s"], ["p99.9 / max single-write latency", f"{w['lat_ns']['percentile']['99.900000']/1e3:,.0f} µs / {w['lat_ns']['max']/1e6:.1f} ms"],
-        ["SMART temperature start → end", f"{temps[0]} → {temps[-1]} °C (max {max(temps)})"]]
+        ["SMART temperature start → end", f"{temps[0]} to {temps[-1]} °C (max {max(temps)})"]]
 write("exp6b", ["metric", "value"], rows)
 print("tables written:", sorted(os.listdir(OUT)))

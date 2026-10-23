@@ -3,3 +3,4 @@ data/smoke/
 *.tmp
 .DS_Store
 .venv/
+node_modules/

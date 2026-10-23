@@ -14,14 +14,19 @@ SUM = list(csv.DictReader(open(PROC + "/summary.csv")))
 RUNS = list(csv.DictReader(open(PROC + "/all_runs.csv")))
 f = lambda r, k: float(r[k])
 C = {"blue": "#0072B2", "orange": "#E69F00", "green": "#009E73", "red": "#D55E00", "purple": "#CC79A7", "sky": "#56B4E9", "grey": "#666666"}
-plt.rcParams.update({"font.size": 9, "axes.grid": True, "grid.alpha": 0.3, "axes.spines.top": False, "axes.spines.right": False,
-                     "figure.dpi": 130, "legend.fontsize": 8})
+plt.rcParams.update({"font.size": 11, "axes.titlesize": 10.5, "axes.labelsize": 10.5, "xtick.labelsize": 9.5, "ytick.labelsize": 9.5, "axes.grid": True,
+                     "grid.alpha": 0.3, "axes.spines.top": False, "axes.spines.right": False, "figure.dpi": 130, "legend.fontsize": 9})
 FOOT = "Apple M5 Max, APPLE SSD AP2048Z, APFS file (32 GiB), direct I/O, macOS 27.0.1, fio 3.43; mean ± sd, n=3"
 
 def save(fig, name, foot=FOOT):
-    fig.text(0.01, 0.005, foot, fontsize=6.5, color="#555")
-    fig.tight_layout(rect=(0, 0.02, 1, 1))
+    """plots/NAME.{png,pdf} carry a footer with platform and knobs; plots/docx/NAME.png (for the Word report) has none,
+    the caption states it instead."""
+    os.makedirs(OUT + "/docx", exist_ok=True)
+    t = fig.text(0.01, 0.005, foot, fontsize=8, color="#555")
+    fig.tight_layout(rect=(0, 0.025, 1, 1))
     for ext in ("png", "pdf"): fig.savefig(f"{OUT}/{name}.{ext}")
+    t.remove(); fig.tight_layout()
+    fig.savefig(f"{OUT}/docx/{name}.png")
     plt.close(fig)
 
 def kib(bs): return int(bs[:-1]) * (1024 if bs.endswith("m") else 1)
@@ -61,7 +66,7 @@ def fig_blocksize():
     for a, yl in zip(ax, ("throughput (MB/s)", "IOPS", "mean latency (µs)")):
         a.set_xscale("log", base=2); a.set_xlabel("block size (KiB)"); a.set_ylabel(yl)
     ax[1].set_yscale("log"); ax[2].set_yscale("log"); ax[0].legend()
-    fig.suptitle("Exp 2: block-size sweep (fixed: effective QD16 = 16 psync jobs; varied: block size, random vs sequential, read vs write)", fontsize=9)
+    fig.suptitle("Exp 2: block-size sweep (fixed: effective QD16 = 16 psync jobs; varied: block size, random vs sequential, read vs write)", fontsize=10)
     save(fig, "fig2_blocksize")
 
 # ---- Fig 3: read/write mix
@@ -90,7 +95,7 @@ def fig_qd():
         ax[0].errorbar(lat, io, yerr=[f(r, "r_iops_std") / 1e3 for r in rs], label=lab, color=col, marker=mk, ls=ls, ms=4, capsize=2)
         if eng == "posixaio":
             for r, x, y in zip(rs, lat, io):
-                if int(r["qd"]) in (1, 16, 64, 256): ax[0].annotate(f"QD{r['qd']}", (x, y), textcoords="offset points", xytext=(3, -9), fontsize=6.5, color=col)
+                if int(r["qd"]) in (1, 16, 64, 256): ax[0].annotate(f"QD{r['qd']}", (x, y), textcoords="offset points", xytext=(3, -9), fontsize=8, color=col)
         lq = [f(r, "littles_qd_mean") for r in rs]; cq = [int(r["qd"]) for r in rs]
         ax[1].plot(cq, lq, color=col, marker=mk, ls=ls, ms=4, label=lab)
     kn = next(r for r in SUM if r["exp"] == "exp4" and r["eng"] == "psync" and r["qd"] == "16")
@@ -98,9 +103,8 @@ def fig_qd():
     for ex in ("exp4", "exp4b"):
         k2 = next(r for r in SUM if r["exp"] == ex and r["eng"] == "psync" and r["qd"] == "16")
         ax[0].scatter([f(k2, "r_lat_mean_us_mean")], [f(k2, "r_iops_mean") / 1e3], s=160, facecolors="none", edgecolors="k", lw=1)
-    ax[0].text(0.02, 0.97, "ringed = knee, QD16 (first point at ≥90% of its curve's peak IOPS)", transform=ax[0].transAxes, fontsize=7, va="top")
     ax[0].set_xscale("log"); ax[0].set_xlabel("mean latency (µs, log)"); ax[0].set_ylabel("IOPS (thousands)")
-    ax[0].set_title("Exp 4: throughput vs latency, 4 KiB random read"); ax[0].legend(loc="lower right")
+    ax[0].set_title("Exp 4: throughput vs latency, 4 KiB random read"); ax[0].legend(loc="center right", fontsize=8)
     ax[1].plot([1, 256], [1, 256], "k:", lw=0.8, label="y = x"); ax[1].set_xscale("log", base=2); ax[1].set_yscale("log", base=2)
     ax[1].set_xlabel("configured queue depth"); ax[1].set_ylabel("IOPS × mean latency (Little's law)"); ax[1].set_title("Little's law check: outstanding = throughput × latency")
     ax[1].legend(loc="upper left")
@@ -115,7 +119,7 @@ def fig_tail():
         v = [f(r, f"r_lat_{k}_us_mean") for k in keys]; e = [f(r, f"r_lat_{k}_us_std") for k in keys]
         ax.bar(np.arange(6) + (i - 0.5) * w, v, w, yerr=e, color=col, capsize=2,
                label=f"QD{r['qd']} ({'mid' if role=='mid' else 'near knee'}), {f(r,'r_ios_mean')/1e6:.1f} M IOs/run")
-        for j, y in enumerate(v): ax.text(j + (i - 0.5) * w, y * 1.05, f"{y:.0f}", ha="center", fontsize=6)
+        for j, y in enumerate(v): ax.text(j + (i - 0.5) * w, y * 1.05, f"{y:.0f}", ha="center", fontsize=7.5)
     ax.set_xticks(range(6)); ax.set_xticklabels(keys); ax.set_yscale("log"); ax.set_ylabel("latency (µs, log)"); ax.set_xlabel("percentile")
     ax.set_title("Exp 5: tail latency, 4 KiB random read, 60 s runs"); ax.legend()
     save(fig, "fig5_tail_latency", FOOT)
@@ -135,7 +139,7 @@ def fig_state():
         for j, rg in enumerate(("1g", "32g")):
             r = next(x for x in rows if x["rw"] == rw and x["range"] == rg)
             ax[0].bar(i * 3 + j, f(r, s + "_iops_mean") / 1e3, yerr=f(r, s + "_iops_std") / 1e3, color=col, alpha=1 if j else 0.55, capsize=2)
-            ax[0].text(i * 3 + j, f(r, s + "_iops_mean") / 1e3 + 4, rg.upper().replace("G", " GiB"), ha="center", fontsize=6.5)
+            ax[0].text(i * 3 + j, f(r, s + "_iops_mean") / 1e3 + 4, rg.upper().replace("G", " GiB"), ha="center", fontsize=8)
     ax[0].set_xticks([0.5, 3.5]); ax[0].set_xticklabels(["4K rand read", "4K rand write"]); ax[0].set_ylabel("IOPS (thousands)")
     ax[0].set_title("Exp 6a: address range 1 vs 32 GiB (QD16)")
     xs, gb = per_second_series()
@@ -153,16 +157,16 @@ def fig_state():
 # ---- Fig 7: misleading setups
 def fig_misleading():
     rows = sorted([r for r in SUM if r["exp"] == "exp7"], key=lambda r: r["cfg"])
-    lab = {"A": "A\ndirect, QD1\n(correct)", "B": "B\nbuffered, QD1\n(page cache)", "C": "C\ndirect, QD16\n(correct)", "D": "D\ndirect, psync,\niodepth=64 (real QD1)"}
+    lab = {"A": "A\ncorrect", "B": "B\npage cache", "C": "C\nQD16", "D": "D\niodepth=64"}
     col = {"A": C["blue"], "B": C["red"], "C": C["sky"], "D": C["orange"]}
     fig, ax = plt.subplots(1, 3, figsize=(11, 3.5))
     for i, r in enumerate(rows):
         ax[0].bar(i, f(r, "r_iops_mean"), yerr=f(r, "r_iops_std"), color=col[r["cfg"]], capsize=2)
         ax[1].bar(i, f(r, "r_lat_mean_us_mean"), yerr=f(r, "r_lat_mean_us_std"), color=col[r["cfg"]], capsize=2)
-        ax[2].bar(i, f(r, "littles_qd_mean"), color=col[r["cfg"]]); ax[2].text(i, f(r, "littles_qd_mean") * 1.1, f"cfg {int(f(r,'cfg_qd_mean'))}", ha="center", fontsize=7)
+        ax[2].bar(i, f(r, "littles_qd_mean"), color=col[r["cfg"]]); ax[2].text(i, f(r, "littles_qd_mean") * 1.1, f"cfg {int(f(r,'cfg_qd_mean'))}", ha="center", fontsize=8)
     for a, yl, ttl in zip(ax, ("IOPS (log)", "mean latency (µs, log)", "effective QD (IOPS × latency, log)"), ("throughput", "latency", "effective vs configured depth")):
-        a.set_xticks(range(len(rows))); a.set_xticklabels([lab[r["cfg"]] for r in rows], fontsize=6.5); a.set_yscale("log"); a.set_ylabel(yl); a.set_title(ttl)
-    fig.suptitle("Exp 7: same 4 KiB random read on a 1 GiB range, flawed vs correct setups", fontsize=9)
+        a.set_xticks(range(len(rows))); a.set_xticklabels([lab[r["cfg"]] for r in rows], fontsize=8); a.set_yscale("log"); a.set_ylabel(yl); a.set_title(ttl)
+    fig.suptitle("Exp 7: same 4 KiB random read on a 1 GiB range, flawed vs correct setups", fontsize=10)
     save(fig, "fig7_misleading_setups")
 
 # ---- Fig 8: drift (anomaly)
@@ -183,7 +187,7 @@ def fig_drift():
         ax[0].scatter([datetime.datetime.fromtimestamp(p[0]) for p in q], [p[1] for p in q], s=9, color=cm.get(ex, "k"), label=ex)
         ax[1].scatter([p[2] for p in q], [p[1] for p in q], s=9, color=cm.get(ex, "k"))
     ax[0].set_ylabel("IOPS (thousands)"); ax[0].set_title("4 KiB random read, 16 psync jobs, every run in the campaign")
-    ax[0].tick_params(axis="x", labelrotation=30); ax[0].legend(fontsize=6, ncol=2)
+    ax[0].tick_params(axis="x", labelrotation=30); ax[0].legend(fontsize=8, ncol=2)
     ax[1].set_xlabel("fio system CPU (% of one core, summed)"); ax[1].set_ylabel("IOPS (thousands)"); ax[1].set_title("IOPS vs host kernel CPU")
     save(fig, "fig8_state_drift", "Two performance levels (~189 k and ~222 k IOPS) for an identical workload; cause not established")
 
@@ -196,11 +200,11 @@ def fig_roofline():
              ("QD16 1M seq write", best("exp2", "write", "1m", "w"), C["red"]), ("sustained 1M seq write (2.2 TB)", 2.199e12 / 199.0 / 1e6, C["red"])]
     fig, ax = plt.subplots(figsize=(8, 3.6))
     ax.barh(range(len(items)), [i[1] / 1e3 for i in items], color=[i[2] for i in items])
-    for i, it in enumerate(items): ax.text(it[1] / 1e3 + 0.1, i, f"{it[1]/1e3:.2f} GB/s", va="center", fontsize=7)
+    for i, it in enumerate(items): ax.text(it[1] / 1e3 + 0.1, i, f"{it[1]/1e3:.2f} GB/s", va="center", fontsize=8)
     for v, nm in ((3.94, "PCIe 3.0 x4 ≈ 3.9"), (7.88, "PCIe 4.0 x4 ≈ 7.9"), (15.75, "PCIe 5.0 x4 ≈ 15.8")):
-        ax.axvline(v, color="k", ls="--", lw=0.7); ax.text(v - 0.1, -0.75, nm, fontsize=6.5, ha="right", va="center")
+        ax.axvline(v, color="k", ls="--", lw=0.7); ax.text(v - 0.1, -0.75, nm, fontsize=8, ha="right", va="center")
     ax.set_yticks(range(len(items))); ax.set_yticklabels([i[0] for i in items]); ax.set_ylim(len(items) - 0.5, -1.1); ax.set_xlabel("throughput (GB/s, 10^9 B/s)")
-    ax.set_xlim(0, 17.5); ax.set_title("Measured throughput vs PCIe x4 payload ceilings\n(link generation not readable on macOS)", fontsize=9)
+    ax.set_xlim(0, 17.5); ax.set_title("Measured throughput vs PCIe x4 payload ceilings\n(link generation not readable on macOS)", fontsize=10)
     save(fig, "fig9_roofline_summary", FOOT.replace("; mean ± sd, n=3", ""))
 
 if __name__ == "__main__":

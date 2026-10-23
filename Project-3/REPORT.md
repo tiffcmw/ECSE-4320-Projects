@@ -5,7 +5,7 @@ Claims are labeled **measured** (directly in the data), **inferred** (follows fr
 ## Summary
 
 - **Measured** 4 KiB random read at queue depth 1 takes 55 to 70 us (the two values come from two different machine states, see Anomaly 1); 128 KiB sequential read at QD1 takes 135 us (970 MB/s).
-- **Measured** reads scale to 12.9 GB/s (256 KiB random read, QD16); 4 KiB random read saturates at 190 k (early run) to 222 k (later run) IOPS from QD64 upward. The knee of the throughput-latency curve is QD16 in both runs of the sweep. Little's law (IOPS x mean latency) reproduces the configured queue depth within 1% at every `psync` point and within 2% at every `posixaio` point up to QD256.
+- **Measured** reads scale to 12.9 GB/s (256 KiB random read, QD16); 4 KiB random read saturates at 190 k (early run) to 222 k (later run) IOPS from QD64 upward. The knee of the throughput-latency curve is QD16 in both runs of the sweep. As a validity check, IOPS x mean latency equals the configured queue depth within 1% at every `psync` point and within 2.1% at every `posixaio` point up to QD256, so the effective depth is real (it is not an explanation of the knee, see Exp 4).
 - **Measured** writes plateau at about 10 to 10.7 GB/s for blocks of 128 KiB and up, and 4 KiB random writes reach only 47 k IOPS (vs 190 k for reads).
 - **Measured** a 2.2 TB sustained sequential write ran at a steady 11.0 GB/s with no cliff (first 10 s: 11.7 GB/s) while the SSD heated from 34 to 65 C. No SLC-cache exhaustion or throttling was observed.
 - **Measured** page-cache reads are 90x the IOPS of direct reads (1.32 M vs 14.5 k IOPS, 0.69 us vs 68.6 us) on the same file, which is the negative example for Exp 7.
@@ -128,7 +128,7 @@ Write points of 32 KiB and larger show Little's QD of 13.7 to 14.6 (flagged), an
 
 **Hypothesis (with Amendments A and B):** IOPS rises about linearly to QD8 to 16, saturates at 180 to 250 k IOPS, knee at QD8 to 32 (smallest QD with at least 90% of peak IOPS), latency then grows as QD / peak IOPS, Little's law agrees with configured QD within 5% for `psync`.
 
-The sweep was run twice, early (A) and again about 55 minutes after the early sweep (B), because the identical workload had given two different speeds (Anomaly 1).
+The sweep was run twice, early (A) and again about 54 minutes after the early sweep (B), because the identical workload had given two different speeds (Anomaly 1).
 
 | run | engine | configured QD | IOPS (sd) | mean µs | p99 µs | Little's QD | check |
 |---|---|---|---|---|---|---|---|
@@ -163,9 +163,11 @@ The sweep was run twice, early (A) and again about 55 minutes after the early sw
 
 ![Exp 4](plots/fig4_qd_sweep.png)
 
-**Result vs hypothesis.** Peak IOPS is 189.9 k (A) and 222.7 k (B), both in the predicted range. The knee by the stated rule is **QD16** in both runs (psync QD16 reaches 98.5% of A's peak and 98.7% of B's; QD8 only 57% and 60%). Little's law matches the configured depth within 1% for every `psync` point and within 2% for every `posixaio` point up to 256 (254.5 to 255.1 at QD256), so no point is flagged. Plateau latency follows QD / IOPS: QD256 / 189.4 k = 1.351 ms against 1.347 ms measured (A); 256 / 220.6 k = 1.160 ms against 1.154 ms (B).
+**Result vs hypothesis.** Peak IOPS is 189.9 k (A) and 222.7 k (B), both in the predicted range. The knee by the stated rule is **QD16** in both runs (psync QD16 reaches 98.5% of A's peak and 98.7% of B's; QD8 only 57% and 60%). Little's law matches the configured depth within 1% for every `psync` point and within 2.1% for every `posixaio` point up to 256 (254.5 to 255.1 at QD256), so no point is flagged. Plateau latency follows QD / IOPS: QD256 / 189.4 k = 1.351 ms against 1.347 ms measured (A); 256 / 220.6 k = 1.160 ms against 1.154 ms (B).
 
-**Interpretation.** *Inferred:* the device handles about 13 to 14 requests in parallel (QD16 gives 13.1x the QD1 IOPS) and tops out near 190 to 222 k commands/s; beyond that extra outstanding requests only add queueing delay. This is the Little's-law picture in its simplest form: below the knee latency is almost flat (70 to 85 us for `psync` A) and throughput scales with depth; above it throughput is flat and latency is proportional to depth. `psync` beats `posixaio` at the same depth below QD32 (187 k vs 151 k at QD16 in A), *hypothesis:* because `posixaio` hands each IO to a small pool of kernel threads (`kern.aiothreads=4`); the two converge at QD64 and above, where both reach the same ceiling. The ceiling itself is not purely a device property (Anomaly 1).
+**Little's law is a check here, not an explanation.** In a closed-loop fio run each of N workers issues its next IO only after the previous one completes, so IOPS x mean latency equals N nearly by construction. Its value is as a validity check on the effective queue depth: it confirms that `psync` with `numjobs=N` and `posixaio` with `iodepth=N` (up to 256) really keep N IOs outstanding, and it shows when they do not (`psync` with `iodepth=64` gives 1.00, because a synchronous engine collapses to QD1; Exp 7). It says nothing about why throughput stops growing.
+
+**The knee comes from saturation (inferred).** Evidence: (1) IOPS rises almost linearly to QD8 (7.6x the QD1 rate), bends at QD16 (13.1x) and is flat from QD64 to QD256 (A: 189.9 k, 189.3 k, 189.4 k; B: 214.1 k, 222.7 k, 220.6 k) while mean latency grows in proportion to depth; (2) two different submission mechanisms, `psync` threads and `posixaio`, end at the same ceiling, so it is not the overhead of one engine (`psync` is faster below QD32, 187 k vs 151 k at QD16 in A, *hypothesis:* because `posixaio` hands each IO to a small kernel thread pool); (3) the limit is not interface bandwidth: the same drive moves 12.9 GB/s with 256 KiB reads at only 49 k IOPS, against 0.78 GB/s at 190 k IOPS for 4 KiB, so the 4 KiB ceiling is a per-command limit (controller command rate and flash parallelism, plus the host kernel path); (4) fio uses about 2.2 of the 18 cores' worth of CPU, so the host is not out of CPU. **Not established:** how the ceiling splits between controller, firmware and host path. The 17% shift between the two machine states (Anomaly 1) shows that the 4 KiB ceiling is not a pure device property.
 
 ## Exp 5. Tail latency (4 KiB random read, 60 s, 3 trials)
 
@@ -178,7 +180,7 @@ The sweep was run twice, early (A) and again about 55 minutes after the early sw
 
 ![Exp 5](plots/fig5_tail_latency.png)
 
-**Result vs hypothesis.** Sample counts: 3.3 M IOs per run at QD4 (about 3,300 samples above p99.9) and 11.3 M at QD16 (about 11,300). p99/p50 is 1.43 at QD4 (just below the predicted range) and p99.9/p50 is 2.2, well below the predicted 3 to 8x, so the tail is **tighter** than expected. The knee run has a slightly larger p99.9/p50 (2.39 vs 2.20), but the difference is under one standard deviation of p99.9 (sd 23 to 34 us), so no claim is made. p99.99 is unreliable (sd about 430 us on a mean of 670 to 840 us, only about 300 to 1,100 samples per run).
+**Result vs hypothesis.** Sample counts: 3.3 M IOs per run at QD4 (about 3,300 samples above p99.9) and 11.3 M at QD16 (about 11,300). p99/p50 is 1.43 at QD4 (just below the predicted range) and p99.9/p50 is 2.2, well below the predicted 3 to 8x, so the tail is **tighter** than expected. The knee run has a slightly larger p99.9/p50 (2.39 vs 2.20), but the difference is under one standard deviation of p99.9 (sd 23 to 34 us), so no claim is made. p99.99 is unreliable (sd 430 to 480 us on a mean of 670 to 840 us, only about 300 to 1,100 samples per run).
 
 **Interpretation.** *Inferred:* reads at moderate depth have almost no interference sources (no writes, no garbage collection), so the tail is mostly queueing: going from QD4 to QD16 raises p50 by 18% (70 to 83 us) and p99 by 32% (100 to 133 us). The maximum latencies (6 to 13 ms) are rare outliers, *hypothesis:* OS scheduling or controller housekeeping events, not distribution tails. This experiment ran in the slower machine state (Anomaly 1).
 
@@ -211,13 +213,13 @@ The sweep was run twice, early (A) and again about 55 minutes after the early sw
 | mean throughput, last 30 s | 11.04 GB/s |
 | slowest 1 s window | 8.96 GB/s |
 | p99.9 / max single-write latency | 4,047 µs / 19.6 ms |
-| SMART temperature start → end | 34 → 65 °C (max 65) |
+| SMART temperature start → end | 34 to 65 °C (max 65) |
 
 ![Exp 6](plots/fig6_working_set_and_sustained_write.png)
 
-**Result.** No cliff. Throughput fell from 12.6 GB/s in the first second to about 11.1 GB/s by 10 to 15 s (a 12% initial burst effect) and stayed there for the remaining 190 s and 2.2 TB (slowest 1 s window 8.96 GB/s; last 30 s 11.04 vs 10 to 60 s 10.99 GB/s). The cap of 2.2 TB, not the 300 s limit, ended the run (198 s). Also checked: p99.9 write latency 4.0 ms and max 19.6 ms (no stalls), SMART temperature (rose to 65 C with no throughput change), and that fio and SMART byte counts agree. No cliff was invented: **if there is an SLC cache on this drive, it is larger than 2.2 TB or hidden by the test.**
+**Result.** No cliff. Throughput fell from 12.6 GB/s in the first second to about 11.0 GB/s by 10 to 15 s (a 13% initial burst effect) and stayed there for the rest of the 198 s run and 2.2 TB (slowest 1 s window 8.96 GB/s; last 30 s 11.04 vs 10 to 60 s 10.99 GB/s). The cap of 2.2 TB, not the 300 s limit, ended the run (198 s). Also checked: p99.9 write latency 4.0 ms and max 19.6 ms (no stalls), SMART temperature (rose to 65 C with no throughput change), and that fio and SMART byte counts agree. No cliff was invented: **this is a single run, and the absence of a cliff reflects the limits of the test (the drive was never filled; the 2.2 TB went to one 32 GiB logical range), not proof that no SLC-style cache exists.**
 
-**Interpretation, and what this test cannot show.** *Inferred:* the write path sustained about 11 GB/s with no sign of throttling at 65 C. *Hypothesis:* the file is overwritten in place logically (32 GiB) but APFS is copy-on-write, so the SSD sees new blocks each time and the old ones are TRIMmed, which means the drive always had plenty of free blocks; a cliff would need the drive to be filled, which the 20%-free-space safety rule forbids. The unplanned 12 GB/s write speed is twice the 3 to 6 GB/s assumed; the byte cap replaced the original 300 s-only plan, which would have written about 3.7 TB.
+**Interpretation, and what this test cannot show.** *Inferred:* the write path sustained about 11 GB/s with no sign of throttling at 65 C. *Hypothesis:* the file is overwritten in place logically (32 GiB) but APFS is copy-on-write, so the SSD sees new blocks each time and the old ones are TRIMmed, which means the drive always had plenty of free blocks; a cliff would need the drive to be filled, which the 20%-free-space safety rule forbids. The unplanned 12 GB/s write speed is twice the 3 to 6 GB/s assumed; the byte cap replaced the original 300 s-only plan, which would have written about 3.3 TB at the measured rate.
 
 ## Exp 7. Misleading setup (page cache), shown next to the correct one
 
@@ -275,7 +277,27 @@ Latency floor: QD1 4 KiB read is 55 to 70 us, which is above raw flash read time
 
 ## Anomalies (hypotheses are labeled)
 
-1. **Two performance levels for an identical workload.** 4 KiB random read at 16 `psync` jobs gave 187 to 192 k IOPS in Exp 2, 4, 5, 6a and 7, and 215 to 224 k IOPS in Exp 3, the drift check, a 30-run time series (6 minutes, stable at 222 k) and the Exp 4 replicate (Fig 8). The change is not tied to the job file, the address range, the battery (held at 80%) or time since heavy writes (the high level persisted for at least 30 minutes after the 2.2 TB write). It is visible at QD1 too (55.6 us vs 70.1 us mean) so it is not only thread placement at saturation. In the high state fio's kernel CPU use is about 262% of a core vs about 209% in the low state (**measured**). **Hypotheses (untested):** a storage or SoC power/clock state, macOS scheduler quality-of-service placement of the fio threads on performance vs efficiency cores, or background system activity during the earlier stages. **Consequence:** absolute numbers from different experiments carry about 17% uncertainty; comparisons within one experiment hold (each experiment ran in a single state, checked by its own control points: for example Exp 7 compares A, B, C, D within minutes). Exp 1's QD1 read latency (54.6 us) matches the high state (55.6 us in the replicate); Exp 7's QD1 read (68.6 us) matches the low state (70.1 us).
+1. **Two performance levels for an identical workload.** 4 KiB random read at 16 `psync` jobs gave 187 to 192 k IOPS in Exp 2, 4, 5, 6a and 7, and 215 to 224 k IOPS in Exp 3, the drift check, a 30-run time series (6 minutes, stable at 222 k) and the Exp 4 replicate (Fig 8). It is visible at QD1 too (55.6 us vs 70.1 us mean), so it is not only thread placement at saturation. In the high level fio's kernel CPU use is about 262% of a core vs about 209% in the low level (**measured**; a consequence, not a cause). **Analysis of existing data only (no new runs)**, over the 57 runs of this workload (15 low, 42 high), which form four consecutive episodes, so every factor is effectively tested on four episodes:
+
+| Candidate factor | Low level (~189 k) | High level (~222 k) | Point-biserial r with level |
+|---|---|---|---|
+| Run order (index 0 to 56) | mean 9.4 | mean 34.6 | +0.68 |
+| Minutes since last write run of at least 10 GB | mean 23.8 (min 0.3) | mean 6.2 (min 0.3) | -0.68 |
+| GB written in the 30 min before the run | mean 307.9 | mean 2136.3 | +0.92 |
+| Power source at run start (pmset log) | AC in 15 of 15 runs | AC in 42 of 42 runs | not computable (no variation) (battery charge held at [77, 80] %) |
+| Display on at run start (user activity proxy) | on in 12 of 15 | on in 42 of 42 | +0.39 |
+| Sleep events during the run | 0 | 0 | none |
+| SSD temperature (SMART, stage start and end, C) | [28, 40, 41, 43, 46, 53, 58] | [37, 41, 42, 43, 46, 50, 58] | overlap, no per-run reading |
+| fio system CPU (% of one core, summed) | mean 209.4 | mean 262.2 | +0.99 (consequence, not cause) |
+
+| Episode | Level | Experiments (first run) | Time span | Runs |
+|---|---|---|---|---|
+| 1 | low | exp2 | 19:32 to 19:33 | 3 |
+| 2 | high | exp3 | 22:32 to 22:33 | 3 |
+| 3 | low | exp4 | 22:43 to 23:13 | 12 |
+| 4 | high | drift | 23:21 to 23:38 | 39 |
+
+   Power source: AC for all 57 runs (battery held at 77 to 80%), so there is no variation to explain anything. Sleep: none during any run. Thermal: SMART temperatures exist only at stage boundaries, they overlap between levels and there is no per-run reading, so there is no evidence either way. Display on: 12 of 15 low runs vs 42 of 42 high runs (weak, a rough proxy for user activity). Run order correlates (r = +0.68) only because of the episode layout. The strongest association is the volume written in the 30 minutes before the run (r = +0.92; mean 2,136 GB before high runs vs 308 GB before low runs). It is confounded with run order and one episode contradicts it: Exp 4's QD16 runs at 22:43 were low although 1.5 TB had been written about 12 minutes earlier. **Conclusion: no single factor accounts for the split; recent write volume is the only candidate that lines up, and it is an untested hypothesis.** Other **untested hypotheses:** a storage or SoC power or clock state, macOS scheduler placement of the fio threads on performance vs efficiency cores, background system activity. **Consequence:** absolute numbers from different experiments carry about 17% uncertainty; comparisons within one experiment hold (Exp 7 compares A, B, C and D within minutes). Exp 1's QD1 read latency (54.6 us) matches the high level (55.6 us in the replicate); Exp 7's QD1 read (68.6 us) matches the low level (70.1 us).
 2. **Exp 2 write results were first invalid.** The first pass showed single writes lasting up to 180 s and standard deviations above the mean. Cause (from `pmset -g log`): the charger was unplugged and the lid closed, and the Mac slept repeatedly mid-run. The 42 affected files are kept in `data/raw/invalid_sleep_2026-10-22/` and excluded; the runs were repeated under per-run power checks, `caffeinate` and a wall-clock validity check, and the repeated results are stable (sd 0.5 to 21% of the mean, largest at 256 KiB and 1 MiB). Drive-level stalls were the first suspicion; a diagnostic job was written for that and removed unused once the sleep log explained the stalls.
 3. **OS upgrade mid-project.** macOS went from 26.5.2 to 27.0.1; `kern.aiomax` 90 to 1024 and `kern.aioprocmax` 16 to 256 changed, so the `posixaio` effective depth went from 16 to 256 and the first engine conclusion became wrong. `smartctl` also reports a different firmware string (2973.120 before, 241.0.12 after). `HYPOTHESES.md` was amended (Amendment B) before any experiment data.
 4. **Writes show Little's QD below 16** (13.7 to 14.6 at 16 jobs): fio's per-IO random-data generation sits outside the measured latency (Exp 2 and Exp 1 notes).

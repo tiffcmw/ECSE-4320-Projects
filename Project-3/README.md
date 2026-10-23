@@ -20,7 +20,8 @@ Run conditions: **charger plugged in, lid open, nothing else running** (the stag
 | `scripts/common.sh` | safety guards, per-run validity checks, health logging |
 | `scripts/run_*.sh` | drivers: `00` precondition, `01` direct-I/O check, `02` Exp 1+2, `03` Exp 3+4, `04` Exp 5, `05` Exp 6+7 (+ drift check), `06` drift series, `07` Exp 4 replicate, `run_engine_check.sh`, `run_all.sh`, `wait_for_ac.sh`, `cleanup.sh` |
 | `scripts/parse_fio.py` | fio JSON to `data/processed/all_runs.csv` and `summary.csv` (mean, sd, min, max over trials; Little's-law check per run) |
-| `scripts/make_tables.py`, `check_smart_reads.py`, `plots.py`, `build_report.py` | tables, SMART cross-check, figures, report assembly |
+| `scripts/make_tables.py`, `check_smart_reads.py`, `analyze_state_split.py`, `plots.py`, `build_report.py` | tables, SMART cross-check, analysis of the two IOPS levels (existing data only), figures, `REPORT.md` assembly |
+| `scripts/export_docx_data.py`, `scripts/docx/make_docx.js`, `scripts/check_docx_numbers.py` | the Word report `Project3_SSD_Report.docx` (tables from `data/processed`, figures from `plots/docx/`) and a trace of every number in it to the data (`data/processed/docx_number_trace.md`); needs `cd scripts/docx && npm install docx` and pandoc |
 | `data/raw/` | untouched fio JSON, one file per run, name = `exp__knob=value__...__tN.json`; `health/` has before/after snapshots per stage; `invalid_sleep_2026-10-22/` holds quarantined runs |
 | `data/processed/` | CSVs and generated markdown tables |
 | `plots/` | PNG and PDF figures |

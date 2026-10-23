@@ -1,0 +1,656 @@
+{
+ "exp1": [
+  [
+   "workload (QD1, 1 job)",
+   "IOPS",
+   "MB/s",
+   "mean \u00b5s",
+   "p50 \u00b5s",
+   "p95 \u00b5s",
+   "p99 \u00b5s"
+  ],
+  [
+   "4 KiB random read",
+   "18,279",
+   "75",
+   "54.6 (0.5)",
+   "54.0 (0.0)",
+   "58.8 (0.6)",
+   "62.7 (1.8)"
+  ],
+  [
+   "4 KiB random write",
+   "12,319",
+   "50",
+   "80.9 (3.5)",
+   "69.8 (3.1)",
+   "91.6 (3.1)",
+   "181.2 (46.1)"
+  ],
+  [
+   "128 KiB sequential read",
+   "7,403",
+   "970",
+   "134.9 (0.1)",
+   "131.6 (0.9)",
+   "179.2 (0.0)",
+   "206.5 (1.2)"
+  ],
+  [
+   "128 KiB sequential write",
+   "19,352",
+   "2,536",
+   "29.1 (0.7)",
+   "28.7 (0.6)",
+   "35.1 (1.0)",
+   "39.5 (0.6)"
+  ]
+ ],
+ "exp3": [
+  [
+   "read/write %",
+   "read IOPS",
+   "write IOPS",
+   "total IOPS (sd)",
+   "total MB/s",
+   "read mean / p99 \u00b5s",
+   "write mean / p99 \u00b5s"
+  ],
+  [
+   "100/0",
+   "220,362",
+   "0",
+   "220,362 (2,766)",
+   "903",
+   "72 / 108",
+   "-"
+  ],
+  [
+   "70/30",
+   "78,637",
+   "33,653",
+   "112,290 (3,306)",
+   "460",
+   "134 / 1297",
+   "160 / 1341"
+  ],
+  [
+   "50/50",
+   "40,454",
+   "40,511",
+   "80,964 (2,752)",
+   "332",
+   "179 / 1330",
+   "215 / 1395"
+  ],
+  [
+   "0/100",
+   "0",
+   "49,417",
+   "49,417 (3,054)",
+   "202",
+   "-",
+   "323 / 1461"
+  ]
+ ],
+ "exp5": [
+  [
+   "QD",
+   "IOs/run",
+   "samples above p99.9",
+   "p50 \u00b5s",
+   "p90 \u00b5s",
+   "p95 \u00b5s",
+   "p99 \u00b5s",
+   "p99.9 \u00b5s",
+   "p99.99 \u00b5s",
+   "max \u00b5s",
+   "p99.9 / p50"
+  ],
+  [
+   "QD4 (mid)",
+   "3.3 M",
+   "3,347",
+   "70.1 (0.0)",
+   "79.4 (0.0)",
+   "82.4 (0.0)",
+   "100.5 (2.6)",
+   "154.5 (23.1)",
+   "844.5 (481.2)",
+   "12,979",
+   "2.20"
+  ],
+  [
+   "QD16 (knee)",
+   "11.3 M",
+   "11,277",
+   "82.8 (0.6)",
+   "98.5 (1.6)",
+   "108.4 (2.1)",
+   "132.6 (4.6)",
+   "197.6 (33.8)",
+   "672.1 (432.8)",
+   "6,133",
+   "2.39"
+  ]
+ ],
+ "exp6b": [
+  [
+   "metric",
+   "value"
+  ],
+  [
+   "fio bytes written (io_bytes)",
+   "2.199 TB"
+  ],
+  [
+   "SMART host bytes written delta",
+   "2.199 TB"
+  ],
+  [
+   "duration (1 s log windows)",
+   "198 s"
+  ],
+  [
+   "mean throughput, first 10 s",
+   "11.69 GB/s"
+  ],
+  [
+   "mean throughput, 10 to 60 s",
+   "10.99 GB/s"
+  ],
+  [
+   "mean throughput, last 30 s",
+   "11.04 GB/s"
+  ],
+  [
+   "slowest 1 s window",
+   "8.96 GB/s"
+  ],
+  [
+   "p99.9 / max single-write latency",
+   "4,047 \u00b5s / 19.6 ms"
+  ],
+  [
+   "SMART temperature start \u2192 end",
+   "34 \u2192 65 \u00b0C (max 65)"
+  ]
+ ],
+ "exp7": [
+  [
+   "setup",
+   "IOPS (sd)",
+   "mean \u00b5s (sd)",
+   "p99 \u00b5s (sd)",
+   "configured QD",
+   "effective QD (Little)"
+  ],
+  [
+   "A: direct=1, QD1 (correct)",
+   "14,540 (230)",
+   "68.63 (1.06)",
+   "81.41 (2.05)",
+   "1",
+   "1.00"
+  ],
+  [
+   "B: direct=0 buffered, QD1 (flawed: page cache)",
+   "1,316,919 (79,092)",
+   "0.69 (0.05)",
+   "1.00 (0.00)",
+   "1",
+   "0.90"
+  ],
+  [
+   "C: direct=1, QD16 (correct)",
+   "191,798 (504)",
+   "83.19 (0.21)",
+   "125.10 (0.59)",
+   "16",
+   "15.96"
+  ],
+  [
+   "D: psync with iodepth=64 (flawed: depth ignored)",
+   "14,395 (42)",
+   "69.35 (0.20)",
+   "81.75 (1.56)",
+   "64",
+   "1.00"
+  ]
+ ],
+ "state_split": [
+  [
+   "Candidate factor",
+   "Low level (~189 k)",
+   "High level (~222 k)",
+   "Point-biserial r with level"
+  ],
+  [
+   "Run order (index 0 to 56)",
+   "mean 9.4",
+   "mean 34.6",
+   "+0.68"
+  ],
+  [
+   "Minutes since last write run of at least 10 GB",
+   "mean 23.8 (min 0.3)",
+   "mean 6.2 (min 0.3)",
+   "-0.68"
+  ],
+  [
+   "GB written in the 30 min before the run",
+   "mean 307.9",
+   "mean 2136.3",
+   "+0.92"
+  ],
+  [
+   "Power source at run start (pmset log)",
+   "AC in 15 of 15 runs",
+   "AC in 42 of 42 runs",
+   "not computable (no variation) (battery charge held at [77, 80] %)"
+  ],
+  [
+   "Display on at run start (user activity proxy)",
+   "on in 12 of 15",
+   "on in 42 of 42",
+   "+0.39"
+  ],
+  [
+   "Sleep events during the run",
+   "0",
+   "0",
+   "none"
+  ],
+  [
+   "SSD temperature (SMART, stage start and end, C)",
+   "[28, 40, 41, 43, 46, 53, 58]",
+   "[37, 41, 42, 43, 46, 50, 58]",
+   "overlap, no per-run reading"
+  ],
+  [
+   "fio system CPU (% of one core, summed)",
+   "mean 209.4",
+   "mean 262.2",
+   "+0.99 (consequence, not cause)"
+  ],
+  [
+   "Episode",
+   "Level",
+   "Experiments (first run)",
+   "Time span",
+   "Runs"
+  ],
+  [
+   "---",
+   "---",
+   "---",
+   "---",
+   "---"
+  ],
+  [
+   "1",
+   "low",
+   "exp2",
+   "19:32 to 19:33",
+   "3"
+  ],
+  [
+   "2",
+   "high",
+   "exp3",
+   "22:32 to 22:33",
+   "3"
+  ],
+  [
+   "3",
+   "low",
+   "exp4",
+   "22:43 to 23:13",
+   "12"
+  ],
+  [
+   "4",
+   "high",
+   "drift",
+   "23:21 to 23:38",
+   "39"
+  ]
+ ],
+ "smart_read_check": [
+  [
+   "stage",
+   "SMART read delta (GB)",
+   "fio read bytes after ramp (GB)",
+   "SMART / fio"
+  ],
+  [
+   "exp34 (Exp 3 and 4, 23 s runs: ramp factor 1.15)",
+   "693.0",
+   "447.8",
+   "1.55"
+  ],
+  [
+   "exp5 (65 s runs: ramp factor 1.08)",
+   "199.7",
+   "179.7",
+   "1.11"
+  ],
+  [
+   "driftseries (12 s runs: ramp factor 1.20)",
+   "350.4",
+   "271.7",
+   "1.29"
+  ],
+  [
+   "exp4b replicate (23 s runs: ramp factor 1.15)",
+   "513.0",
+   "425.3",
+   "1.21"
+  ]
+ ],
+ "exp6a": [
+  [
+   "pattern",
+   "address range",
+   "IOPS (sd)",
+   "mean \u00b5s (sd)",
+   "p99 \u00b5s (sd)"
+  ],
+  [
+   "randread",
+   "1 GiB",
+   "189,058 (697)",
+   "84 (0)",
+   "131 (2)"
+  ],
+  [
+   "randread",
+   "32 GiB",
+   "189,553 (235)",
+   "84 (0)",
+   "127 (1)"
+  ],
+  [
+   "randwrite",
+   "1 GiB",
+   "46,923 (353)",
+   "340 (3)",
+   "1466 (0)"
+  ],
+  [
+   "randwrite",
+   "32 GiB",
+   "47,761 (728)",
+   "334 (5)",
+   "1466 (16)"
+  ]
+ ],
+ "exp2c": [
+  [
+   "Block",
+   "MB/s: rand read",
+   "seq read",
+   "rand write",
+   "seq write",
+   "mean \u00b5s: rand read",
+   "seq read",
+   "rand write",
+   "seq write"
+  ],
+  [
+   "4 KiB",
+   "778",
+   "854",
+   "192",
+   "185",
+   "84",
+   "77",
+   "340",
+   "353"
+  ],
+  [
+   "16 KiB",
+   "2,753",
+   "2,866",
+   "1,560",
+   "1,506",
+   "95",
+   "91",
+   "160",
+   "166"
+  ],
+  [
+   "32 KiB",
+   "4,616",
+   "4,853",
+   "3,191",
+   "3,249",
+   "113",
+   "108",
+   "150",
+   "147"
+  ],
+  [
+   "64 KiB",
+   "7,369",
+   "7,840",
+   "6,638",
+   "6,796",
+   "142",
+   "134",
+   "135",
+   "133"
+  ],
+  [
+   "128 KiB",
+   "10,591",
+   "10,886",
+   "10,736",
+   "9,330",
+   "198",
+   "196",
+   "168",
+   "198"
+  ],
+  [
+   "256 KiB",
+   "12,872",
+   "11,710",
+   "10,382",
+   "9,954",
+   "326",
+   "363",
+   "371",
+   "375"
+  ],
+  [
+   "512 KiB",
+   "-",
+   "10,629",
+   "-",
+   "10,562",
+   "-",
+   "794",
+   "-",
+   "701"
+  ],
+  [
+   "1024 KiB",
+   "-",
+   "12,796",
+   "-",
+   "10,589",
+   "-",
+   "1,315",
+   "-",
+   "1,393"
+  ]
+ ],
+ "exp4c": [
+  [
+   "QD",
+   "A psync IOPS (k)",
+   "A posixaio IOPS (k)",
+   "A posixaio mean \u00b5s",
+   "B psync IOPS (k)",
+   "B posixaio IOPS (k)",
+   "B posixaio mean \u00b5s",
+   "Little's QD (A posixaio)"
+  ],
+  [
+   "1",
+   "14.2",
+   "13.2",
+   "76",
+   "18.0",
+   "16.0",
+   "62",
+   "1.0"
+  ],
+  [
+   "2",
+   "27.1",
+   "25.4",
+   "78",
+   "33.6",
+   "31.3",
+   "63",
+   "2.0"
+  ],
+  [
+   "4",
+   "55.3",
+   "52.6",
+   "76",
+   "69.9",
+   "62.7",
+   "63",
+   "4.0"
+  ],
+  [
+   "8",
+   "108.7",
+   "96.6",
+   "82",
+   "133.7",
+   "118.0",
+   "67",
+   "7.9"
+  ],
+  [
+   "16",
+   "187.1",
+   "151.4",
+   "104",
+   "219.8",
+   "164.8",
+   "95",
+   "15.8"
+  ],
+  [
+   "32",
+   "-",
+   "182.2",
+   "174",
+   "-",
+   "205.3",
+   "153",
+   "31.7"
+  ],
+  [
+   "64",
+   "-",
+   "189.9",
+   "335",
+   "-",
+   "214.1",
+   "296",
+   "63.7"
+  ],
+  [
+   "128",
+   "-",
+   "189.3",
+   "675",
+   "-",
+   "222.7",
+   "573",
+   "127.7"
+  ],
+  [
+   "256",
+   "-",
+   "189.4",
+   "1,347",
+   "-",
+   "220.6",
+   "1,154",
+   "255.1"
+  ]
+ ],
+ "ceilings": [
+  [
+   "Quantity",
+   "Measured",
+   "Reference"
+  ],
+  [
+   "4 KiB random read IOPS, QD16 to QD256",
+   "189 k (A) to 223 k (B)",
+   "0.8 to 0.9 GB/s, 6 to 7% of best read bandwidth"
+  ],
+  [
+   "Best read bandwidth (256 KiB random)",
+   "12.9 GB/s",
+   "PCIe 4.0 x4 payload 7.9 GB/s; 5.0 x4 15.8 GB/s (link not readable on macOS)"
+  ],
+  [
+   "Best write bandwidth (1 MiB sequential)",
+   "10.6 GB/s short runs; 11.0 GB/s sustained over 2.2 TB",
+   "about 82 to 86% of the read ceiling"
+  ],
+  [
+   "QD1 4 KiB random read latency",
+   "54.6 \u00b5s (Exp 1) to 70.1 \u00b5s (Exp 4)",
+   "flash page read is tens of \u00b5s; the rest is controller, encryption, protocol and file system"
+  ]
+ ],
+ "fig": {
+  "fig7_misleading_setups.png": [
+   1430,
+   455
+  ],
+  "fig4_qd_sweep.png": [
+   1300,
+   507
+  ],
+  "fig8_state_drift.png": [
+   1300,
+   442
+  ],
+  "fig9_roofline_summary.png": [
+   1040,
+   468
+  ],
+  "fig2_blocksize.png": [
+   1430,
+   442
+  ],
+  "fig3_rwmix.png": [
+   1040,
+   429
+  ],
+  "fig1_baseline_qd1.png": [
+   1040,
+   416
+  ],
+  "fig5_tail_latency.png": [
+   845,
+   455
+  ],
+  "fig6_working_set_and_sustained_write.png": [
+   1430,
+   455
+  ]
+ }
+}
