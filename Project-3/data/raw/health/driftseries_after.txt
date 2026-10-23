@@ -1,0 +1,35 @@
+== time: 2026-10-22 23:31:00 EDT
+== host: macOS 27.0.1 (26A434); Apple M5 Max; 36 GiB RAM
+== fio: fio-3.43
+== power:
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=36110435)	80%; AC attached; not charging present: true
+ powermode            0
+== thermal:
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+== free space:
+/dev/disk3s5   1.8Ti   637Gi   1.2Ti    35%    2.4M   12G    0%   /System/Volumes/Data
+== smartctl:
+Model Number:                       APPLE SSD AP2048Z
+Firmware Version:                   241.0.12
+Firmware Updates (0x02):            1 Slot
+SMART overall-health self-assessment test result: PASSED
+Critical Warning:                   0x00
+Temperature:                        50 Celsius
+Available Spare:                    100%
+Percentage Used:                    0%
+Data Units Read:                    56,207,296 [28.7 TB]
+Data Units Written:                 31,306,111 [16.0 TB]
+Host Read Commands:                 1,335,079,929
+Host Write Commands:                533,296,966
+smartctl unreadable
+== smart_bytes_written: 16028728832000
+== top CPU consumers:
+ %CPU COMM
+ 19.0 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer
+ 15.1 /Applications/Dockitty.app/Contents/MacOS/Dockitty
+  2.6 /usr/libexec/PerfPowerServices
+  2.3 bash
+  1.9 /Applications/Google Chrome.app/Contents/Frameworks/Google Chrome Framework.framework/Versions/155.0.8059.80/Helpers/Google Chrome Helper (Aperitif).app/Contents/MacOS/Google Chrome Helper (Aperitif)

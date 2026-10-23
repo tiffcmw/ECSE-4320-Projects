@@ -1,0 +1,35 @@
+== time: 2026-10-22 23:24:22 EDT
+== host: macOS 27.0.1 (26A434); Apple M5 Max; 36 GiB RAM
+== fio: fio-3.43
+== power:
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=36110435)	80%; AC attached; not charging present: true
+ powermode            0
+== thermal:
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+== free space:
+/dev/disk3s5   1.8Ti   637Gi   1.2Ti    35%    2.4M   12G    0%   /System/Volumes/Data
+== smartctl:
+Model Number:                       APPLE SSD AP2048Z
+Firmware Version:                   241.0.12
+Firmware Updates (0x02):            1 Slot
+SMART overall-health self-assessment test result: PASSED
+Critical Warning:                   0x00
+Temperature:                        50 Celsius
+Available Spare:                    100%
+Percentage Used:                    0%
+Data Units Read:                    55,522,900 [28.4 TB]
+Data Units Written:                 31,305,361 [16.0 TB]
+Host Read Commands:                 1,249,604,410
+Host Write Commands:                533,269,424
+smartctl unreadable
+== smart_bytes_written: 16028344832000
+== top CPU consumers:
+ %CPU COMM
+ 32.9 claude bg-spare
+ 18.3 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer
+ 16.2 /Applications/Dockitty.app/Contents/MacOS/Dockitty
+  7.1 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/FSEvents.framework/Versions/A/Support/fseventsd
+  2.8 /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/Metadata.framework/Versions/A/Support/mds
