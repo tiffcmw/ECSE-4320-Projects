@@ -1,0 +1,35 @@
+== time: 2026-10-22 22:32:11 EDT
+== host: macOS 27.0.1 (26A434); Apple M5 Max; 36 GiB RAM
+== fio: fio-3.43
+== power:
+Now drawing from 'AC Power'
+ -InternalBattery-0 (id=36110435)	80%; AC attached; not charging present: true
+ powermode            0
+== thermal:
+Note: No thermal warning level has been recorded
+Note: No performance warning level has been recorded
+Note: No CPU power status has been recorded
+== free space:
+/dev/disk3s5   1.8Ti   637Gi   1.2Ti    35%    2.4M   12G    0%   /System/Volumes/Data
+== smartctl:
+Model Number:                       APPLE SSD AP2048Z
+Firmware Version:                   241.0.12
+Firmware Updates (0x02):            1 Slot
+SMART overall-health self-assessment test result: PASSED
+Critical Warning:                   0x00
+Temperature:                        53 Celsius
+Available Spare:                    100%
+Percentage Used:                    0%
+Data Units Read:                    52,942,594 [27.1 TB]
+Data Units Written:                 26,502,341 [13.5 TB]
+Host Read Commands:                 978,608,915
+Host Write Commands:                515,247,229
+smartctl unreadable
+== smart_bytes_written: 13569198592000
+== top CPU consumers:
+ %CPU COMM
+ 13.6 /Applications/Dockitty.app/Contents/MacOS/Dockitty
+ 13.6 /System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer
+  5.6 claude bg-spare
+  5.4 /Applications/Visual Studio Code.app/Contents/Frameworks/Code Helper (Renderer).app/Contents/MacOS/Code Helper (Renderer)
+  4.0 /usr/sbin/coreaudiod
