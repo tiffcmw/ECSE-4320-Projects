@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the self-contained report from report/parts/*.md, filling every number from data/processed.
+"""Assemble the self-contained report from report_src/parts/*.md, filling every number from data/processed.
 
   scripts/build_report.py            -> report/ECSE4320_Project2_Report.md, .docx and .pdf (pandoc + LibreOffice)
 Placeholders in the parts have the form {{expression|format}}; the expression is evaluated with the helpers below.
@@ -14,7 +14,8 @@ import analysis_lib as A  # noqa: E402
 
 ROOT = A.ROOT
 REP = os.path.join(ROOT, "report")
-PARTS = os.path.join(REP, "parts")
+REPSRC = os.path.join(ROOT, "report_src")
+PARTS = os.path.join(REPSRC, "parts")
 SRC = os.path.join(ROOT, "src")
 USED = {}
 _cache = {}
@@ -427,7 +428,7 @@ def hyp_table():
     orig = dict(hyp_rows())
     ns_ = dict(NS)
     ver = {}
-    for line in open(os.path.join(REP, "verdicts.txt")).read().strip().split("\n"):
+    for line in open(os.path.join(REPSRC, "verdicts.txt")).read().strip().split("\n"):
         i, meas, lab = [x.strip() for x in line.split("||")]
         ver[i] = (render(meas, ns_), render(lab, ns_))
     rows = []

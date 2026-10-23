@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Builds report/REPORT.pdf from report/REPORT.md: Markdown -> HTML (python-markdown) -> PDF (headless Google Chrome).
+"""Builds report/old/REPORT.pdf (a draft, not the submitted report) from report_src/REPORT.md: Markdown -> HTML (python-markdown) -> PDF (headless Google Chrome).
 Requirements: `pip install markdown` and Google Chrome (path below). Usage: scripts/make_report_pdf.py"""
 import os, re, subprocess, sys, tempfile
 import markdown
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHROME = os.environ.get("CHROME", "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
-src = open(f"{ROOT}/report/REPORT.md", encoding="utf-8").read()
+src = open(f"{ROOT}/report_src/REPORT.md", encoding="utf-8").read()
 body = markdown.markdown(src, extensions=["tables", "fenced_code", "sane_lists"])
 body = re.sub(r'src="\.\./', 'src="file://%s/' % ROOT, body)
 body = re.sub(r"<p>((?:(?!</p>).)*)</p>(\s*<table)", lambda m: '<p class="question">' + m.group(1) + "</p>" + m.group(2), body, flags=re.S)
@@ -34,7 +34,8 @@ pre code { background: none; padding: 0; font-size: 6.8pt; }
 html = f'<!doctype html><html><head><meta charset="utf-8"><title>SIMD Advantage Profiling</title><style>{CSS}</style></head><body>{body}</body></html>'
 with tempfile.TemporaryDirectory() as d:
     h = os.path.join(d, "report.html"); open(h, "w", encoding="utf-8").write(html)
-    out = f"{ROOT}/report/REPORT.pdf"
+    os.makedirs(f"{ROOT}/report/old", exist_ok=True)
+    out = f"{ROOT}/report/old/REPORT.pdf"
     r = subprocess.run([CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", f"--print-to-pdf={out}", "--allow-file-access-from-files", "file://" + h], capture_output=True, text=True, timeout=180)
     if r.returncode != 0 or not os.path.exists(out): sys.exit("PDF build failed: " + r.stderr[-500:])
 import re as _re

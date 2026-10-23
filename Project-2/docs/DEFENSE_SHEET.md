@@ -39,7 +39,7 @@ Numbers are from the final collection and are generated in the report; check the
 
 ## Exp 8: pitfalls
 1. **Why does a 4 MiB buffer give 1852 GB/s?** It is resident in the shared L2 across the 16 threads, so it measures cache bandwidth, not DRAM, and exceeds the 460 GB/s peak, which the validation flags.
-2. **How do you know the optimizer deleted the loop?** The function has no symbol in the binary and the caller only calls the sinking variant (Appendix E); timing it claims 1.2e9 GB/s.
+2. **How do you know the optimizer deleted the loop?** The function has no symbol in the binary and the caller only calls the sinking variant (Appendix B); timing it claims 1.2e9 GB/s.
 3. **Why a 300 ms spin before every measurement?** A process after idle runs at 43% of the steady clock after 5 ms and reaches the steady value after about 100 ms.
 
 ## Five weakest claims and what would strengthen them

@@ -244,4 +244,4 @@ const doc = new Document({
     footers: { default: new Footer({ children: [new Paragraph({ alignment: AlignmentType.CENTER, children: [new TextRun({ text: "Project 3: SSD Performance Profiling    |    Page ", size: 16, color: "666666" }),
       new TextRun({ children: [PageNumber.CURRENT], size: 16, color: "666666" }), new TextRun({ text: " of ", size: 16, color: "666666" }), new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 16, color: "666666" })] })] }) },
     children: C }] });
-Packer.toBuffer(doc).then((b) => { fs.writeFileSync(ROOT + "/Project3_SSD_Report.docx", b); console.log("wrote Project3_SSD_Report.docx", b.length, "bytes"); });
+Packer.toBuffer(doc).then((b) => { fs.writeFileSync(ROOT + "/report/Project3_SSD_Report.docx", b); console.log("wrote Project3_SSD_Report.docx", b.length, "bytes"); });

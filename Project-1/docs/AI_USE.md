@@ -28,12 +28,12 @@ Recorded in `docs/HYPOTHESES.md` (verdict column). Examples: alignment penalty (
 - [ ] Run `scripts/run_all.sh` on the student's own machine: tests must pass and all plots regenerate. Optionally `COLLECT=quick scripts/run_all.sh` (about 20 minutes, plugged in, Low Power Mode off).
 - [ ] Check `docs/REPRODUCTION.md` (clean-clone result) against a fresh clone.
 - [ ] Disassemble one kernel and compare with `vecreports/VECTORIZATION.md`: `objdump -d --disassemble-symbols=_kern_saxpy_f32_auto build/obj/auto/saxpy_f32.o` (after `scripts/build.sh`), and `clang -O3 -Rpass=loop-vectorize ...` as in `scripts/vecreport.py`.
-- [ ] Spot-check three numbers in `report/REPORT.md` against `data/processed/` and the raw CSVs (for example the 2.08x f32 SAXPY L1 speedup, the 147 GiB/s ceiling, 3.99 fmla per cycle). A spot-check log kept during development is not a substitute.
+- [ ] Spot-check three numbers in `report/Project1_Report.pdf` against `data/processed/` and the raw CSVs (for example the 2.08x f32 SAXPY L1 speedup, the 147 GiB/s ceiling, 3.99 fmla per cycle). A spot-check log kept during development is not a substitute.
 - [ ] Read the hypotheses table and confirm each outcome matches its cited evidence; confirm with `git log --follow docs/HYPOTHESES.md` that hypotheses were committed before the data (addendum 4 in `032af85`, HA6 in `9733d53`).
 - [ ] Confirm the machine state during the runs claimed: AC power, Low Power Mode off (`pmset -g`), no heavy background apps (`docs/ENVIRONMENT_sessions.log` shows the load averages; a video player was running in `ext1`).
 - [x] Powermetrics samples were run by a student (see above).
 - [ ] Each student confirms that the account of who wrote which kernel, testbench and benchmark (top of this file) is accurate, and that it matches what the course requires to be disclosed.
-- [ ] Confirm the unexplained items in section 11 of the report are acceptable, or investigate one.
+- [ ] Confirm the unexplained items in Section 6 (Anomalies and unresolved items) of the report are acceptable, or investigate one.
 - [ ] Confirm that skipping SME is acceptable (SME exists on this chip; not used).
 - [ ] Check the course policy on AI-assisted proofreading and plotting, and edit the report if it requires more than the disclosure above.
 - [ ] Check that no em-dashes appear: `grep -rn $'\xe2\x80\x94' . --include='*.md' --include='*.py' --include='*.sh' --include='*.c' --include='*.h'` should print nothing.

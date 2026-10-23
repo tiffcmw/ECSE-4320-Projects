@@ -4,7 +4,7 @@ Tool: Claude Code (model Sonnet 5.5) working inside this repository, driven by t
 
 ## What Claude Code generated
 
-Everything under `Project-3/` except the owner's decisions listed below: the fio job files, all `scripts/` (safety guards, drivers, parser, tables, plots, report builder), `HYPOTHESES.md` and its two amendments, `README.md`, `REPORT.template.md` (and so `REPORT.md`), this file, and the analysis text. Claude also ran the benchmarks by launching the driver scripts and read the results.
+Everything under `Project-3/` except the owner's decisions listed below: the fio job files, all `scripts/` (safety guards, drivers, parser, tables, plots, report builder), `HYPOTHESES.md` and its two amendments, `README.md`, `report_src/REPORT.template.md` (and so `report_src/REPORT.md`), this file, and the analysis text. Claude also ran the benchmarks by launching the driver scripts and read the results.
 
 ## Decisions that came from the project owner (given in the prompt or in approvals)
 
@@ -23,7 +23,7 @@ Not a Claude error but it shaped the schedule: the owner said the charger was pl
 
 ## Hypotheses that were wrong
 
-Several predictions in `HYPOTHESES.md` were missed (writes slower than reads at QD1, tail tighter than predicted (p99.9 at 2.2 times p50 against 3 to 8 predicted), write and read bandwidth 2x higher than predicted); they are listed in the scorecard of `REPORT.md`, not adjusted afterwards.
+Several predictions in `HYPOTHESES.md` were missed (writes slower than reads at QD1, tail tighter than predicted (p99.9 at 2.2 times p50 against 3 to 8 predicted), write and read bandwidth 2x higher than predicted); they are listed in the scorecard (Section 9) of `report/Project3_Report.pdf`, not adjusted afterwards.
 
 ## Verification done by Claude, and what still needs the team
 
@@ -40,7 +40,7 @@ Claude Code generated most of the code and the first-draft text. The students ar
 | Student B | [STUDENT TO FILL: name] | Exp 3 (read/write mix), Exp 4 (queue-depth sweep), knee analysis, Little's law check | Explains the knee from device and interface saturation and why Little's law is a validity check here |
 | Student C | [STUDENT TO FILL: name] | Exp 5 (tail latency), Exp 6 (device state, working set), Exp 7 (misleading setup), anomalies including the 189 k against 222 k split, sustained-write caveat | Defends the tail, device-state and anomaly sections and the limits of the sustained-write result |
 | Joint | All three | Hypotheses and their scoring; section edits for owned experiments; each student's own AI-use paragraph; final consistency pass | Final consistency pass owner: [STUDENT TO FILL: name] |
-| Claude Code | AI tool | Generated fio job files, run and parse scripts, plotting code; drafted `REPORT.md` and the Word report; proofreading and consistency checks; flagged anomalies and errors in its own earlier work (for example the invalid sleep-affected Exp 2 write runs) | Not a substitute for student validation |
+| Claude Code | AI tool | Generated fio job files, run and parse scripts, plotting code; drafted `report_src/REPORT.md` and the Word report (final: `report/Project3_Report.pdf`); proofreading and consistency checks; flagged anomalies and errors in its own earlier work (for example the invalid sleep-affected Exp 2 write runs) | Not a substitute for student validation |
 
 **[STUDENT TO FILL: Student A name]: what I changed, tested, or rejected.** [STUDENT TO FILL: what you changed] [STUDENT TO FILL: what you tested independently] [STUDENT TO FILL: what you rejected or corrected and why (at least one concrete item)]
 

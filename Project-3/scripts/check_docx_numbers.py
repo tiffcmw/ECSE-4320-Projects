@@ -9,7 +9,7 @@ Output: data/processed/docx_number_trace.md and a printed summary."""
 import csv, glob, json, os, re, subprocess, sys
 import numpy as np
 P3 = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DOCX = P3 + "/Project3_SSD_Report.docx"
+DOCX = P3 + "/report/Project3_SSD_Report.docx"
 text = subprocess.run(["pandoc", "-t", "plain", "--wrap=none", DOCX], capture_output=True, text=True, check=True).stdout
 text = re.sub(r"\[STUDENT TO FILL[^\]]*\]", " ", text)
 

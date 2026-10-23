@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Reproduces the study.
 #   scripts/run_all.sh                 build, test, regenerate vectorization reports and ALL plots from the committed raw data (about 1 minute)
-#   COLLECT=quick scripts/run_all.sh   additionally re-measure a reduced version of every experiment into new raw CSVs (about 10 minutes) and plot those
-#   COLLECT=full  scripts/run_all.sh   re-measure everything at full resolution (about 40 minutes)
+#   COLLECT=quick scripts/run_all.sh   additionally re-measure a reduced version of every experiment into new raw CSVs (about 2 minutes) and plot those
+#   COLLECT=full  scripts/run_all.sh   re-measure everything at full resolution (about 1 hour)
 # Controls for measuring: AC power, Low Power Mode off, no heavy background apps (see docs/METHODOLOGY.md).
 set -euo pipefail
 cd "$(dirname "$0")/.."
