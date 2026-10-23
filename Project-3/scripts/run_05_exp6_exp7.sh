@@ -29,6 +29,7 @@ if [ ! -f "$OUT/exp6b__sustained.json" ]; then
   ( cd "$OUT" && env TESTFILE="$TESTFILE" LOGPREFIX="$OUT/exp6b" fio --output-format=json --output="$OUT/exp6b__sustained.json.tmp" "$SCRATCH/06_sustained_write.run.fio" ) \
      || { kill $TPID; die "sustained fio failed"; }
   kill $TPID; wait $TPID 2>/dev/null || true
+  pmset -g batt | head -1 | grep -q "AC Power" || { mkdir -p "$RAW/invalid"; mv "$OUT/exp6b__sustained.json.tmp" "$RAW/invalid/"; die "sustained run invalid: left AC power"; }
   mv "$OUT/exp6b__sustained.json.tmp" "$OUT/exp6b__sustained.json"
   echo "SMART host bytes written during sustained write: $(( $(smart_bytes_written) - B0 ))" | tee "$OUT/bytes_written.txt"
 fi

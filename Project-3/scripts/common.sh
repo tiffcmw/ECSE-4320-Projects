@@ -73,15 +73,26 @@ health_log() {
 }
 
 # run_fio JOBFILE OUTPUT_JSON [VAR=value ...]  (variables are exported to the job file as ${VAR})
-# Never overwrites an existing raw file.
+# Never overwrites an existing raw file. Before each run: must be on AC power. After each run the result is
+# quarantined to $RAW/invalid/ (and the stage aborts) if the Mac left AC power or the wall-clock time far exceeds
+# RUNTIME+RAMP, which is what a system sleep in the middle of a run looks like (found the hard way in Exp 2 on 2026-10-22).
 run_fio() {
   local job="$1" out="$2"; shift 2
   guard_path "$TESTFILE"
   mkdir -p "$(dirname "$out")"
   if [ -f "$out" ]; then echo "  exists, skip: $(basename "$out")"; return 0; fi
+  check_power
+  local rt_=0 rp_=0 a
+  for a in "$@"; do case "$a" in RUNTIME=*) rt_="${a#RUNTIME=}";; RAMP=*) rp_="${a#RAMP=}";; esac; done
   echo "  fio $(basename "$job") -> $(basename "$out")"
+  local t0 t1; t0=$(date +%s)
   env TESTFILE="$TESTFILE" ENGINE="$ENGINE" "$@" fio --output-format=json --output="$out.tmp" "$job" \
     || { rm -f "$out.tmp"; die "fio failed for $out"; }
+  t1=$(date +%s)
+  if ! pmset -g batt | head -1 | grep -q "AC Power" || [ $(( t1 - t0 )) -gt $(( rt_ + rp_ + 45 )) ]; then
+    mkdir -p "$RAW/invalid"; mv "$out.tmp" "$RAW/invalid/$(basename "$out")"
+    die "run invalid (left AC power, or took $((t1 - t0)) s for a $((rt_ + rp_)) s job: system sleep?): moved to $RAW/invalid/"
+  fi
   mv "$out.tmp" "$out"
   sleep "${SETTLE:-3}"
 }
@@ -97,6 +108,7 @@ preflight() {
     [ -f "$SCRATCH/.precondition_done" ] || die "preconditioning not completed"
   fi
   command -v fio >/dev/null || die "fio not installed"
+  if [ -z "${CAFFEINATED:-}" ]; then caffeinate -ims -w $$ & CAFFEINATED=1; fi   # no sleep while this driver runs
 }
 
 # Smoke mode: SMOKE=1 -> short runs, one trial, output to data/smoke (never mixed with raw data)
