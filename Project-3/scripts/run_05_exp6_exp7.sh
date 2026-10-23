@@ -34,3 +34,13 @@ if [ ! -f "$OUT/exp6b__sustained.json" ]; then
   echo "SMART host bytes written during sustained write: $(( $(smart_bytes_written) - B0 ))" | tee "$OUT/bytes_written.txt"
 fi
 stage_end exp67
+
+# Drift check: repeat the Exp 4 psync QD16 point (and the Exp 3 100% read point) at the very end of the campaign.
+# Exp 2/4 gave ~190 k IOPS for this workload and Exp 3 gave ~220 k; this tells whether the machine drifts over time.
+geom randread 1
+for t in $(seq 1 "$TRIALS"); do
+  run_fio "$FIO_DIR/04_qd_sweep.fio" "$RAW/drift/drift__src=exp4style__qd=16__t${t}.json" THREAD=1 \
+    RW=randread BS=4k NUMJOBS=16 IODEPTH=1 JOBSIZE=$JOBSIZE OFFINC=$OFFINC RUNTIME=$(rt 20) RAMP=$(ramp 3)
+  run_fio "$FIO_DIR/03_rwmix.fio" "$RAW/drift/drift__src=exp3style__qd=16__t${t}.json" \
+    RW=randread BS=4k NUMJOBS=16 IODEPTH=1 MIXREAD=100 JOBSIZE=$JOBSIZE OFFINC=$OFFINC RUNTIME=$(rt 20) RAMP=$(ramp 3)
+done
